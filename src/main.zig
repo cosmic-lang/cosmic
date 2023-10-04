@@ -6,7 +6,7 @@ const clap = @import("clap");
 const MAX_BYTES = 1024^2;
 const VERSION = "0.0.1";
 const EXTENSION = ".tali";
-const PROMPT = "tali>";
+const PROMPT = "talisman>";
 const LOGO = 
   \\
   ;
