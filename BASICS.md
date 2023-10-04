@@ -201,6 +201,11 @@ end
 ```elixir
 ```
 
+## Memory Management
+```elixir
+
+```
+
 ## Conditionals
 ```elixir
 if condition do
@@ -208,10 +213,6 @@ if condition do
 else if another_condition do
 
 else
-
-end
-
-unless condition do
 
 end
 ```
