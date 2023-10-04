@@ -1,5 +1,5 @@
 # `Talisman`
-`Talisman` is a general purpose programming language. `Talisman` is statically typed, features type inference, and treats types as values.
+`Talisman` is a general purpose, statically typed, programming language.
 
 # ! In Early Development
 The Language is currently in the design stage, so the language has yet to be implemented, and everything is subject to drastic change.
