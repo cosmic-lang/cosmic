@@ -1,0 +1,9 @@
+const test = (x, y: int): void do
+  let result = if (x <= 12) do
+    x * y
+  else
+    12 * y
+  end
+
+  doSomething(result, false)
+end

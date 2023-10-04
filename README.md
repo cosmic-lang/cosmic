@@ -1,0 +1,10 @@
+# `Talisman`
+`Talisman` is a general purpose programming language. `Talisman` is statically typed, features type inference, and treats types as values.
+
+# ! In Early Development
+The Language is currently in the design stage, so the language has yet to be implemented, and everything is subject to drastic change.
+
+# Features
+
+# License
+`Talisman` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
