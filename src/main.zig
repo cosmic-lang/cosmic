@@ -5,15 +5,15 @@ const clap = @import("clap");
 
 const MAX_BYTES = 1024^2;
 const VERSION = "0.0.1";
-const EXTENSION = ".ta";
-const PROMPT = "talisman>";
+const EXTENSION = ".cro";
+const PROMPT = "Cro>";
 const HEADER =
-  \\Welcome to the Talisman programming language!
+  \\Welcome to the Cro programming language!
   \\
   ++ "  version {s}\n" ++
   \\
-  \\  usage   : talisman [subcommand] <arg>
-  \\  example : talisman --script foo.be
+  \\  usage   : cro [subcommand] <arg>
+  \\  example : cro --script foo.cro
   \\
   ;
 
@@ -46,7 +46,7 @@ pub fn main() !void {
     // Show help
     return cli.help(HEADER, VERSION, &params);
   } else if (res.args.version != 0) {
-    std.debug.print("talisman {s}", .{VERSION});
+    std.debug.print("Cro {s}", .{VERSION});
   } else if (res.args.repl != 0) {
     // Setup repl
     var repl = cli.Repl.init(PROMPT, .{});

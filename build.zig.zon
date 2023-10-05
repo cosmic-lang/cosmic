@@ -1,5 +1,5 @@
 .{
-    .name = "talisman",
+    .name = "cro",
     .version = "0.0.1",
     .dependencies = .{
         .clap = .{
