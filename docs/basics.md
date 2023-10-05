@@ -337,7 +337,7 @@ The `Pipeline` operator "|>" takes the result of the expression before it,
 and inputs it into the first argument of the function after it
 ```elixir
 const scan = (source: string): []tokens do: ...
-const parse = (source: []tokens): Ast {...} do: ...
+const parse = (source: []tokens): Ast do: ...
 
 var source = "some source code"
 
@@ -432,11 +432,10 @@ end
   - -   : Subtraction             - -%      - -|
   - *   : Multiplication          - *%      - *|
   - /   : Division                - /%      - /|
-  - ^   : Exponentiation          - ^%      - ^|
+  - **  : Exponentiation          - ^%      - ^|
   - %   : Modulus or Remainder
   - ++  : Increment
   - --  : Decrement
-  - **  : Square
   - Can be combined with the assignment operator, for example: += or ^|=
 - Comparison Operators
   - >   : Greater than
@@ -444,7 +443,6 @@ end
   - <   : Less than
   - <=  : Less than or equal
   - ==  : Equal to
-  - === : Strict equal to
   - !=  : Not equal to
 - Logical Operators
   - &&  : Logical And
@@ -453,12 +451,12 @@ end
 - Bitwise Operators
   - &   : Bitwise AND
   - |   : Bitwise OR
-  - |^  : Bitwise XOR
+  - ^  : Bitwise XOR
   - ~   : Bitwise Negation
 - Type Symbols
   - type | type     : Union
   - !type           : Type or error
-  - ?type           : Optinal type
+  - ?type           : Type or void
   - *type           : Raw Pointer
   - []type          : Slice, which is a pointer and a length
   - &type           : Let Reference
@@ -468,7 +466,6 @@ end
   - %{key, value}   : Map
   - {type, ...}     : Tuple
   - list(type)      : List
-  - type(..<)       : Exclusive Range, type must be integer types or byte
-  - type(..=)       : Inclusive Range, type must be integer types or byte
+  - range(type)     : Range, type must be integer types or byte
   - fn () -> ()     : Function
 </pre>
