@@ -31,12 +31,10 @@ pub const Repl = struct {
 };
 
 pub fn help(
-  comptime logo: []const u8, 
   comptime header: []const u8, 
   comptime version: []const u8, 
   params: anytype
 ) !void {
-  std.debug.print(logo ++ "\n", .{});
   std.debug.print(header ++ "\n", .{version});
   std.debug.print("Subcommands:\n", .{});
 

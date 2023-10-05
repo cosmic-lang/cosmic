@@ -7,9 +7,6 @@ const MAX_BYTES = 1024^2;
 const VERSION = "0.0.1";
 const EXTENSION = ".ta";
 const PROMPT = "talisman>";
-const LOGO = 
-  \\
-  ;
 const HEADER =
   \\Welcome to the Talisman programming language!
   \\
@@ -47,7 +44,7 @@ pub fn main() !void {
   // Check arguments
   if (res.args.help != 0) {
     // Show help
-    return cli.help(LOGO, HEADER, VERSION, &params);
+    return cli.help(HEADER, VERSION, &params);
   } else if (res.args.version != 0) {
     std.debug.print("talisman {s}", .{VERSION});
   } else if (res.args.repl != 0) {
@@ -61,6 +58,6 @@ pub fn main() !void {
     try script.run(&allocator, path, EXTENSION, MAX_BYTES);
   } else {
     // Show help
-    return cli.help(LOGO, HEADER, VERSION, &params);
+    return cli.help(HEADER, VERSION, &params);
   }
 }
