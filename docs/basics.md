@@ -50,7 +50,7 @@ Assignment in Talisman can also be done as an expression using ":=", which retur
 ```elixir
 var boolean: bool
 # Assignment expression
-while (boolean := someFunc()) do # Will loop until someFunc returns false 
+while boolean := someFunc() do # Will loop until someFunc returns false 
   std/fmt.printf("{}", boolean)
 end
 ```
