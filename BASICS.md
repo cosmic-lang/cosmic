@@ -58,10 +58,10 @@ end
 Bindings of the same type can be grouped together.
 ``` elixir
 # Var and let bindings still don't need to be initialized right away
-var (
+var
   x = 72,
   y
-)
+end
 
 ```
 
