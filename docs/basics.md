@@ -189,11 +189,12 @@ var y = Result.err("Some error message")
 var o = Result.other
 
 # Enum can be pattern matched, to access inner values, errors if rhs is not the matching tag
-var .ok(z) = x
+var Result.ok(z) = x
 
 std/testing.assert(z == 12)
 
 # Enum can also be used for branching based on if the pattern matches or not
+# The enum type can be inferred
 if var .ok(z) = x do
   std/fmt.printf("{}", z)
 end
@@ -237,7 +238,7 @@ const Result = enum{
 var x = Result.ok(12);
 
 match x
-| .ok(val) => std/fmt.println("{}", val),
+| Result.ok(val) => std/fmt.println("{}", val),
 | .err(err) => std/fmt.println(err),
 | _ => do ... end # Default case, not necissary here as all cases covered above
 end
@@ -455,6 +456,7 @@ end
   - |^  : Bitwise XOR
   - ~   : Bitwise Negation
 - Type Symbols
+  - type | type     : Union
   - !type           : Type or error
   - ?type           : Optinal type
   - *type           : Raw Pointer
