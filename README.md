@@ -8,6 +8,3 @@
 
 # License
 `Talisman` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
-
-# Credits
-<a href="https://www.flaticon.com/free-icons/japan" title="japan icons">Placeholder Logo created by Freepik - Flaticon</a>
