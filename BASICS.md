@@ -235,9 +235,9 @@ const Result = enum{
 var x = Result.ok(12);
 
 match x
-  | .ok(val) => std/fmt.println("{}", val),
-  | .err(err) => std/fmt.println(err),
-  | _ => do ... end # Default case, not necissary here as all cases covered above
+| .ok(val) => std/fmt.println("{}", val),
+| .err(err) => std/fmt.println(err),
+| _ => do ... end # Default case, not necissary here as all cases covered above
 end
 ```
 
