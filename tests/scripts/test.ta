@@ -1,7 +1,7 @@
 const test = (x, y: int): void do
   let result = if (x <= 12) do
     x * y
-  else
+  else do
     12 * y
   end
 
