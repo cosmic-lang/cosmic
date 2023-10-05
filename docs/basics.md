@@ -161,6 +161,8 @@ const Pos = struct{ # struct{} is the syntax to create anonymous struct type
 
 let pos = .{x: 12, y: 13} # .{} is the syntax to create anonymous struct instances, type will be inferred
 let pos = Pos{x: 12, y: 13}
+# Functional updates, creates a copy of pos, with y changed to 11
+let pos2 = .{...pos, y: 11}
 
 let x = pos.x
 let y = pos.y
@@ -212,7 +214,7 @@ if condition do
 
 else if another_condition do
 
-else
+else do
 
 end
 ```
@@ -315,6 +317,18 @@ const variadic = (...args) do
     std/fmt.printf("{} ", args[i]);
   end
 end
+
+# Functions can be taken as parameters and returned from functions
+const sort = (slice: []i32, pred: fn (i32, i32) -> bool) do
+  ...
+  if pred(slice[i], slice[j]) do
+  ...
+end
+
+const arr = [41, 22, 31, 84, 75]
+# The types of the anonymous function passed will be inferred
+sort(arr[..], (lhs, rhs) do: lhs > rhs)
+
 ```
 
 ## Pipeline Operator
@@ -441,9 +455,12 @@ end
   - |^  : Bitwise XOR
   - ~   : Bitwise Negation
 - Type Symbols
+  - !type           : Type or error
+  - ?type           : Optinal type
   - *type           : Raw Pointer
   - []type          : Slice, which is a pointer and a length
-  - &type           : Reference
+  - &type           : Let Reference
+  - &mut type       : Mutable Reference
   - size[]type      : Array
   - dyn[]type       : Dynamic Array
   - %{key, value}   : Map
