@@ -50,18 +50,18 @@ Assignment in Talisman can also be done as an expression using ":=", which retur
 ```elixir
 var boolean: bool
 # Assignment expression
-while boolean := someFunc() do # Will loop until someFunc returns false 
+while boolean := someFunc() { # Will loop until someFunc returns false 
   std/fmt.printf("{}", boolean)
-end
+}
 ```
 
 Bindings of the same type can be grouped together.
 ``` elixir
 # Var and let bindings still don't need to be initialized right away
-var
+var (
   x = 72,
   y
-end
+)
 
 ```
 
@@ -195,9 +195,13 @@ std/testing.assert(z == 12)
 
 # Enum can also be used for branching based on if the pattern matches or not
 # The enum type can be inferred
-if var .ok(z) = x do
+if var .ok(z) = x {
   std/fmt.printf("{}", z)
-end
+}
+```
+
+## Blocks
+```elixir
 ```
 
 ## Type specification basics
@@ -211,13 +215,13 @@ end
 
 ## Conditionals
 ```elixir
-if condition do
+if condition {
 
-else if another_condition do
+} else if another_condition {
 
-else do
+} else {
 
-end
+}
 ```
 
 ## Loops
@@ -237,11 +241,11 @@ const Result = enum{
 
 var x = Result.ok(12);
 
-match x
+match x {
 | Result.ok(val) => std/fmt.println("{}", val),
 | .err(err) => std/fmt.println(err),
-| _ => do ... end # Default case, not necissary here as all cases covered above
-end
+| _ => {...} # Default case, not necissary here as all cases covered above
+}
 ```
 
 ## Function Basics
@@ -254,6 +258,13 @@ const hello = (): string do: return "Hello, world!"
 ```
 
 `{}` can be used for a multi line body. The final expression of a block is implicitly returned.
+```elixir
+const add = (x, y): int {
+  x + y
+}
+```
+
+`do end` can also be used for a multi line body. The final expression of a block is implicitly returned.
 ```elixir
 const add = (x, y): int do
   x + y
@@ -269,9 +280,9 @@ const foo: fn () -> ()
 const bar: fn void -> void
 
 # Types can be specified for multiple parameters at a time.
-const add = (x, y: int): int do
+const add = (x, y: int): int {
   return x + y
-end
+}
 
 const add_three = (x, y, z: int): int do: x + y + z
 ```
@@ -283,48 +294,48 @@ const add_three = (x, y, z: int): int do: x + y + z
 #   but they must be assigned to multiple bindings when called.
 # Return values can be given identifiers to declare bindings to use for returning, 
 # allowing for naked returns
-const div = (x, y: int): (quo, rem: int) do
+const div = (x, y: int): (quo, rem: int) {
   quo = x / y
   rem = x % y
   return # return could potentially be ommitted here
-end
+}
 
 let quo, rem = div(12, 5)
 
 # Returning a tuple or struct allows the return to be stored in a single binding
-const div = (x, y: int): {int, int} do
+const div = (x, y: int): {int, int} {
   let quo = x / y
   let rem = x % y
   return {quo, rem}
-end
+}
 
 let result = div(12, 5)
 std/testing.assert(result[0] == 2)
 
-const div = (x, y: int): struct{quo, rem: int} do
+const div = (x, y: int): struct{quo, rem: int} {
   let quo = x / y
   let rem = x % y
   return .{quo: quo, rem: rem} # if names match field tags, can ommit field name 
                                 #   ie .{quo, rem}
-end
+}
 
 let result = div(12, 5)
 std/testing.assert(result.quo == 2)
 
 # Functions can take variadic arguments using ...indent syntax.
 # The arguments are packaged together into a tuple, which can then be indexed
-const variadic = (...args) do
-  for 0..<$len(args) do |i|
+const variadic = (...args) {
+  for 0..<$len(args) { |i|
     std/fmt.printf("{} ", args[i]);
-  end
-end
+  }
+}
 
 # Functions can be taken as parameters and returned from functions
-const sort = (slice: []i32, pred: fn (i32, i32) -> bool) do
+const sort = (slice: []i32, pred: fn (i32, i32) -> bool) {
   ...
-  if pred(slice[i], slice[j]) do
+  if pred(slice[i], slice[j]) {
   ...
-end
+}
 
 const arr = [41, 22, 31, 84, 75]
 # The types of the anonymous function passed will be inferred
@@ -394,12 +405,12 @@ system(&player, ...)
 The return of compile time expressions can be stored in var or let, but they will no longer be usable in later compile time expressions
 ```elixir
 # @ preceeding a identifier states that this parameter must be known at compile time
-const Vector = (@t: typeid): typeid do
+const Vector = (@t: typeid): typeid {
   return struct{
     x: t,
     y: t
   }
-end
+}
 
 const t = int
 # The function :Vector could be called at runtime:
@@ -410,9 +421,10 @@ var Pos = @Vector(t) # This can no longer be used in later compile time expressi
 const Pos = @Vector(t) # This can still be used in later compile time expressions
 
 # Blocks can also be compile time
-const screen_size = @ do
+# Blocks can be specified with {...} or do...end
+const screen_size = @ {
   return {1920, 1080}
-end
+}
 ```
 
 ## Operators

@@ -1,9 +1,9 @@
-const test = (x, y: int): void do
-  let result = if (x <= 12) do
+const test = (x, y: int): void {
+  let result = if (x <= 12) {
     x * y
-  else do
+  } else {
     12 * y
-  end
+  }
 
   doSomething(result, false)
-end
+}
