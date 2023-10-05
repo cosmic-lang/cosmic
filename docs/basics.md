@@ -242,9 +242,9 @@ const Result = enum{
 var x = Result.ok(12);
 
 match x {
-| Result.ok(val) => std/fmt.println("{}", val),
-| .err(err) => std/fmt.println(err),
-| _ => {...} # Default case, not necissary here as all cases covered above
+| Result.ok(val) do: std/fmt.println("{}", val),
+| .err(err) do: std/fmt.println(err),
+| _ {...} # Default case, not necissary here as all cases covered above
 }
 ```
 
@@ -325,8 +325,8 @@ std/testing.assert(result.quo == 2)
 # Functions can take variadic arguments using ...indent syntax.
 # The arguments are packaged together into a tuple, which can then be indexed
 const variadic = (...args) {
-  for 0..<$len(args) { |i|
-    std/fmt.printf("{} ", args[i]);
+  for 0..<$len(args) |i| {
+    std/fmt.printf("{} ", args[i])
   }
 }
 
