@@ -132,6 +132,11 @@ let atomic_mass = %{
   carbon: 15.999
 }
 
+let atomic_mass = %{
+  "beryllium" => 9.1022,
+  "carbon" => 15.999
+}
+
 let carbon_mass = atomic_mass[:carbon]
 std/testing.assert(carbon_mass == 15.999) # For floats == only compares the whole number
 ```
