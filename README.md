@@ -38,9 +38,11 @@ let name: string # The loc mode can be infered if the type is specified to be a 
 ## Bindings are initialized to zero
 In `Ruka`, bindings are initialized to default values depending on the type, `0` for numbers, `""` for strings, etc.
 
-## Receivers
+## Methods and Receivers
 `Method` definition in `Ruka` is done using `receivers` which specify which type the method is a part of, allowing for adding
-functionality to any type, even those foreign to your project
+functionality to any type, even those foreign to your project.
+
+The receiver must be a reference, slice, or pointer type. If you want the function to get a copy of a value, you can just add that value to the parameter list.
 ```elixir
 const Result = enum{
   Ok(int),
