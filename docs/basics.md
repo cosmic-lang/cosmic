@@ -351,6 +351,10 @@ match x {
 
 ```
 
+## Modules
+```elixir
+```
+
 ## More on functions
 ```elixir
 # Functions can return multiple data types.
@@ -455,6 +459,8 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   identifiers, parameter types, and return types
+const update_pos(self: &mut Player) = (pos: {f32, f32}) do: ...
+const update_health(self: &mut Player) = (health: int) do: ...
 
 var player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -487,6 +493,10 @@ const Pos = @Vector(t) # This can still be used in later compile time expression
 const screen_size = @ {
   return {1920, 1080}
 }
+```
+
+## First Class Modules
+```elixir
 ```
 
 ## Operators
