@@ -100,8 +100,7 @@ const List = (@t: typeid): typeid {
 
   return struct{
     head: *Node,
-    size: uint,
-    ...
+    size: uint
   }
 }
 
