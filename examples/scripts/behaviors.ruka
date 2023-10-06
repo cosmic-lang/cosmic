@@ -1,7 +1,7 @@
 # Shared behaviour of entities
 const Entity = behaviour{
-  set_pos: fn &mut ({f32, f32}) -> (),
-  read_pos: fn & () -> {f32, f32}
+  set_pos: fn (&mut)({f32, f32}) -> (),
+  read_pos: fn (&)() -> {f32, f32}
 }
 
 # A function with accepts a behaviour instead of a type
