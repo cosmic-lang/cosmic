@@ -219,16 +219,17 @@ All functions in `Ruka` are anonymous, so function definition involves storing a
 
 Anonymous function creation follows the form of:
 <pre>
-  (parameters [: type]) [: return type] block;
+  (parameters [: type]) [: return type] body;
 </pre>
+the body is a block
 
 Function definition follows the form of:
 <pre>
-  kind ident [(reveiver)] [: type] = anonymous fn;
+  kind ident [(receiver: type)] [: type] = anonymous fn;
 </pre>
-the receiver will be explained later when methods are explained
+the receiver will be covered later when methods are explained
 
-A single-line function
+A single-line body function
 ```elixir
 const hello = (): string do: return "Hello, world!"
 ```
@@ -238,13 +239,6 @@ const hello = (): string do: return "Hello, world!"
 const add = (x, y): int {
   x + y
 }
-```
-
-`do end` can also be used for a multi line body. The final expression of a block is implicitly returned.
-```elixir
-const add = (x, y): int do
-  x + y
-end
 ```
 
 ## Function type specification
@@ -262,7 +256,6 @@ const add = (x, y: int): int {
 
 const add_three = (x, y, z: int): int do: x + y + z
 ```
-
 
 ## Creating new types
 - `Struct`  
