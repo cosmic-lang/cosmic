@@ -14,11 +14,11 @@ x = 12; # x will be inferred as int
 
 var name = "Ruka" # name will be inferred as string
 
-var titles: [dyn]string # titles is specified to be a dynamic array of strings
+var titles: [dyn]string # titles is specified to be a dyn array of strings
 ```
 
 ## Bindings are initialized to zero
-In `Ruka`, bindings are initialized to default values depending on the type, zero for numbers, "" for strings, etc.
+In `Ruka`, bindings are initialized to default values depending on the type, `0` for numbers, `""` for strings, etc.
 
 ## Receivers
 `Method` definition in `Ruka` is done using `receivers` which specify which type the method is a part of, allowing for adding
@@ -29,7 +29,8 @@ const Result = enum{
   Err(string)
 }
 
-# The receiver follows the method identifier, and is a name and type surrounded by parenthesis
+# The receiver follows the method identifier,
+# and is specified as a name and type surrounded by parenthesis
 const unwrap(self: &Result) = (): int {
   return match self {
   | .Ok(value) do: value,
