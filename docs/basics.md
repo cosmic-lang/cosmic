@@ -6,7 +6,7 @@
 ```
 
 ## Bindings
-Bindings in `Cro` follow the form of:  
+Bindings in `Ruka` follow the form of:  
 <pre>
   kind ident [: type] [= expression];
 </pre>
@@ -39,14 +39,14 @@ var name: string
 var age = 25
 ```
 
-`Cro` supports multiple assignment
+`Ruka` supports multiple assignment
 ```elixir
 var x = 12
 var y = 31
 x, y = y, x # swaps bindings with no need for temporary bindings
 ```
 
-Assignment in Cro can also be done as an expression using ":=", which returns the rhs value
+Assignment in Ruka can also be done as an expression using ":=", which returns the rhs value
 ```elixir
 var boolean: bool
 # Assignment expression
@@ -66,7 +66,7 @@ var (
 ```
 
 ## Basic Primitive Types
-Here is a list of `Cro`'s primitive types:
+Here is a list of `Ruka`'s primitive types:
 - `int`    
   - 12, architecture dependent size
 - `i#`     
@@ -88,7 +88,7 @@ Here is a list of `Cro`'s primitive types:
 - `void` 
   - also (), represents nothing.
 - `typeid` 
-  - i32, int, char, MyStructure. Types are values in `Cro`
+  - i32, int, char, MyStructure. Types are values in `Ruka`
 - `range` 
   - 0..=10, 5..<15
 - `tag`   
@@ -99,7 +99,7 @@ Here is a list of `Cro`'s primitive types:
   - When  types are specified for bindings, the ":" is moved to the rhs
 
 ## Primitive Data Collections
-`Cro` has a few primitive data collections for you to use:
+`Ruka` has a few primitive data collections for you to use:
 - `Array`
 ```elixir
 # Arrays are static, their sizes cannot change and must be known at compile time
@@ -174,7 +174,7 @@ if condition {
 ```
 
 ## Function Basics
-All functions in `Cro` are anonymous.  
+All functions in `Ruka` are anonymous.  
 Basic function creation involves storing a function literal in a binding.  
 
 `do:` can be used for a one line body, ie body of function end of the line.
@@ -389,7 +389,7 @@ let greeting = "!dlrow ,olleh"
 ```
 
 ## Behaviours
-`Cro` doesn't have inheritance, instead `Cro` uses interfaces called `behaviours`.
+`Ruka` doesn't have inheritance, instead `Ruka` uses interfaces called `behaviours`.
 
 Behaviours cannot specify data members, only methods
 ```elixir
@@ -418,7 +418,7 @@ system(&player, ...)
 ```
 
 ## Compile Time
-`Cro` can run code at compile time instead of run time.
+`Ruka` can run code at compile time instead of run time.
 
 The return of compile time expressions can be stored in var or let, but they will no longer be usable in later compile time expressions
 ```elixir
@@ -446,7 +446,7 @@ const screen_size = @ {
 ```
 
 ## Operators
-`Cro` has many operators and symbols, some have different meaning depending on context:
+`Ruka` has many operators and symbols, some have different meaning depending on context:
 <pre>
 - Miscelaneous Operators
   - =   : Assignment 

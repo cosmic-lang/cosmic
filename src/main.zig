@@ -5,15 +5,15 @@ const clap = @import("clap");
 
 const MAX_BYTES = 1024^2;
 const VERSION = "0.0.1";
-const EXTENSION = ".cro";
-const PROMPT = "Cro>";
+const EXTENSION = ".ruka";
+const PROMPT = "Ruka>";
 const HEADER =
-  \\Welcome to the Cro programming language!
+  \\Welcome to the Ruka programming language!
   \\
   ++ "  version {s}\n" ++
   \\
-  \\  usage   : cro [subcommand] <arg>
-  \\  example : cro --script foo.cro
+  \\  usage   : ruka [subcommand] <arg>
+  \\  example : ruka --script foo.ruka
   \\
   ;
 
@@ -46,7 +46,7 @@ pub fn main() !void {
     // Show help
     return cli.help(HEADER, VERSION, &params);
   } else if (res.args.version != 0) {
-    std.debug.print("Cro {s}", .{VERSION});
+    std.debug.print("Ruka {s}", .{VERSION});
   } else if (res.args.repl != 0) {
     // Setup repl
     var repl = cli.Repl.init(PROMPT, .{});

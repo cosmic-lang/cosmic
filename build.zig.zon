@@ -1,5 +1,5 @@
 .{
-    .name = "cro",
+    .name = "ruka",
     .version = "0.0.1",
     .dependencies = .{
         .clap = .{
