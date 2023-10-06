@@ -108,8 +108,9 @@ let program: [100]u8
 load(&ram, program[..]) # [..] creates a slice covering the entire array
 ```
 
-## Compile time execution
-`Ruka` features compile time code execution like in `Zig`.
+## Compile Time Execution
+`Ruka` features compile time code execution like in `Zig`. This combined with types as values
+is how generic in `Ruka` work.
 ```elixir
 # @ signifies a parameter which must be known at compile time
 # typeid is the type of types, i.e. int, string, *u8 
@@ -128,6 +129,41 @@ end
 # List(string) returns the new type
 # empty {} are used to create an instance of the type with default values
 let names = List(string){}
+```
+
+## Modules
+```elixir
+
+```
+
+## First Class Modules
+As you may have noticed earlier, methods are declared outside a struct, and generic data structures
+are created by returning a new type from a function. So how does one implement methods for those
+generic data structures? 
+
+Well modules are first class citizens, so can store them in variables, pass them into functions, return them,
+just as you would any other value.
+
+So to properly create a generic data structure you want a function that returns a module not a type.
+```elixir
+const List = (@type: typeid): moduleid do
+  return module{
+    const t = struct{
+      head: &Node,
+      size: uint
+    }
+
+    const Node = struct{
+      next: &Node,
+      data: type
+    }
+
+    const insert(uni& t) = (value: type) {...}
+  }
+end
+
+let intList = List(int).t{}
+
 ```
 
 # License

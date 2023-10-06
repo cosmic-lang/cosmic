@@ -81,6 +81,8 @@ Here is a list of `Ruka`'s primitive types:
   - also (), represents nothing.
 - `typeid` 
   - i32, int, char, MyStructure. Types are values in `Ruka`
+- `moduleid`
+  - The type of modules
 - `range` 
   - 0..=10, 5..<15
 - `tag`   
