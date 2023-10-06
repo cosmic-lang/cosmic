@@ -154,6 +154,7 @@ std/testing.assert(x == 10 && y == 15)
 
 All structs are anonymous. Members can be accessed with the `.` operator. Members can also be accessed by indexing with a tag, provided the tag is known at compile time.
 ```elixir
+# Struct definitions only contain data members, methods are added separately
 const Pos = struct{ # struct{} is the syntax to create anonymous struct type
   x: int, 
   y: int
@@ -325,7 +326,8 @@ std/testing.assert(result.quo == 2)
 # Functions can take variadic arguments using ...indent syntax.
 # The arguments are packaged together into a tuple, which can then be indexed
 const variadic = (...args) {
-  for 0..<$len(args) |i| {
+  let size = $len(args)
+  for 0..<size |i| {
     std/fmt.printf("{} ", args[i])
   }
 }
@@ -386,13 +388,15 @@ const Player = struct{
   pos: {f32, f32},
   health: int,
   ...,
-  # To implement the Entity Behaviour, it must have all methods defined with matching
-  #   identifiers, parameter types, and return types
-  # Static members, ie values which are the same between instances, are const bindings
-  #   declared in the struct
-  const update_pos = (pos: {f32, f32}) do: ...
-  const update_health = (health: int) do: ...
 }
+
+# To implement the Entity Behaviour, it must have all methods defined with matching
+#   identifiers, parameter types, and return types
+
+# Methods for structs are declared by specifying a reciever after the indentifier
+# This can be used to add functionality to primitive types
+const update_pos(self: &mut Player) = (pos: {f32, f32}) do: ...
+const update_health(self: *Player) = (health: int) do: ...
 
 var player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
