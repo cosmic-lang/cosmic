@@ -25,30 +25,22 @@ const msg = "Hello, world!"
 
 - `let`  
 ```elixir
-# A run-time constant/immutable binding, can be initialized after declaration.
+# A runtime variable
 let year: int
 year = 2023
-year = 2024 # Error, cannot reassign immutable binding
-let year = 2024 # But the binding can be shadowed
-```
-
-- `var`  
-```elixir
-# Can be declared unitialized like let bindings.
-var name: string
-var age = 25
+year = 2024
 ```
 
 `Ruka` supports multiple assignment
 ```elixir
-var x = 12
-var y = 31
+let x = 12
+let y = 31
 x, y = y, x # swaps bindings with no need for temporary bindings
 ```
 
-Assignment in Ruka can also be done as an expression using ":=", which returns the rhs value
+Assignment in `Ruka` can also be done as an expression using ":=", which returns the rhs value
 ```elixir
-var boolean: bool
+let boolean: bool
 # Assignment expression
 while boolean := someFunc() { # Will loop until someFunc returns false 
   std/fmt.printf("{}", boolean)
@@ -58,7 +50,7 @@ while boolean := someFunc() { # Will loop until someFunc returns false
 Bindings of the same type can be grouped together.
 ``` elixir
 # Var and let bindings still don't need to be initialized right away
-var (
+let (
   x = 72,
   y
 )
@@ -155,6 +147,21 @@ let x, y = pos # The lhs braces are not required
 std/testing.assert(x == 10 && y == 15)
 ```
 
+## Memory Management
+In `Ruka` memory is stack allocated. Memory can be allocated on the heap in two ways:
+- Garbage collection:
+  - Using the built in function $new(typeid) returns a reference to memory managed by the gc
+- Manual management:
+  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
+```elixir
+let x = 12 # Stack allocated, lives until enclosing scope ends
+
+let name: &int = $new(int) # GC allocated, will be freed after the reference goes out of scope
+
+let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a pointer to it
+defer std/allocator.free(names) # Manual memory must be freed
+```
+
 ## Blocks
 Single-line blocks are written using do:
 ```elixir
@@ -188,7 +195,7 @@ then a type specification must be added
   let x = 83
   let x: int = 83
 
-  var name: string
+  let name: string
 ```
 
 ## Conditionals
@@ -293,18 +300,18 @@ const Result = enum{
   other
 }
 
-var x = Result.ok(12)
-var y = Result.err("Some error message")
-var o = Result.other
+let x = Result.ok(12)
+let y = Result.err("Some error message")
+let o = Result.other
 
 # Enum can be pattern matched, to access inner values, errors if rhs is not the matching tag
-var Result.ok(z) = x
+let Result.ok(z) = x
 
 std/testing.assert(z == 12)
 
 # Enum can also be used for branching based on if the pattern matches or not
 # The enum type can be inferred
-if var .ok(z) = x {
+if let .ok(z) = x {
   std/fmt.printf("{}", z)
 }
 ```
@@ -320,7 +327,7 @@ const Player = struct{
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-const set_pos(self: &mut Player) = (pos: {f32, f32}) do: ...
+const set_pos(self: uni &Player) = (pos: {f32, f32}) do: ...
 const read_health(self: &Player) = (health: int) do: ...
 
 # Receiver types can be normal types, pointer types, reference types, and compile time types
@@ -333,7 +340,7 @@ const Result = enum{
   err(string)
 }
 
-var x = Result.ok(12);
+let x = Result.ok(12);
 
 match x {
 | Result.ok(val) do: std/fmt.println("{}", val),
@@ -344,11 +351,6 @@ match x {
 
 ## Error Handling
 ```elixir
-```
-
-## Memory Management
-```elixir
-
 ```
 
 ## Modules
@@ -419,7 +421,7 @@ and inputs it into the first argument of the function after it
 const scan = (source: string): []tokens do: ...
 const parse = (source: []tokens): Ast do: ...
 
-var source = "some source code"
+let source = "some source code"
 
 # Normally if you didnt want to save any of the intermediate steps you would write code like this.
 let ast = parse(scan(source))
@@ -444,12 +446,12 @@ Behaviours cannot specify data members, only methods
 # Behaviour definition
 const Entity = behaviour{
   # Method types have restrictions on the receiver type, which goes after fn
-  # Both of these methods require receivers to be &mut
-  update_pos: fn (&mut)({f32, f32}) -> (),
-  update_health: fn (&mut)(int) -> () 
+  # Both of these methods require receivers to be uni& (a unique reference)
+  update_pos: fn (uni&)({f32, f32}) -> (),
+  update_health: fn (uni&)(int) -> () 
 }
 
-const system = (entity: &mut Entity, ...) do: ...
+const system = (entity: uni &Entity, ...) do: ...
 
 # Behaviours are implemented implicitly
 const Player = struct{
@@ -461,18 +463,18 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   identifiers, parameter types, and return types
-const update_pos(self: &mut Player) = (pos: {f32, f32}) do: ...
-const update_health(self: &mut Player) = (health: int) do: ...
+const update_pos(self: uni &Player) = (pos: {f32, f32}) do: ...
+const update_health(self: uni &Player) = (health: int) do: ...
 
-var player = Player{} # If field values are not provided they will be set to the 
+let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
-system(&mut player, ...)
+system(&player, ...)
 ```
 
 ## Compile Time
 `Ruka` can run code at compile time instead of run time.
 
-The return of compile time expressions can be stored in var or let, but they will no longer be usable in later compile time expressions
+The return of compile time expressions can be stored in let, but they will no longer be usable in later compile time expressions
 ```elixir
 # @ preceeding a identifier states that this parameter must be known at compile time
 const Vector = (@t: typeid): typeid {
@@ -487,7 +489,7 @@ const t = int
 let Pos = Vector(t) # This cannot be used in compile time expressions 
                      #   because it is executed at runtime
 # Or compile time:
-var Pos = @Vector(t) # This can no longer be used in later compile time expressions
+let Pos = @Vector(t) # This can no longer be used in later compile time expressions
 const Pos = @Vector(t) # This can still be used in later compile time expressions
 
 # Blocks can also be compile time
@@ -543,10 +545,10 @@ const screen_size = @ {
   - (type | type)   : Union
   - !type           : Type or error
   - ?type           : Type or void
-  - *type           : Raw Pointer
+  - *type           : Pointer
   - []type          : Slice, which is a pointer and a length
   - &type           : Let Reference
-  - &mut type       : Mutable Reference
+  - uni &type       : Unique Reference
   - [size]type      : Array
   - [dyn]type       : Dynamic Array
   - %{key, value}   : Map

@@ -9,12 +9,27 @@
 ## Types and Inference
 Types in `Ruka` are static, and are inferred by default, except for a few cases. They can also be specified if desired.
 ```elixir
-var x
+let x
 x = 12 # x will be inferred as int
 
-var name = "Ruka" # name will be inferred as string
+let name = "Ruka" # name will be inferred as string
 
-var titles: [dyn]string # titles is specified to be a dyn array of strings
+let titles: [dyn]string # titles is specified to be a dyn array of strings
+```
+
+## Memory Management
+In `Ruka` memory is stack allocated. Memory can be allocated on the heap in two ways:
+- Garbage collection:
+  - Using the built in function $new(typeid) returns a reference to memory managed by the gc
+- Manual management:
+  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
+```elixir
+let x = 12 # Stack allocated, lives until enclosing scope ends
+
+let name: &int = $new(int) # GC allocated, will be freed after the reference goes out of scope
+
+let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a pointer to it
+defer std/allocator.free(names) # Manual memory must be freed
 ```
 
 ## Bindings are initialized to zero
@@ -56,7 +71,7 @@ In `Ruka` you use `Golang` style interfaces, called `behaviours`, when you want 
 ```elixir
 const MMIODevice = behaviour{
   read: fn (&)(address: u32) -> u8,
-  write: fn (&mut)(address: u32, value: u8) -> ()
+  write: fn (uni&)(address: u32, value: u8) -> ()
 }
 ```
 
@@ -72,20 +87,25 @@ const read(self: &Ram) = (address): u8 do
   return self.memory[address]
 end
 
-const write(self: &mut Ram) = (address, value) do
+const write(self: uni &Ram) = (address, value) do
   self.memory[address] = value
 end
 ```
 
 Function parameters can then have `behaviours` specified instead of types.
 ```elixir
-const loadProgram = (ram: &mut Ram, program: []u8) do
+const loadProgram = (ram: uni &Ram, program: []u8) do
   let len = program.len
 
   for program, 0..<len |byte, i| do
     ram.write(i, byte)
   end
 end
+
+let ram = Ram{}
+let program: [100]u8
+
+loadProgram(&ram, program[..]) # [..] creates a slice covering the entire array
 ```
 
 ## Compile time execution
@@ -107,7 +127,7 @@ end
 
 # List(string) returns the new type
 # empty {} are used to create an instance of the type with default values
-var names = List(string){}
+let names = List(string){}
 ```
 
 # License
