@@ -163,6 +163,7 @@ const List = (@type: typeid): moduleid do
 end
 
 let intList = List(int).t{}
+intList.insert(12)
 
 ```
 
