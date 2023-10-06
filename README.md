@@ -92,6 +92,7 @@ const loadProgram = (ram: &mut Ram, program: []u8) {
 `Ruka` features compile time code execution like in `Ziglang`.
 ```elixir
 # @ signifies a parameter which must be known at compile time
+# typeid is the type of types, i.e. int, string, *u8 
 const List = (@t: typeid): typeid {
   const Node = struct{
     next: *Node,
