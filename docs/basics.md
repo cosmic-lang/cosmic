@@ -445,8 +445,8 @@ Behaviours cannot specify data members, only methods
 const Entity = behaviour{
   # Method types have restrictions on the receiver type, which goes after fn
   # Both of these methods require receivers to be &mut
-  update_pos: fn &mut ({f32, f32}) -> (),
-  update_health: fn &mut (int) -> () 
+  update_pos: fn (&mut)({f32, f32}) -> (),
+  update_health: fn (&mut)(int) -> () 
 }
 
 const system = (entity: &mut Entity, ...) do: ...
