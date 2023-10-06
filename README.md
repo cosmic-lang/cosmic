@@ -10,7 +10,7 @@
 Types in `Ruka` are static, and are inferred by default, except for a few cases. They can also be specified if desired.
 ```elixir
 var x
-x = 12; # x will be inferred as int
+x = 12 # x will be inferred as int
 
 var name = "Ruka" # name will be inferred as string
 
