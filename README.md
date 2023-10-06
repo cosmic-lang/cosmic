@@ -18,7 +18,7 @@ let titles: [dyn]string # titles is specified to be a dyn array of strings
 ```
 
 ## Memory Management
-In `Ruka` memory is stack allocated. Memory can be allocated on the heap in two ways:
+In `Ruka` bindings are stack allocated by default. Memory can be allocated on the heap in two ways:
 - Garbage collection:
   - Using the built in function $new(typeid) returns a reference to memory managed by the gc
 - Manual management:
