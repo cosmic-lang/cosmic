@@ -8,7 +8,7 @@
 ## Bindings
 Bindings in `Ruka` follow the form of:  
 <pre>
-  kind ident [: type] [= expression];
+  kind [mode] ident [: type] [= expression];
 </pre>
 with the parts surrounded by [] being optional.  
 
@@ -26,8 +26,7 @@ const msg = "Hello, world!"
 - `let`  
 ```elixir
 # A runtime variable
-let year: int
-year = 2023
+let year = 2023
 year = 2024
 ```
 
@@ -40,7 +39,7 @@ x, y = y, x # swaps bindings with no need for temporary bindings
 
 Assignment in `Ruka` can also be done as an expression using ":=", which returns the rhs value
 ```elixir
-let boolean: bool
+let boolean = false
 # Assignment expression
 while boolean := someFunc() { # Will loop until someFunc returns false 
   std/fmt.printf("{}", boolean)
@@ -52,9 +51,71 @@ Bindings of the same type can be grouped together.
 # Var and let bindings still don't need to be initialized right away
 let (
   x = 72,
-  y
+  y = 12
 )
 
+```
+
+## Modes
+Variable bindings can have constraints on them, called modes.
+- `loc` local mode
+- `uni` unique mode
+- `@` compile time mode
+
+By default, bindings are allocated by the GC, therefore values are normally & types. But stack allocation
+can be done using the `loc` mode. 
+```elixir
+# Local mode bindings are allocated on the stack
+# They are freed at the end of the enclosing scope
+let loc x = 12
+# The local mode can be inferred if the type of a variable is a non-reference type
+# This will also be the case with functions, where non-reference types will be inferred to be local
+let x: int
+```
+
+## Type specification basics
+
+When declaring bindings, types are usually inferred based on later usage of the binding, 
+but types can be specified if desired.
+
+<pre>
+  kind [mode] ident [: type] [= expression];
+</pre>
+
+If the binding is not initialized,
+then a type specification must be added.
+Again, by default bindings are allocated by the GC, therefore values are normally & types.
+```elixir
+  let x = 83
+  let x: &int = 83
+
+  let name: string
+```
+
+## Memory Management
+In `Ruka` memory is GC allocated by default. Memory can be allocated manually using an allocator
+- Manual management:
+  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
+- Stack allocation:
+  - Variables can be allocated on the stack using the loc mode, which can be inferred
+```elixir
+let loc x = 12 # Stack allocated, lives until enclosing scope ends
+let x: int
+
+let name: &int = 12 # GC allocated, will be freed after the reference goes out of scope
+
+let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a pointer to it
+defer std/allocator.free(names) # Manual memory must be freed
+```
+
+Important note here. GC values are stored as reference, but are dereferenced automatically, so
+if a function expects a reference, it still must be passed with & which prevents the dereferencing
+```elixir
+let name: &string = "hello" 
+
+const greet = (name: &string) {...}
+greet(name) # Error, type mismatch: &string expected, string received
+greet(&name)
 ```
 
 ## Basic Primitive Types
@@ -149,21 +210,6 @@ let x, y = pos # The lhs braces are not required
 std/testing.assert(x == 10 && y == 15)
 ```
 
-## Memory Management
-In `Ruka` memory is stack allocated. Memory can be allocated on the heap in two ways:
-- Garbage collection:
-  - Using the built in function $new(typeid) returns a reference to memory managed by the gc
-- Manual management:
-  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
-```elixir
-let x = 12 # Stack allocated, lives until enclosing scope ends
-
-let name: &int = $new(int) # GC allocated, will be freed after the reference goes out of scope
-
-let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a pointer to it
-defer std/allocator.free(names) # Manual memory must be freed
-```
-
 ## Blocks
 Single-line blocks are written using do:
 ```elixir
@@ -180,24 +226,6 @@ do
   let x = 83
 end
 
-```
-
-## Type specification basics
-
-When declaring bindings, types are usually inferred based on later usage of the binding, 
-but types can be specified if desired.
-
-<pre>
-  kind ident [: type] [= expression];
-</pre>
-
-If the binding is not initialized,
-then a type specification must be added
-```elixir
-  let x = 83
-  let x: int = 83
-
-  let name: string
 ```
 
 ## Conditionals
@@ -357,14 +385,6 @@ match x {
 
 ## Modules
 ```elixir
-```
-
-## Modes
-Function parameters can have constraints on them, called modes.
-- uni
-- @
-```elixir
-
 ```
 
 ## More on functions
@@ -556,9 +576,10 @@ const screen_size = @ {
   - !type           : Type or error
   - ?type           : Type or void
   - *type           : Pointer
-  - []type          : Slice, which is a pointer and a length
   - &type           : Let Reference
   - uni &type       : Unique Reference
+  - []type          : Slice, which is a reference and a length
+  - uni[]type       : Unique Slice, which is a reference and a length
   - [size]type      : Array
   - [dyn]type       : Dynamic Array
   - %{key, value}   : Map

@@ -10,26 +10,29 @@
 Types in `Ruka` are static, and are inferred by default, except for a few cases. They can also be specified if desired.
 ```elixir
 let x
-x = 12 # x will be inferred as int
+x = 12 # x will be inferred as &int
 
-let name = "Ruka" # name will be inferred as string
+let name = "Ruka" # name will be inferred as &string
 
 let titles: [dyn]string # titles is specified to be a dyn array of strings
 ```
 
 ## Memory Management
-In `Ruka` bindings are stack allocated by default. Memory can be allocated on the heap in two ways:
-- Garbage collection:
-  - Using the built in function $new(typeid) returns a reference to memory managed by the gc
+In `Ruka` bindings are stack allocated by default. Memory can be allocated on the heap manually if desired
 - Manual management:
-  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
+  - Using an allocator, you can manage memory manually, which will return a raw pointer to the memory which must be freed before the program ends
+- Stack allocation can be handled using the local mode
 ```elixir
-let x = 12 # Stack allocated, lives until enclosing scope ends
 
-let name: &int = $new(int) # GC allocated, will be freed after the reference goes out of scope
+let name: &string = "hello" # GC allocated, will be freed after the reference goes out of scope
+```
+```elixir
 
-let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a pointer to it
+let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a raw pointer to it
 defer std/allocator.free(names) # Manual memory must be freed
+
+let loc name = "hello" # Will be stack allocated
+let name: string # The loc mode can be infered if the type is specified to be a non-reference type
 ```
 
 ## Bindings are initialized to zero
