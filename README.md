@@ -88,11 +88,11 @@ const Ram = struct{
 }
 
 # After these two function definitons, Ram implements MMIODevice
-const read(self: &Ram) = (address): u8 do
+const read(self: &Ram) = (address: u32): u8 do
   return self.memory[address]
 end
 
-const write(self: uni &Ram) = (address, value) do
+const write(self: uni &Ram) = (address: u32, value: u32) do
   self.memory[address] = value
 end
 ```
