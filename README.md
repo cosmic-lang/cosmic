@@ -94,18 +94,18 @@ end
 
 Function parameters can then have `behaviours` specified instead of types.
 ```elixir
-const loadProgram = (ram: uni &Ram, program: []u8) do
+const load = (device: uni &MMIODevice, program: []u8) do
   let len = program.len
 
   for program, 0..<len |byte, i| do
-    ram.write(i, byte)
+    device.write(i, byte)
   end
 end
 
 let ram = Ram{}
 let program: [100]u8
 
-loadProgram(&ram, program[..]) # [..] creates a slice covering the entire array
+load(&ram, program[..]) # [..] creates a slice covering the entire array
 ```
 
 ## Compile time execution
