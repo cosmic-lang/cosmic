@@ -67,7 +67,7 @@ let value = someResult.unwrap()
 ```
 
 ## Behaviours
-In `Ruka` you use `Golang` style interfaces, called `behaviours`, when you want shared functionality between types.
+In `Ruka` you use `Go` style interfaces, called `behaviours`, when you want shared functionality between types.
 ```elixir
 const MMIODevice = behaviour{
   read: fn (&)(address: u32) -> u8,
@@ -109,7 +109,7 @@ load(&ram, program[..]) # [..] creates a slice covering the entire array
 ```
 
 ## Compile time execution
-`Ruka` features compile time code execution like in `Ziglang`.
+`Ruka` features compile time code execution like in `Zig`.
 ```elixir
 # @ signifies a parameter which must be known at compile time
 # typeid is the type of types, i.e. int, string, *u8 
