@@ -538,15 +538,15 @@ const screen_size = @ {
   - ^  : Bitwise XOR
   - ~   : Bitwise Negation
 - Type Symbols
-  - type | type     : Union
+  - (type | type)   : Union
   - !type           : Type or error
   - ?type           : Type or void
   - *type           : Raw Pointer
   - []type          : Slice, which is a pointer and a length
   - &type           : Let Reference
   - &mut type       : Mutable Reference
-  - size[]type      : Array
-  - dyn[]type       : Dynamic Array
+  - [size]type      : Array
+  - [dyn]type       : Dynamic Array
   - %{key, value}   : Map
   - {type, ...}     : Tuple
   - list(type)      : List
