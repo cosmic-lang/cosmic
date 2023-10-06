@@ -55,8 +55,8 @@ let value = someResult.unwrap()
 In `Ruka` you use `Golang` style interfaces, called `behaviours`, when you want shared functionality between types.
 ```elixir
 const MMIODevice = behaviour{
-  read: & fn (address: u32) -> u8,
-  write: &mut fn (address: u32, value: u8) -> ()
+  & read: fn (address: u32) -> u8,
+  &mut write: fn (address: u32, value: u8) -> ()
 }
 ```
 
