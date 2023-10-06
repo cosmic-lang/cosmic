@@ -31,7 +31,7 @@ const Result = enum{
 
 # The receiver follows the method identifier,
 # and is specified as a name and type surrounded by parenthesis
-const unwrap(self: &Result) = (): int {
+const unwrap(self: &Result) = (): int do
   return match self {
   | .Ok(value) do: value,
   | .Err(msg) do 
@@ -39,7 +39,7 @@ const unwrap(self: &Result) = (): int {
     0
   end
   }
-}
+end
 
 # The method can then be called on a instance of Result
 let value = someResult.unwrap()
@@ -68,24 +68,24 @@ const Ram = struct{
 }
 
 # After these two function definitons, Ram implements MMIODevice
-const read(self: &Ram) = (address): u8 {
+const read(self: &Ram) = (address): u8 do
   return self.memory[address]
-}
+end
 
-const write(self: &mut Ram) = (address, value) {
+const write(self: &mut Ram) = (address, value) do
   self.memory[address] = value
-}
+end
 ```
 
 Function parameters can then have `behaviours` specified instead of types.
 ```elixir
-const loadProgram = (ram: &mut Ram, program: []u8) {
+const loadProgram = (ram: &mut Ram, program: []u8) do
   let len = program.len
 
-  for program, 0..<len |byte, i| {
+  for program, 0..<len |byte, i| do
     ram.write(i, byte)
-  }
-}
+  end
+end
 ```
 
 ## Compile time execution
@@ -93,7 +93,7 @@ const loadProgram = (ram: &mut Ram, program: []u8) {
 ```elixir
 # @ signifies a parameter which must be known at compile time
 # typeid is the type of types, i.e. int, string, *u8 
-const List = (@t: typeid): typeid {
+const List = (@t: typeid): typeid do
   const Node = struct{
     next: *Node,
     data: t
@@ -103,7 +103,7 @@ const List = (@t: typeid): typeid {
     head: *Node,
     size: uint
   }
-}
+end
 
 # List(string) returns the new type
 # empty {} are used to create an instance of the type with default values
