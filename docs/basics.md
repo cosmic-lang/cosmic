@@ -359,6 +359,14 @@ match x {
 ```elixir
 ```
 
+## Modes
+Function parameters can have constraints on them, called modes.
+- uni
+- @
+```elixir
+
+```
+
 ## More on functions
 ```elixir
 # Functions can return multiple data types.
