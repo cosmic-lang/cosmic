@@ -150,6 +150,70 @@ let x, y = pos # The lhs braces are not required
 std/testing.assert(x == 10 && y == 15)
 ```
 
+## Blocks
+```elixir
+```
+
+## Type specification basics
+```elixir
+```
+
+## Conditionals
+```elixir
+if condition {
+
+} else if another_condition {
+
+} else {
+
+}
+```
+
+## Loops
+```elixir
+```
+
+## Function Basics
+All functions in `Cro` are anonymous.  
+Basic function creation involves storing a function literal in a binding.  
+
+`do:` can be used for a one line body, ie body of function end of the line.
+```elixir
+const hello = (): string do: return "Hello, world!"
+```
+
+`{}` can be used for a multi line body. The final expression of a block is implicitly returned.
+```elixir
+const add = (x, y): int {
+  x + y
+}
+```
+
+`do end` can also be used for a multi line body. The final expression of a block is implicitly returned.
+```elixir
+const add = (x, y): int do
+  x + y
+end
+```
+
+## Function type specification
+```elixir
+# Functions that take no parameters have empty "()" before the arrow.
+# Void returns can be specified in two ways.
+# The return type must always be specified in type specifications.
+const foo: fn () -> ()
+const bar: fn void -> void
+
+# Types can be specified for multiple parameters at a time.
+const add = (x, y: int): int {
+  return x + y
+}
+
+const add_three = (x, y, z: int): int do: x + y + z
+```
+
+
+## Creating new types
 - `Struct`  
 
 All structs are anonymous. Members can be accessed with the `.` operator. Members can also be accessed by indexing with a tag, provided the tag is known at compile time.
@@ -201,36 +265,21 @@ if var .ok(z) = x {
 }
 ```
 
-## Blocks
+## Methods and Receivers
+
+Types can be given methods using receivers
 ```elixir
-```
-
-## Type specification basics
-```elixir
-```
-
-## Memory Management
-```elixir
-
-```
-
-## Conditionals
-```elixir
-if condition {
-
-} else if another_condition {
-
-} else {
-
+const Player = struct{
+  pos: {f32, f32},
+  health: int
 }
-```
 
-## Loops
-```elixir
-```
+# Methods for types are declared by specifying a reciever after the indentifier
+# This can be used to add functionality to primitive types
+const set_pos(self: &mut Player) = (pos: {f32, f32}) do: ...
+const read_health(self: &Player) = (health: int) do: ...
 
-## Error Handling
-```elixir
+# Receiver types can be normal types, pointer types, reference types, and compile time types
 ```
 
 ## Pattern Matching
@@ -249,43 +298,13 @@ match x {
 }
 ```
 
-## Function Basics
-All functions in `Cro` are anonymous.  
-Basic function creation involves storing a function literal in a binding.  
-
-`do:` can be used for a one line body, ie body of function end of the line.
+## Error Handling
 ```elixir
-const hello = (): string do: return "Hello, world!"
 ```
 
-`{}` can be used for a multi line body. The final expression of a block is implicitly returned.
+## Memory Management
 ```elixir
-const add = (x, y): int {
-  x + y
-}
-```
 
-`do end` can also be used for a multi line body. The final expression of a block is implicitly returned.
-```elixir
-const add = (x, y): int do
-  x + y
-end
-```
-
-## Function type specification
-```elixir
-# Functions that take no parameters have empty "()" before the arrow.
-# Void returns can be specified in two ways.
-# The return type must always be specified in type specifications.
-const foo: fn () -> ()
-const bar: fn void -> void
-
-# Types can be specified for multiple parameters at a time.
-const add = (x, y: int): int {
-  return x + y
-}
-
-const add_three = (x, y, z: int): int do: x + y + z
 ```
 
 ## More on functions
@@ -392,11 +411,6 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   identifiers, parameter types, and return types
-
-# Methods for structs are declared by specifying a reciever after the indentifier
-# This can be used to add functionality to primitive types
-const update_pos(self: &mut Player) = (pos: {f32, f32}) do: ...
-const update_health(self: *Player) = (health: int) do: ...
 
 var player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
