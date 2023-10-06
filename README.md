@@ -53,11 +53,11 @@ const Result = enum{
 # and is specified as a name and type surrounded by parenthesis
 const unwrap(self: &Result) = (): int do
   return match self {
-  | .Ok(value) do: value,
-  | .Err(msg) do 
-    std/error.log(msg)
-    0
-  end
+    | .Ok(value) do: value,
+    | .Err(msg) do 
+      std/error.log(msg)
+      0
+    end
   }
 end
 
