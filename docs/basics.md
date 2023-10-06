@@ -553,5 +553,6 @@ const screen_size = @ {
   - {type, ...}     : Tuple
   - list(type)      : List
   - range(type)     : Range, type must be integer types or byte
-  - fn () -> ()     : Function
+  - fn (params) -> (return)      : Function
+  - fn (rec)(params) -> (return) : Function
 </pre>
