@@ -156,11 +156,35 @@ std/testing.assert(x == 10 && y == 15)
 ```
 
 ## Blocks
+
+Blocks are enclosed using braces: {}, or do end.  
 ```elixir
+{
+  let x = 83
+}
+
+do
+  let x = 83
+end
+
 ```
 
 ## Type specification basics
+
+When declaring bindings, types are usually inferred based on later usage of the binding, 
+but types can be specified if desired.
+
+<pre>
+  kind ident [: type] [= expression];
+</pre>
+
+If the binding is not initialized,
+then a type specification must be added
 ```elixir
+  let x = 83
+  let x: int = 83
+
+  var name: string
 ```
 
 ## Conditionals
@@ -175,7 +199,15 @@ if condition {
 ```
 
 ## Loops
+`Ruka` has two looping constructs, range-based for loops, and while loops.
 ```elixir
+for iterable |i| {
+
+}
+
+while condition {
+
+}
 ```
 
 ## Function Basics
