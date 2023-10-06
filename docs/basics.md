@@ -156,8 +156,12 @@ std/testing.assert(x == 10 && y == 15)
 ```
 
 ## Blocks
+Single-line blocks are written using do:
+```elixir
+do: let x = 83
+```
 
-Blocks are enclosed using braces: {}, or do end.  
+Multi-line blocks are enclosed using braces: {}, or do end.  
 ```elixir
 {
   let x = 83
@@ -211,10 +215,20 @@ while condition {
 ```
 
 ## Function Basics
-All functions in `Ruka` are anonymous.  
-Basic function creation involves storing a function literal in a binding.  
+All functions in `Ruka` are anonymous, so function definition involves storing a function literal in a binding.  
 
-`do:` can be used for a one line body, ie body of function end of the line.
+Anonymous function creation follows the form of:
+<pre>
+  (parameters [: type]) [: return type] block;
+</pre>
+
+Function definition follows the form of:
+<pre>
+  kind ident [(reveiver)] [: type] = anonymous fn;
+</pre>
+the receiver will be explained later when methods are explained
+
+A single-line function
 ```elixir
 const hello = (): string do: return "Hello, world!"
 ```
