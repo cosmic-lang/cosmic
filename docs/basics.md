@@ -443,11 +443,13 @@ Behaviours cannot specify data members, only methods
 ```elixir
 # Behaviour definition
 const Entity = behaviour{
-  update_pos: fn ({f32, f32}) -> (),
-  update_health: fn (int) -> () 
+  # Method types have restrictions on the receiver type, which goes after fn
+  # Both of these methods require receivers to be &mut
+  update_pos: fn &mut ({f32, f32}) -> (),
+  update_health: fn &mut (int) -> () 
 }
 
-const system = (entity: &Entity, ...) do: ...
+const system = (entity: &mut Entity, ...) do: ...
 
 # Behaviours are implemented implicitly
 const Player = struct{
@@ -464,7 +466,7 @@ const update_health(self: &mut Player) = (health: int) do: ...
 
 var player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
-system(&player, ...)
+system(&mut player, ...)
 ```
 
 ## Compile Time
