@@ -82,7 +82,7 @@ Function parameters can then have `behaviours` specified instead of types.
 const loadProgram = (ram: &mut Ram, program: []u8) {
   let len = program.len
 
-  for program, 0..len |byte, i| {
+  for program, 0..<len |byte, i| {
     ram.write(i, byte)
   }
 }
