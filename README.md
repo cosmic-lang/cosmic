@@ -44,7 +44,7 @@ In `Ruka`, bindings are initialized to default values depending on the type, `0`
 `Method` definition in `Ruka` is done using `receivers` which specify which type the method is a part of, allowing for adding
 functionality to any type, even those foreign to your project.
 
-The receiver must be a reference, slice, or pointer type. If you want the function to get a copy of a value, you can just add that value to the parameter list.
+The receiver must be a reference, slice, or pointer type.
 ```elixir
 const Result = enum{
   Ok(int),
