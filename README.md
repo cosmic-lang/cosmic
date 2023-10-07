@@ -23,7 +23,7 @@ let titles: [dyn]string # titles is specified to be a dyn array of strings
 ## Memory Management
 In `Ruka` bindings are stack allocated by default. Memory can be allocated on the heap manually if desired
 - Manual management:
-  - Using an allocator, you can manage memory manually, which will return a raw pointer to the memory which must be freed before the program ends
+  - Using an allocator, you can manage memory manually, which will return a raw pointer to the memory which must be freed before the program }s
 - Variable specified to be non-reference types will be stack allocated
 ```elixir
 
@@ -38,13 +38,11 @@ let name: string = "hello" # Specifying a non-reference type will be stack alloc
 ```
 
 ## Bindings are initialized to zero
-In `Ruka`, bindings are initialized to default values depending on the type, `0` for numbers, `""` for strings, etc.
+In `Ruka`, bindings are initialized to default values dep}ing on the type, `0` for numbers, `""` for strings, etc.
 
 ## Methods and Receivers
-`Method` definition in `Ruka` is done using `receivers` which specify which type the method is a part of, allowing for adding
+`Method` definition in `Ruka` is {ne using `receivers` which specify which type the method is a part of, allowing for adding
 functionality to any type, even those foreign to your project.
-
-The receiver must be a reference, slice, or pointer type.
 ```elixir
 const Result = enum{
   Ok(int),
@@ -53,15 +51,15 @@ const Result = enum{
 
 # The receiver follows the method identifier,
 # and is specified as a name and type surrounded by parenthesis
-const unwrap(self: &Result) = (): int do
-  return match self {
+method unwrap(r: &Result) = (): int {
+  return match r {
     | .Ok(value) do: value,
-    | .Err(msg) do 
+    | .Err(msg) { 
       std/error.log(msg)
       0
-    end
+    }
   }
-end
+}
 
 # The method can then be called on a instance of Result
 let value = someResult.unwrap()
@@ -90,24 +88,24 @@ const Ram = struct{
 }
 
 # After these two function definitons, Ram implements MMIODevice
-const read(self: &Ram) = (address: u32): u8 do
-  return self.memory[address]
-end
+method read(r: &Ram) = (address: u32): u8 {
+  return r.memory[address]
+}
 
-const write(self: exc &Ram) = (address: u32, value: u32) do
-  self.memory[address] = value
-end
+method write(r: exc &Ram) = (address: u32, value: u32) {
+  r.memory[address] = value
+}
 ```
 
 Function parameters can then have `behaviours` specified instead of types.
 ```elixir
-const load = (device: exc &MMIODevice, program: []u8) do
+const load = (device: &MMIODevice, program: []u8) {
   let len = program.len
 
-  for program, 0..<len |byte, i| do
+  for program, 0..<len |byte, i| {
     device.write(i, byte)
-  end
-end
+  }
+}
 
 let ram = Ram{}
 let program: [100]u8
@@ -121,7 +119,7 @@ is how generic in `Ruka` work.
 ```elixir
 # @ signifies a parameter which must be known at compile time
 # typeid is the type of types, i.e. int, string, *u8 
-const List = (@t: typeid): typeid do
+const List = (@t: typeid): typeid {
   const Node = struct{
     next: *Node,
     data: t
@@ -131,45 +129,9 @@ const List = (@t: typeid): typeid do
     head: *Node,
     size: uint
   }
-end
+}
 
 # List(string) returns the new type
 # empty {} are used to create an instance of the type with default values
 let names = List(string){}
-```
-
-## Modules
-```elixir
-
-```
-
-## First Class Modules
-As you may have noticed earlier, methods are declared outside a type, and generic data structures
-are created by returning a new type from a function. So how does one implement methods for those
-generic data structures? 
-
-Well modules are first class citizens, so can store them in variables, pass them into functions, return them,
-just as you would any other value.
-
-So to properly create a generic data structure you want a function that returns a module not a type.
-```elixir
-const List = (@type: typeid): moduleid do
-  return module{
-    const t = struct{
-      head: &Node,
-      size: uint
-    }
-
-    const Node = struct{
-      next: &Node,
-      data: type
-    }
-
-    const insert(uni& t) = (value: type) {...}
-  }
-end
-
-let intList = List(int).t{}
-intList.insert(12)
-
 ```

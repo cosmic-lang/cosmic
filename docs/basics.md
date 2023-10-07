@@ -42,7 +42,7 @@ Assignment in `Ruka` can also be done as an expression using ":=", which returns
 let boolean = false
 # Assignment expression
 while boolean := someFunc() { # Will loop until someFunc returns false 
-  std/fmt.printf("{}", boolean)
+  std.fmt.printf("{}", boolean)
 }
 ```
 
@@ -87,17 +87,17 @@ Again, by default bindings are allocated by the GC, therefore values are normall
 ## Memory Management
 In `Ruka` memory is GC allocated by default. Memory can be allocated manually using an allocator
 - Manual management:
-  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
+  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program }s
 - Stack allocation:
   - Variables can be allocated on the stack using the loc mode, which can be inferred
 ```elixir
-let loc x = 12 # Stack allocated, lives until enclosing scope ends
+let loc x = 12 # Stack allocated, lives until enclosing scope }s
 let x: int
 
 let name: &int = 12 # GC allocated, will be freed after the reference goes out of scope
 
-let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a pointer to it
-defer std/allocator.free(names) # Manual memory must be freed
+let names: *[5]string = std.allocator.new([5]string) # Allocates an array and returns a pointer to it
+defer std.allocator.free(names) # Manual memory must be freed
 ```
 
 Important note here. GC values are stored as reference, but are dereferenced automatically, so
@@ -116,15 +116,15 @@ greet2(name) # Value is copied/Passed by value
 ## Basic Primitive Types
 Here is a list of `Ruka`'s primitive types:
 - `int`    
-  - 12, architecture dependent size
+  - 12, architecture dep}ent size
 - `i#`     
   - \# bit signed integer i.e. i16
 - `uint` 
-  - 12, architecture dependent size
+  - 12, architecture dep}ent size
 - `u#`     
   - \# bit unsigned integer i.e. u8
 - `float`  
-  - 12.2, architecture dependent size
+  - 12.2, architecture dep}ent size
 - `f#`     
   - \# bit float i.e. f32
 - `byte`   
@@ -137,8 +137,6 @@ Here is a list of `Ruka`'s primitive types:
   - also (), represents nothing.
 - `typeid` 
   - i32, int, char, MyStructure. Types are values in `Ruka`
-- `moduleid`
-  - The type of modules
 - `range` 
   - 0..=10, 5..<15
 - `tag`   
@@ -146,7 +144,7 @@ Here is a list of `Ruka`'s primitive types:
   - Polymorphic enumerations, i.e. don't need to be part of a type. 
   - Also used for identifiers, when used for identifiers the ":" can be ommited.
   - When used for map keys, the ":" is moved to the rhs
-  - When  types are specified for bindings, the ":" is moved to the rhs
+  - When types are specified for bindings, the ":" is moved to the rhs
 
 ## Primitive Data Collections
 `Ruka` has a few primitive data collections for you to use:
@@ -155,7 +153,7 @@ Here is a list of `Ruka`'s primitive types:
 # Arrays are static, their sizes cannot change and must be known at compile time
 let arr = [1, 2, 3, 4, 5]
 let num = arr[2]
-std/testing.assert(num == 3)
+std.testing.assert(num == 3)
 ```
 
 - `Dynamic Array`
@@ -163,7 +161,7 @@ std/testing.assert(num == 3)
 # Can change size
 let arr = [|1, 2, 3|]
 let num = arr[1]
-std/testing.assert(num == 2)
+std.testing.assert(num == 2)
 ```
 
 - `List`
@@ -171,7 +169,7 @@ std/testing.assert(num == 2)
 # Can change size
 let list = {|1, 2, 3|}
 let num = list[1]
-std/testing.assert(num == 2)
+std.testing.assert(num == 2)
 ```
 
 - `Map`
@@ -188,7 +186,7 @@ let atomic_mass = %{
 }
 
 let carbon_mass = atomic_mass[:carbon]
-std/testing.assert(carbon_mass == 15.999) # For floats == only compares the whole number
+std.testing.assert(carbon_mass == 15.999) # For floats == only compares the whole number
 ```
 
 - `Tuple`  
@@ -197,12 +195,12 @@ Tuples can be indexed, or destructured using pattern matching. The $len() functi
 ```elixir
 let pos = {10, 15}
 
-std/testing.assert($len(pos) == 2)
+std.testing.assert($len(pos) == 2)
 
 let {x, y} = {pos[0], pos[1]}
 let x, y = pos # The lhs braces are not required
 
-std/testing.assert(x == 10 && y == 15)
+std.testing.assert(x == 10 && y == 15)
 ```
 
 ## Blocks
@@ -211,16 +209,11 @@ Single-line blocks are written using do:
 do: let x = 83
 ```
 
-Multi-line blocks are enclosed using braces: {}, or do end.  
+Multi-line blocks are enclosed using braces: {} 
 ```elixir
 {
   let x = 83
 }
-
-do
-  let x = 83
-end
-
 ```
 
 ## Conditionals
@@ -259,9 +252,8 @@ the body is a block
 
 Function definition follows the form of:
 <pre>
-  kind ident [(receiver: type)] [: type] = anonymous fn;
+  kind ident [: type] = anonymous fn;
 </pre>
-the receiver will be covered later when methods are explained
 
 A single-line body function
 ```elixir
@@ -270,7 +262,7 @@ const hello = () do: return "Hello, world!"
 values must be returned explicitly
 
 
-`{}` can be used for a multi line body. The final expression of a block is implicitly returned.
+A multi line body.
 ```elixir
 const add = (x, y) {
   return x + y
@@ -323,7 +315,6 @@ name # "bar"
 
 ```
 
-
 ## Creating new types
 - `Struct`  
 
@@ -331,8 +322,16 @@ All structs are anonymous. Members can be accessed with the `.` operator. Member
 ```elixir
 # Struct definitions only contain data members, methods are added separately
 const Pos = struct{ # struct{} is the syntax to create anonymous struct type
+  const default = {0, 0} # Structs may contain static values which must go before
+                         # the member list
   x: int, 
   y: int
+}
+
+# Struct members can be given default values, the types will be inferred
+const Other = struct{
+  x = 12, # &int
+  y = 32.1 # &float
 }
 
 let pos = .{x: 12, y: 13} # .{} is the syntax to create anonymous struct instances, type will be inferred
@@ -344,7 +343,7 @@ let x = pos.x
 let y = pos.y
 let z = pos[:x]
 
-std/testing.assert(x == 12 && y == 13 && z == 12)
+std.testing.assert(x == 12 && y == 13 && z == 12)
 ```
 
 - `Enum`  
@@ -367,12 +366,12 @@ let o = Result.other
 # Enum can be pattern matched, to access inner values, errors if rhs is not the matching tag
 let Result.ok(z) = x
 
-std/testing.assert(z == 12)
+std.testing.assert(z == 12)
 
 # Enum can also be used for branching based on if the pattern matches or not
 # The enum type can be inferred
 if let .ok(z) = x {
-  std/fmt.printf("{}", z)
+  std.fmt.printf("{}", z)
 }
 ```
 
@@ -387,8 +386,8 @@ const Player = struct{
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-const set_pos(self: exc &Player) = (pos: {f32, f32}) do: ...
-const read_health(self: &Player) = (health: int) do: ...
+method set_pos(p: exc &Player) = (pos: {f32, f32}) do: ...
+method read_health(p: &Player) = (health: int) do: ...
 
 # Receiver types can be normal types, pointer types, reference types, and compile time types
 ```
@@ -403,8 +402,8 @@ const Result = enum{
 let x = Result.ok(12);
 
 match x {
-  | Result.ok(val) do: std/fmt.println("{}", val),
-  | .err(err) do: std/fmt.println(err),
+  | Result.ok(val) do: std.fmt.println("{}", val),
+  | .err(err) do: std.fmt.println(err),
   | _ {...} # Default case, not necissary here as all cases covered above
 }
 ```
@@ -413,8 +412,10 @@ match x {
 ```elixir
 ```
 
-## Modules
+## File imports
+When files are imported, they are stored as structs.
 ```elixir
+const std = $import("std")
 ```
 
 ## More on functions
@@ -440,7 +441,7 @@ const div = (x, y: int): {int, int} {
 }
 
 let result = div(12, 5)
-std/testing.assert(result[0] == 2)
+std.testing.assert(result[0] == 2)
 
 const div = (x, y: int): struct{quo, rem: int} {
   let quo = x / y
@@ -450,14 +451,14 @@ const div = (x, y: int): struct{quo, rem: int} {
 }
 
 let result = div(12, 5)
-std/testing.assert(result.quo == 2)
+std.testing.assert(result.quo == 2)
 
 # Functions can take variadic arguments using ...indent syntax.
 # The arguments are packaged together into a tuple, which can then be indexed
 const variadic = (...args) {
   let size = $len(args)
   for 0..<size |i| {
-    std/fmt.printf("{} ", args[i])
+    std.fmt.printf("{} ", args[i])
   }
 }
 
@@ -470,7 +471,7 @@ const sort = (slice: []i32, pred: fn (i32, i32) -> bool) {
 
 const arr = [41, 22, 31, 84, 75]
 # The types of the anonymous function passed will be inferred
-sort(arr[..], (lhs, rhs) do: lhs > rhs)
+sort(arr[..], (lhs, rhs) {: lhs > rhs)
 
 ```
 
@@ -499,7 +500,7 @@ let greeting = "!dlrow ,olleh"
 ```
 
 ## Behaviours
-`Ruka` doesn't have inheritance, instead `Ruka` uses interfaces called `behaviours`.
+`Ruka` {esn't have inheritance, instead `Ruka` uses interfaces called `behaviours`.
 
 Behaviours cannot specify data members, only methods
 ```elixir
@@ -523,8 +524,8 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   identifiers, parameter types, and return types
-const update_pos(self: exc &Player) = (pos: {f32, f32}) do: ...
-const update_health(self: exc &Player) = (health: int) do: ...
+method update_pos(p: exc &Player) = (pos: {f32, f32}) do: ...
+method update_health(p: exc &Player) = (health: int) do: ...
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -553,14 +554,30 @@ let Pos = @Vector(t) # This can no longer be used in later compile time expressi
 const Pos = @Vector(t) # This can still be used in later compile time expressions
 
 # Blocks can also be compile time
-# Blocks can be specified with {...} or do...end
+# Blocks can be specified with {...} or {...}
 const screen_size = @ {
   return {1920, 1080}
 }
-```
 
-## First Class Modules
-```elixir
+# To create a generic ds with methods, you must return a struct with static bindings
+const List = (@type: typeid): typeid {
+  return struct{
+    const t = struct{
+      head: &Node,
+      size: uint
+    }
+
+    const Node = struct{
+      next: &Node,
+      data: type
+    }
+
+    method insert(uni& t) = (value: type) {...}
+  }
+}
+
+let intList = List(int).t{}
+intList.insert(12)
 ```
 
 ## Operators
@@ -614,6 +631,6 @@ const screen_size = @ {
   - {type, ...}     : Tuple
   - list(type)      : List
   - range(type)     : Range, type must be integer types or byte
-  - fn (params) -> (return)      : Function
-  - fn (rec)(params) -> (return) : Method
+  - fn (params) -> return      : Function
+  - fn (rec)(params) -> return : Method
 </pre>

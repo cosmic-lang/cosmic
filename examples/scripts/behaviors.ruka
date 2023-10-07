@@ -1,11 +1,11 @@
 # Shared behaviour of entities
 const Entity = behaviour{
-  set_pos: fn (uni&)({f32, f32}) -> (),
+  set_pos: fn (exc&)({f32, f32}) -> (),
   read_pos: fn (&)() -> {f32, f32}
 }
 
 # A function with accepts a behaviour instead of a type
-const movementSystem = (entity: uni &Entity) do 
+const movementSystem = (entity: exc &Entity) do 
   let {x, y} = entity.read_pos()
 
   x += 10.0
@@ -20,12 +20,12 @@ const Player = struct{
 }
 
 # Implementing Entity for player
-const set_pos(self: uni &Player) = (pos: {f32, f32}) {
-  self.pos = pos
+method set_pos(p: exc &Player) = (pos: {f32, f32}) {
+  p.pos = pos
 }
 
-const read_pos(self: &Player) = (): int {
-  self.pos
+method read_pos(p: &Player) = (): int {
+  p.pos
 }
 
 # A struct representing an enemy
@@ -34,12 +34,12 @@ const Enemy = struct{
 }
 
 # Implementing Entity for enemy
-const set_pos(self: uni &Enemy) = (pos: {f32, f32}) {
-  self.pos = pos
+method set_pos(e: exc &Enemy) = (pos: {f32, f32}) {
+  e.pos = pos
 }
 
-const read_pos(self: &Enemy) = (): int {
-  self.pos
+method read_pos(e: &Enemy) = (): int {
+  e.pos
 }
 
 # Instanciating enemy and player
