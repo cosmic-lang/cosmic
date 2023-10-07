@@ -24,7 +24,7 @@ let titles: [dyn]string # titles is specified to be a dyn array of strings
 In `Ruka` bindings are stack allocated by default. Memory can be allocated on the heap manually if desired
 - Manual management:
   - Using an allocator, you can manage memory manually, which will return a raw pointer to the memory which must be freed before the program ends
-- Stack allocation can be handled using the local mode
+- Variable specified to be non-reference types will be stack allocated
 ```elixir
 
 let name: &string = "hello" # GC allocated, will be freed after the reference goes out of scope
