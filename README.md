@@ -29,8 +29,8 @@ In `Ruka` bindings are stack allocated by default. Memory can be allocated on th
 
 let name: &string = "hello" # GC allocated, will be freed after the reference goes out of scope
 
-let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a raw pointer to it
-defer std/allocator.free(names) # Manual memory must be freed
+let names: *[5]string = std.allocator.new([5]string) # Allocates an array and returns a raw pointer to it
+defer std.allocator.free(names) # Manual memory must be freed
 
 let name: string = "hello" # Specifying a non-reference type will be stack allocated
 ```
@@ -53,7 +53,7 @@ const unwrap(r: &Result) = (): int {
   return match r {
     | .Ok(value) do: value,
     | .Err(msg) { 
-      std/error.log(msg)
+      std.error.log(msg)
       0
     }
   }

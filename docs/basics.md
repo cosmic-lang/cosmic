@@ -619,7 +619,7 @@ intList.insert(12)
   - ^  : Bitwise XOR
   - ~   : Bitwise Negation
 - Type Symbols
-  - (type | type)   : Union
+  - type | type     : Union
   - !type           : Type or error
   - ?type           : Type or void
   - *type           : Pointer
