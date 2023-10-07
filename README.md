@@ -4,6 +4,9 @@
 # ! In Early Development
 `Ruka` is currently in the design stage, so the language has yet to be implemented, and everything is subject to drastic change.
 
+# License
+`Ruka` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
+
 # Features
 
 ## Types and Inference
@@ -31,8 +34,7 @@ let name: &string = "hello" # GC allocated, will be freed after the reference go
 let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a raw pointer to it
 defer std/allocator.free(names) # Manual memory must be freed
 
-let loc name = "hello" # Will be stack allocated
-let name: string # The loc mode can be infered if the type is specified to be a non-reference type
+let name: string = "hello" # Specifying a non-reference type will be stack allocated
 ```
 
 ## Bindings are initialized to zero
@@ -76,7 +78,7 @@ In `Ruka` you use `Go` style interfaces, called `behaviours`, when you want shar
 ```elixir
 const MMIODevice = behaviour{
   read: fn (&)(address: u32) -> u8,
-  write: fn (uni&)(address: u32, value: u8) -> ()
+  write: fn (exc&)(address: u32, value: u8) -> ()
 }
 ```
 
@@ -92,14 +94,14 @@ const read(self: &Ram) = (address: u32): u8 do
   return self.memory[address]
 end
 
-const write(self: uni &Ram) = (address: u32, value: u32) do
+const write(self: exc &Ram) = (address: u32, value: u32) do
   self.memory[address] = value
 end
 ```
 
 Function parameters can then have `behaviours` specified instead of types.
 ```elixir
-const load = (device: uni &MMIODevice, program: []u8) do
+const load = (device: exc &MMIODevice, program: []u8) do
   let len = program.len
 
   for program, 0..<len |byte, i| do
@@ -171,6 +173,3 @@ let intList = List(int).t{}
 intList.insert(12)
 
 ```
-
-# License
-`Ruka` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).

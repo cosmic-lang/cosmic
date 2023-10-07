@@ -8,7 +8,7 @@
 ## Bindings
 Bindings in `Ruka` follow the form of:  
 <pre>
-  kind [mode] ident [: type] [= expression];
+  kind ident [: type] [= expression];
 </pre>
 with the parts surrounded by [] being optional.  
 
@@ -56,21 +56,13 @@ let (
 
 ```
 
-## Modes
-Variable bindings can have constraints on them, called modes.
-- `loc` local mode
-- `uni` unique mode
-- `@` compile time mode
-
 By default, bindings are allocated by the GC, therefore values are normally & types. But stack allocation
-can be done using the `loc` mode. 
+can be done by specifying a non-reference type. 
 ```elixir
-# Local mode bindings are allocated on the stack
-# They are freed at the end of the enclosing scope
-let loc x = 12
-# The local mode can be inferred if the type of a variable is a non-reference type
-# This will also be the case with functions, where non-reference types will be inferred to be local
-let x: int
+# This will be GC allocated
+let x = 12 # &int
+# This will be stack allocated
+let x: int = 12
 ```
 
 ## Type specification basics
@@ -79,7 +71,7 @@ When declaring bindings, types are usually inferred based on later usage of the 
 but types can be specified if desired.
 
 <pre>
-  kind [mode] ident [: type] [= expression];
+  kind ident [: type] [= expression];
 </pre>
 
 If the binding is not initialized,
@@ -109,13 +101,16 @@ defer std/allocator.free(names) # Manual memory must be freed
 ```
 
 Important note here. GC values are stored as reference, but are dereferenced automatically, so
-if a function expects a reference, it still must be passed with & which prevents the dereferencing
+if a function expects a reference, it still must be passed with & which prevents the dereferencing.
 ```elixir
 let name: &string = "hello" 
 
 const greet = (name: &string) {...}
 greet(name) # Error, type mismatch: &string expected, string received
 greet(&name)
+
+const greet2 = (name: string) {...}
+greet2(name) # Value is copied/Passed by value
 ```
 
 ## Basic Primitive Types
@@ -252,7 +247,9 @@ while condition {
 ```
 
 ## Function Basics
-All functions in `Ruka` are anonymous, so function definition involves storing a function literal in a binding.  
+All functions in `Ruka` are anonymous, so function definition involves storing a function literal in a binding.
+Important note, functions are not closures therefore they can only access their parameters or any locally defined
+variables.
 
 Anonymous function creation follows the form of:
 <pre>
@@ -262,7 +259,7 @@ the body is a block
 
 Function definition follows the form of:
 <pre>
-  kind [mode] ident [(receiver: type)] [: type] = anonymous fn;
+  kind ident [(receiver: type)] [: type] = anonymous fn;
 </pre>
 the receiver will be covered later when methods are explained
 
@@ -270,11 +267,13 @@ A single-line body function
 ```elixir
 const hello = () do: return "Hello, world!"
 ```
+values must be returned explicitly
+
 
 `{}` can be used for a multi line body. The final expression of a block is implicitly returned.
 ```elixir
 const add = (x, y) {
-  x + y
+  return x + y
 }
 ```
 
@@ -291,8 +290,39 @@ const add = (x, y: int): int {
   return x + y
 }
 
-const add_three = (x, y, z: int): int do: x + y + z
+const add_three = (x, y, z: int): int do: return x + y + z
 ```
+
+## Modes
+Parameters can have constraints on them, called modes. Values behind references can only be 
+mutated in the enclosing scope the variable were defined in. If passed to functions by reference they
+cannot be mutated, unless they are passed in the unique or exclusive modes
+- Reference types
+  - `uni` unique mode, ownership of reference is moved into function
+  - `exc` exclusive mode, only one active reference to value so safe to mutate
+- All types
+  - `@` compile time mode
+```elixir
+let x, y = 12, 11
+
+const use = (uni x: &int) {}
+
+const add = (x, y: &int) {
+  use(&x)
+  return x + y # Error x used uniquely so cannot be used twice
+}
+
+let name = "foo"
+
+const rename = (exc name: &string) {
+  name = "bar"
+}
+
+rename(&name)
+name # "bar"
+
+```
+
 
 ## Creating new types
 - `Struct`  
@@ -357,7 +387,7 @@ const Player = struct{
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-const set_pos(self: uni &Player) = (pos: {f32, f32}) do: ...
+const set_pos(self: exc &Player) = (pos: {f32, f32}) do: ...
 const read_health(self: &Player) = (health: int) do: ...
 
 # Receiver types can be normal types, pointer types, reference types, and compile time types
@@ -373,9 +403,9 @@ const Result = enum{
 let x = Result.ok(12);
 
 match x {
-| Result.ok(val) do: std/fmt.println("{}", val),
-| .err(err) do: std/fmt.println(err),
-| _ {...} # Default case, not necissary here as all cases covered above
+  | Result.ok(val) do: std/fmt.println("{}", val),
+  | .err(err) do: std/fmt.println(err),
+  | _ {...} # Default case, not necissary here as all cases covered above
 }
 ```
 
@@ -397,7 +427,7 @@ match x {
 const div = (x, y: int): (quo, rem: int) {
   quo = x / y
   rem = x % y
-  return # return could potentially be ommitted here
+  return
 }
 
 let quo, rem = div(12, 5)
@@ -476,12 +506,12 @@ Behaviours cannot specify data members, only methods
 # Behaviour definition
 const Entity = behaviour{
   # Method types have restrictions on the receiver type, which goes after fn
-  # Both of these methods require receivers to be uni& (a unique reference)
-  update_pos: fn (uni&)({f32, f32}) -> (),
-  update_health: fn (uni&)(int) -> () 
+  # Both of these methods require receivers to be exc& (a exclusive mode reference)
+  update_pos: fn (exc&)({f32, f32}) -> (),
+  update_health: fn (exc&)(int) -> () 
 }
 
-const system = (entity: uni &Entity, ...) do: ...
+const system = (entity: exc &Entity, ...) do: ...
 
 # Behaviours are implemented implicitly
 const Player = struct{
@@ -493,8 +523,8 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   identifiers, parameter types, and return types
-const update_pos(self: uni &Player) = (pos: {f32, f32}) do: ...
-const update_health(self: uni &Player) = (health: int) do: ...
+const update_pos(self: exc &Player) = (pos: {f32, f32}) do: ...
+const update_health(self: exc &Player) = (health: int) do: ...
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -577,9 +607,7 @@ const screen_size = @ {
   - ?type           : Type or void
   - *type           : Pointer
   - &type           : Let Reference
-  - uni &type       : Unique Reference
   - []type          : Slice, which is a reference and a length
-  - uni[]type       : Unique Slice, which is a reference and a length
   - [size]type      : Array
   - [dyn]type       : Dynamic Array
   - %{key, value}   : Map
@@ -587,5 +615,5 @@ const screen_size = @ {
   - list(type)      : List
   - range(type)     : Range, type must be integer types or byte
   - fn (params) -> (return)      : Function
-  - fn (rec)(params) -> (return) : Function
+  - fn (rec)(params) -> (return) : Method
 </pre>
