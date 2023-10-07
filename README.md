@@ -28,8 +28,6 @@ In `Ruka` bindings are stack allocated by default. Memory can be allocated on th
 ```elixir
 
 let name: &string = "hello" # GC allocated, will be freed after the reference goes out of scope
-```
-```elixir
 
 let names: *[5]string = std/allocator.new([5]string) # Allocates an array and returns a raw pointer to it
 defer std/allocator.free(names) # Manual memory must be freed
@@ -38,10 +36,10 @@ let name: string = "hello" # Specifying a non-reference type will be stack alloc
 ```
 
 ## Bindings are initialized to zero
-In `Ruka`, bindings are initialized to default values dep}ing on the type, `0` for numbers, `""` for strings, etc.
+In `Ruka`, bindings are initialized to default values depending on the type, `0` for numbers, `""` for strings, etc.
 
 ## Methods and Receivers
-`Method` definition in `Ruka` is {ne using `receivers` which specify which type the method is a part of, allowing for adding
+`Method` definition in `Ruka` is done using `receivers` which specify which type the method is a part of, allowing for adding
 functionality to any type, even those foreign to your project.
 ```elixir
 const Result = enum{
@@ -51,7 +49,7 @@ const Result = enum{
 
 # The receiver follows the method identifier,
 # and is specified as a name and type surrounded by parenthesis
-method unwrap(r: &Result) = (): int {
+const unwrap(r: &Result) = (): int {
   return match r {
     | .Ok(value) do: value,
     | .Err(msg) { 
@@ -88,11 +86,11 @@ const Ram = struct{
 }
 
 # After these two function definitons, Ram implements MMIODevice
-method read(r: &Ram) = (address: u32): u8 {
+const read(r: &Ram) = (address: u32): u8 {
   return r.memory[address]
 }
 
-method write(r: exc &Ram) = (address: u32, value: u32) {
+const write(exc r: &Ram) = (address: u32, value: u32) {
   r.memory[address] = value
 }
 ```

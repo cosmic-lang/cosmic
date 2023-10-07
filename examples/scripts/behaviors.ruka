@@ -5,14 +5,14 @@ const Entity = behaviour{
 }
 
 # A function with accepts a behaviour instead of a type
-const movementSystem = (entity: exc &Entity) do 
+const movementSystem = (entity: exc &Entity) {
   let {x, y} = entity.read_pos()
 
   x += 10.0
   y += 15.0
 
   entity.set_pos({x, y})
-end
+}
 
 # A struct representing a player
 const Player = struct{
@@ -20,11 +20,11 @@ const Player = struct{
 }
 
 # Implementing Entity for player
-method set_pos(p: exc &Player) = (pos: {f32, f32}) {
+const set_pos(exc p: &Player) = (pos: {f32, f32}) {
   p.pos = pos
 }
 
-method read_pos(p: &Player) = (): int {
+const read_pos(p: &Player) = (): int {
   p.pos
 }
 
@@ -34,11 +34,11 @@ const Enemy = struct{
 }
 
 # Implementing Entity for enemy
-method set_pos(e: exc &Enemy) = (pos: {f32, f32}) {
+const set_pos(exc e: &Enemy) = (pos: {f32, f32}) {
   e.pos = pos
 }
 
-method read_pos(e: &Enemy) = (): int {
+const read_pos(e: &Enemy) = (): int {
   e.pos
 }
 

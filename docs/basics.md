@@ -286,8 +286,8 @@ const add_three = (x, y, z: int): int do: return x + y + z
 ```
 
 ## Modes
-Parameters can have constraints on them, called modes. Values behind references can only be 
-mutated in the enclosing scope the variable were defined in. If passed to functions by reference they
+Parameters can have constraints on them, called modes. Reference types can only be mutated
+in the scope they are defined in. Values passed to functions by reference
 cannot be mutated, unless they are passed in the unique or exclusive modes
 - Reference types
   - `uni` unique mode, ownership of reference is moved into function
@@ -322,8 +322,8 @@ All structs are anonymous. Members can be accessed with the `.` operator. Member
 ```elixir
 # Struct definitions only contain data members, methods are added separately
 const Pos = struct{ # struct{} is the syntax to create anonymous struct type
-  const default = {0, 0} # Structs may contain static values which must go before
-                         # the member list
+  const default = {0, 0} # Structs may contain static values which can go before
+                         # or after the member list
   x: int, 
   y: int
 }
@@ -386,8 +386,8 @@ const Player = struct{
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-method set_pos(p: exc &Player) = (pos: {f32, f32}) do: ...
-method read_health(p: &Player) = (health: int) do: ...
+const set_pos(exc p: &Player) = (pos: {f32, f32}) do: ...
+const read_health(p: &Player) = (health: int) do: ...
 
 # Receiver types can be normal types, pointer types, reference types, and compile time types
 ```
@@ -500,7 +500,7 @@ let greeting = "!dlrow ,olleh"
 ```
 
 ## Behaviours
-`Ruka` {esn't have inheritance, instead `Ruka` uses interfaces called `behaviours`.
+`Ruka` doesn't have inheritance, instead `Ruka` uses interfaces called `behaviours`.
 
 Behaviours cannot specify data members, only methods
 ```elixir
@@ -512,7 +512,7 @@ const Entity = behaviour{
   update_health: fn (exc&)(int) -> () 
 }
 
-const system = (entity: exc &Entity, ...) do: ...
+const system = (exc entity: &Entity, ...) do: ...
 
 # Behaviours are implemented implicitly
 const Player = struct{
@@ -524,8 +524,8 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   identifiers, parameter types, and return types
-method update_pos(p: exc &Player) = (pos: {f32, f32}) do: ...
-method update_health(p: exc &Player) = (health: int) do: ...
+const update_pos(exc p: &Player) = (pos: {f32, f32}) do: ...
+const update_health(exc p: &Player) = (health: int) do: ...
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -572,7 +572,7 @@ const List = (@type: typeid): typeid {
       data: type
     }
 
-    method insert(uni& t) = (value: type) {...}
+    const insert(uni &t) = (value: type) {...}
   }
 }
 
