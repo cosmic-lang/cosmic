@@ -142,7 +142,7 @@ let names = List(string){}
 ```
 
 ## First Class Modules
-As you may have noticed earlier, methods are declared outside a struct, and generic data structures
+As you may have noticed earlier, methods are declared outside a type, and generic data structures
 are created by returning a new type from a function. So how does one implement methods for those
 generic data structures? 
 
