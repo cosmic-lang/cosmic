@@ -256,24 +256,24 @@ All functions in `Ruka` are anonymous, so function definition involves storing a
 
 Anonymous function creation follows the form of:
 <pre>
-  (parameters [: type]) [: return type] body;
+  ([mode] parameter [: type]) [: return type] body;
 </pre>
 the body is a block
 
 Function definition follows the form of:
 <pre>
-  kind ident [(receiver: type)] [: type] = anonymous fn;
+  kind [mode] ident [(receiver: type)] [: type] = anonymous fn;
 </pre>
 the receiver will be covered later when methods are explained
 
 A single-line body function
 ```elixir
-const hello = (): string do: return "Hello, world!"
+const hello = () do: return "Hello, world!"
 ```
 
 `{}` can be used for a multi line body. The final expression of a block is implicitly returned.
 ```elixir
-const add = (x, y): int {
+const add = (x, y) {
   x + y
 }
 ```
