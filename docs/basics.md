@@ -331,8 +331,8 @@ const Pos = struct{ # struct{} is the syntax to create anonymous struct type
 
 # Struct members can be given default values, the types will be inferred
 const Other = struct{
-  x = 12, # &int
-  y = 32.1 # &float
+  x = 12, # int
+  y = 32.1 # float
 }
 
 let pos = .{x: 12, y: 13} # .{} is the syntax to create anonymous struct instances, type will be inferred
@@ -697,7 +697,7 @@ intList.insert(12)
   - !type           : Type or error
   - ?type           : Type or null
   - *type           : Pointer
-  - &type           : Let Reference
+  - &type           : Borrowed/Reference Type
   - []type          : Slice, which is a reference and a length
   - [size]type      : Array
   - [dyn]type       : Dynamic Array
