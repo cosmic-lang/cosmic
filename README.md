@@ -1,5 +1,5 @@
 # `Ruka`
-`Ruka` is a general purpose, statically typed, programming language.
+A general purpose, statically typed, programming language.
 
 # ! In Early Development
 `Ruka` is currently in the design stage, so the language has yet to be implemented, and everything is subject to drastic change.
