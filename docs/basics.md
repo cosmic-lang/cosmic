@@ -222,6 +222,8 @@ if (condition) {
 
 } else if (another_condition) {
 
+} else if let pattern {
+
 } else {
 
 }
@@ -240,9 +242,7 @@ while (condition) {
 ```
 
 ## Function Basics
-All functions in `Ruka` are anonymous, so function definition involves storing a function literal in a binding.
-Important note, functions are not closures therefore they can only access their parameters or any locally defined
-variables.
+All functions in `Ruka` are anonymous closures, so function definition involves storing a function literal in a binding.
 
 Anonymous function creation follows the form of:
 <pre>
@@ -294,7 +294,8 @@ const add_three = (x, y, z: int): int do: return x + y + z
 ## Modes
 Parameters can have constraints on them, called modes. Reference types can only be mutated
 in the scope they are defined in. Values passed to functions by reference
-cannot be mutated, unless they are passed in the unique or exclusive modes
+cannot be mutated, unless they are passed in the unique or exclusive modes. This
+may be able to be relaxed, so all values behind references can be modified
 - Reference types
   - `uni` unique mode, ownership of reference is moved into function
   - `exc` exclusive mode, only one active reference to value so safe to mutate
