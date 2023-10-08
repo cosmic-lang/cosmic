@@ -390,8 +390,8 @@ const Player = struct{
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-const set_pos<exc p: &Player> = (pos: {f32, f32}) do: ...
-const read_health<p: &Player> = (health: int) do: ...
+const set_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
+const read_health<p: &Player> = (health: int) do: # code
 
 # Receiver types can be normal types, pointer types, reference types, and compile time types
 ```
@@ -413,12 +413,11 @@ const Result = enum{
   err(string)
 }
 
-let x = Result.ok(12);
+let x = Result.ok(12)
 
 match x {
   | Result.ok(val) do: std.fmt.println("{}", val),
-  | .err(err) do: std.fmt.println(err),
-  | _ {...} # Default case, not necissary here as all cases covered above
+  | .err(err) do: std.fmt.println(err)
 }
 ```
 
@@ -467,20 +466,20 @@ const div = (x, y: int): struct{quo, rem: int} {
 let result = div(12, 5)
 std.testing.assert(result.quo == 2)
 
-# Functions can take variadic arguments using ...indent syntax.
+# Functions can take variadic arguments using ...ident syntax.
 # The arguments are packaged together into a tuple, which can then be indexed
 const variadic = (...args) {
   let size = $len(args)
-  for 0..<size |i| {
+  for 0..size |i| {
     std.fmt.printf("{} ", args[i])
   }
 }
 
 # Functions can be taken as parameters and returned from functions
 const sort = (slice: []i32, pred: fn (i32, i32) -> bool) {
-  ...
+  # code
   if pred(slice[i], slice[j]) {
-  ...
+  # code
 }
 
 const arr = [41, 22, 31, 84, 75]
@@ -493,8 +492,8 @@ sort(arr[..], (lhs, rhs) do: lhs > rhs)
 The `Pipeline` operator "|>" takes the result of the expression before it,
 and inputs it into the first argument of the function after it
 ```elixir
-const scan = (source: string): []tokens do: ...
-const parse = (source: []tokens): Ast do: ...
+const scan = (source: string): []tokens do: # code
+const parse = (source: []tokens): Ast do: # code
 
 let source = "some source code"
 
@@ -526,7 +525,7 @@ const Entity = behaviour{
   update_health: fn <exc&>(int) -> void
 }
 
-const system = (exc entity: &Entity, ...) do: ...
+const system = (exc entity: &Entity) do: # code
 
 # Behaviours are implemented implicitly
 const Player = struct{
@@ -538,12 +537,12 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   identifiers, parameter types, and return types
-const update_pos<exc p: &Player> = (pos: {f32, f32}) do: ...
-const update_health<exc p: &Player> = (health: int) do: ...
+const update_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
+const update_health<exc p: &Player> = (health: int) do: # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
-system(&player, ...)
+system(&player)
 ```
 
 ## Compile Time
@@ -648,7 +647,9 @@ intList.insert(12)
   - %{key, value}   : Map
   - {type, ...}     : Tuple
   - list(type)      : List
-  - range(type)     : Range, type must be integer types or byte
+  - ...             : Variadic Argument
+  - ..(type)        : Exclusive Range, type must be integer types or byte
+  - ..=(type)       : Inclusive Range, type must be integer types or byte
   - fn () -> ()     : Function
   - fn <>() -> ()   : Method
 </pre>

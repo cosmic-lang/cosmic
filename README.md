@@ -12,8 +12,8 @@
 - Type Inference
 - Types and Errors as Values
 - First Class Functions and Modules
-- Shared Behaviour with Interfaces called Behaviours
+- Shared Functionality with Interfaces called Behaviours
 - Compile Time Execution
 - Pattern Matching
-- GC by Default with the option to manage memory manually using allocators, and stack allocate memory as desired
-- Raw pointers for when safety is not a priority, References for when it is
+- GC by Default with the option to manage memory manually using allocators, and to stack allocate memory, as desired
+- References for when safety is a priority, Pointers for when it's not
