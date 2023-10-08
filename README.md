@@ -11,14 +11,16 @@ A general purpose, statically typed, programming language.
 - Strong static typing
 - Type inference
 - First class Types, Errors, Functions, and Modules
-- Shared functionality with interfaces called Behaviours
+- Shared functionality with interfaces called `Behaviours`
 - Pattern matching
-- Metaprogramming with compile time execution
+- Meta-programming with compile time execution
 - Type reflection
+- Green threads called `Strands`
+- Reactivity with `Signals`
 - Automatic memory management by default
   - Variables are stack or GC allocated based on usage
   - Can manually manage heap memory with allocators
-- Per project langauge customization
+- Per project language customization
   - Disable GC
   - Type inference customization
 - References for when safety is a priority, Pointers for when it's not
