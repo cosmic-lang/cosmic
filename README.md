@@ -15,7 +15,7 @@ A general purpose, statically typed, programming language.
 - Pattern matching
 - Meta-programming with compile time execution
 - Type reflection
-- Green threads called `Strands`
+- Green threads called `Strings`
 - Reactivity with `Signals`
 - Automatic memory management by default
   - Variables are stack or GC allocated based on usage
