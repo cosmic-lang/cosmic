@@ -583,10 +583,10 @@ const Pos = @Vector(t) # This can be used in later compile time expressions
 const screen_size = @ {
   return {1920, 1080}
 }
-
+```
 ## First Class Modules
 Modules are first class in `Ruka`, so they can be passed into and out of functions
-```elxir
+```elixir
 # To create a generic ds with methods, you must return a struct with static bindings
 const List = (@type: typeid): moduleid {
   return module{
