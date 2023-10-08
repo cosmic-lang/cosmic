@@ -1,7 +1,7 @@
 # Shared behaviour of entities
 const Entity = behaviour{
-  set_pos: fn (exc&)({f32, f32}) -> (),
-  read_pos: fn (&)() -> {f32, f32}
+  set_pos: fn <exc&>({f32, f32}) -> void,
+  read_pos: fn <&>() -> {f32, f32}
 }
 
 # A function with accepts a behaviour instead of a type
@@ -20,11 +20,11 @@ const Player = struct{
 }
 
 # Implementing Entity for player
-const set_pos(exc p: &Player) = (pos: {f32, f32}) {
+const set_pos<exc p: &Player> = (pos: {f32, f32}) {
   p.pos = pos
 }
 
-const read_pos(p: &Player) = (): int {
+const read_pos<p: &Player> = (): {f32, f32} {
   p.pos
 }
 
@@ -34,11 +34,11 @@ const Enemy = struct{
 }
 
 # Implementing Entity for enemy
-const set_pos(exc e: &Enemy) = (pos: {f32, f32}) {
+const set_pos<exc e: &Enemy> = (pos) {
   e.pos = pos
 }
 
-const read_pos(e: &Enemy) = (): int {
+const read_pos<e: &Enemy> = () {
   e.pos
 }
 
