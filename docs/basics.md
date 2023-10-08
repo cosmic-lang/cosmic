@@ -56,8 +56,7 @@ let (
 
 ```
 
-By default, bindings are allocated by the GC, therefore values are normally & types. But stack allocation
-can be done by specifying a non-reference type. 
+By default, bindings are allocated by the GC or stack allocated, depending on type usage.
 ```elixir
 # This will be GC allocated
 let x = 12 # &int
@@ -85,15 +84,11 @@ Again, by default bindings are allocated by the GC, therefore values are normall
 ```
 
 ## Memory Management
-In `Ruka` memory is GC allocated by default. Memory can be allocated manually using an allocator
+In `Ruka` memory is GC/stack allocated by default. Memory can be allocated manually using an allocator if desired. And GC can be disabled completely on a pre project basis.
 - Manual management:
-  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program }s
-- Stack allocation:
-  - Variables can be allocated on the stack using the loc mode, which can be inferred
+  - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
 ```elixir
-let loc x = 12 # Stack allocated, lives until enclosing scope }s
-let x: int
-
+let name: int = 12 # Stack allocated, will be freed at the end of scope
 let name: &int = 12 # GC allocated, will be freed after the reference goes out of scope
 
 let names: *[5]string = std.allocator.new([5]string) # Allocates an array and returns a pointer to it
@@ -107,10 +102,10 @@ let name: &string = "hello"
 
 const greet = (name: &string) {...}
 greet(name) # Error, type mismatch: &string expected, string received
-greet(&name)
+greet(&name) # Value is borrowed
 
 const greet2 = (name: string) {...}
-greet2(name) # Value is copied/Passed by value
+greet2(name) # Value is copied
 ```
 
 ## Basic Primitive Types
@@ -131,14 +126,21 @@ Here is a list of `Ruka`'s primitive types:
   - 'a' or 0xfd
 - `string`
   - "Hello, world!"
+  - \\ Multi
+    \\ line
+    \\ string
+- `regex`
+  - ~r"foo|bar"
 - `bool` 
   - true, false
 - `void` 
   - also (), represents nothing.
 - `typeid` 
   - i32, int, char, MyStructure. Types are values in `Ruka`
+- `moduleid`
+  - Namespaces
 - `range` 
-  - 0..=10, 5..<15
+  - 0..10, 5..=15
 - `tag`   
   - :quick :skip
   - Polymorphic enumerations, i.e. don't need to be part of a type. 
@@ -162,6 +164,19 @@ std.testing.assert(num == 3)
 let arr = [|1, 2, 3|]
 let num = arr[1]
 std.testing.assert(num == 2)
+```
+
+- `Tuple`  
+Tuples can be indexed, or destructured using pattern matching. The $len() function can be used to assess the length of a tuple
+```elixir
+let pos = {10, 15}
+
+std.testing.assert($len(pos) == 2)
+
+let {x, y} = {pos[0], pos[1]}
+let x, y = pos # The lhs braces are not required
+
+std.testing.assert(x == 10 && y == 15)
 ```
 
 - `List`
@@ -189,18 +204,20 @@ let carbon_mass = atomic_mass[:carbon]
 std.testing.assert(carbon_mass == 15.999) # For floats == only compares the whole number
 ```
 
-- `Tuple`  
-
-Tuples can be indexed, or destructured using pattern matching. The $len() function can be used to assess the length of a tuple
+## String interpolation
 ```elixir
-let pos = {10, 15}
+let fname = "foo"
+let lname = "bar"
 
-std.testing.assert($len(pos) == 2)
+let name = "#{foo} #{bar}"
+```
 
-let {x, y} = {pos[0], pos[1]}
-let x, y = pos # The lhs braces are not required
+## String concatenation
+```elixir
+let fname = "foo"
+let lname = "bar"
 
-std.testing.assert(x == 10 && y == 15)
+let name = foo + " " + bar
 ```
 
 ## Blocks

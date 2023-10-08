@@ -15,5 +15,7 @@
 - Shared Functionality with Interfaces called Behaviours
 - Compile Time Execution
 - Pattern Matching
-- GC by Default with the option to manage memory manually using allocators, and to stack allocate memory, as desired
+- Automatic memory management by default
+  - Variables will be stack or GC allocated based on usage and type specification
+- Can disable GC and manually manage heap memory with allocators
 - References for when safety is a priority, Pointers for when it's not
