@@ -444,6 +444,16 @@ When files are imported, they are stored as modules.
 const std = $import("std")
 ```
 
+## Signals
+Channels
+```elixir
+```
+
+## Strands
+Green threads
+```elixir
+```
+
 ## More on functions
 ```elixir
 # Functions can return multiple data types.
