@@ -226,18 +226,22 @@ Single-line blocks are written using do:
 do: let x = 83
 ```
 
-Multi-line blocks are enclosed using braces: {} 
+Multi-line blocks are enclosed using braces: {} or do end
 ```elixir
 {
   let x = 83
 }
+
+do
+  let x = 75
+end
 ```
 
 ## Conditionals
 ```elixir
-if condition {
+if (condition) {
 
-} else if another_condition {
+} else if (another_condition) {
 
 } else {
 
@@ -247,11 +251,11 @@ if condition {
 ## Loops
 `Ruka` has two looping constructs, range-based for loops, and while loops.
 ```elixir
-for iterable |i| {
+for (iterable) |i| {
 
 }
 
-while condition {
+while (condition) {
 
 }
 ```
@@ -500,7 +504,7 @@ std.testing.assert(result.quo == 2)
 # The arguments are packaged together into a tuple, which can then be indexed
 const variadic = (...args) {
   let size = $len(args)
-  for 0..size |i| {
+  for (0..size) |i| {
     std.fmt.printf("{} ", args[i])
   }
 }
