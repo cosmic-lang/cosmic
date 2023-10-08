@@ -55,8 +55,6 @@ let (
 ```
 
 By default, bindings are allocated by the GC or stack allocated, depending on usage
-```
-
 ## Type specification basics
 
 When declaring bindings, types are usually inferred based on later usage of the binding, 
