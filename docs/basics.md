@@ -576,11 +576,10 @@ const t = int
 let Pos = Vector(t) # This cannot be used in compile time expressions 
                      #   because it is executed at runtime
 # Or compile time:
-let Pos = @Vector(t) # This can no longer be used in later compile time expressions
-const Pos = @Vector(t) # This can still be used in later compile time expressions
+let Pos = @Vector(t) # This can be used in later compile time expressions as long as it is not assigned to again
+const Pos = @Vector(t) # This can be used in later compile time expressions
 
-# Blocks can also be compile time
-# Blocks can be specified with {...} or {...}
+# Blocks can also be run at compile time
 const screen_size = @ {
   return {1920, 1080}
 }
