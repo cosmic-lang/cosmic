@@ -590,14 +590,14 @@ Modules are first class in `Ruka`, so they can be passed into and out of functio
 # To create a generic ds with methods, you must return a struct with static bindings
 const List = (@type: typeid): moduleid {
   return module{
-    const t = struct{
+    const Node = struct{
+      next: &Self,
+      data: type
+    }
+    
+    pub const t = struct{
       head: &Node,
       size: uint
-    }
-
-    const Node = struct{
-      next: &Node,
-      data: type
     }
 
     const insert<uni &t> = (value: type) {...}
