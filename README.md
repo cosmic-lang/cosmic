@@ -14,5 +14,6 @@
 - First Class Functions and Modules
 - Shared Behaviour with Interfaces called Behaviours
 - Compile Time Execution
-- GC by Default with the optional to manage memory manually using allocators, and stack allocate memory
+- Pattern Matching
+- GC by Default with the option to manage memory manually using allocators, and stack allocate memory as desired
 - Raw pointers for when safety is not a priority, References for when it is
