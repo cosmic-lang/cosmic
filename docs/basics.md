@@ -356,7 +356,7 @@ const Other = struct{
 }
 
 let pos = .{x: 12, y: 13} # .{} is the syntax to create anonymous struct instances, type will be inferred
-let pos = Pos{x: 12, y: 13}
+let pos = Pos{x: 12, y: 13} # Can also specify name of struct
 # Functional updates, creates a copy of pos, with y changed to 11
 let pos2 = .{...pos, y: 11}
 
@@ -423,6 +423,19 @@ const Constants = module{
 
 let area = Constants.PI * (radius ** 2)
 ```
+Modules can be extended using functional updates
+```elixir
+const Constants = module{
+  const PI = 3.14
+}
+
+const MoreConstants = module{
+  ...Constants
+  const TwoPi = Constants.PI * 2
+  const Avogadros = 6.022e-23
+}
+```
+
 ## Pattern Matching
 ```elixir
 const Result = enum{
