@@ -328,8 +328,6 @@ All structs are anonymous. Members can be accessed with the `.` operator. Member
 ```elixir
 # Struct definitions only contain data members, methods are added separately
 const Pos = struct{ # struct{} is the syntax to create anonymous struct type
-  const default = {0, 0} # Structs may contain static values which can go before
-                         # or after the member list
   x: int, 
   y: int
 }
@@ -354,7 +352,7 @@ std.testing.assert(x == 12 && y == 13 && z == 12)
 
 - `Enum`  
 
-Tagged unions, if a tag is not given a type, it is given void. A integer type must be provided which is the type used for the tags behind the scenes
+Tagged unions, anonymous. If a tag is not given a type, it is given void. A integer type must be provided which is the type used for the tags behind the scenes
 ```elixir
 let t = int
 let e = string
@@ -398,6 +396,16 @@ const read_health<p: &Player> = (health: int) do: ...
 # Receiver types can be normal types, pointer types, reference types, and compile time types
 ```
 
+## Modules
+In `Ruka`, modules are collections of bindings. Bindings can be let or const.
+All modules are anonymous, named modules are made by storing modules in bindings
+```elixir
+const Constants = module{
+  const PI = 3.14
+}
+
+let area = Constants.PI * (radius ** 2)
+```
 ## Pattern Matching
 ```elixir
 const Result = enum{
@@ -419,7 +427,7 @@ match x {
 ```
 
 ## File imports
-When files are imported, they are stored as structs.
+When files are imported, they are stored as modules.
 ```elixir
 const std = $import("std")
 ```
@@ -565,9 +573,12 @@ const screen_size = @ {
   return {1920, 1080}
 }
 
+## First Class Modules
+Modules are first class in `Ruka`, so they can be passed into and out of functions
+```elxir
 # To create a generic ds with methods, you must return a struct with static bindings
-const List = (@type: typeid): typeid {
-  return struct{
+const List = (@type: typeid): moduleid {
+  return module{
     const t = struct{
       head: &Node,
       size: uint
