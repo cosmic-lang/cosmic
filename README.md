@@ -10,8 +10,7 @@
 # Features
 - Strong Static Typing
 - Type Inference
-- Types and Errors as Values
-- First Class Functions and Modules
+- First Class Types, Errors, Functions, and Modules
 - Shared Functionality with Interfaces called Behaviours
 - Compile Time Execution
 - Pattern Matching
