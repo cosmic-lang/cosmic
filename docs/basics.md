@@ -448,11 +448,18 @@ const std = $import("std")
 ## Signals
 Channels
 ```elixir
+# name: &string, update_name: .{...}
+let name, update_name = $signal(string)
 ```
 
-## Strands
+## Strings
 Green threads
 ```elixir
+let sid = $spawn(() {
+  # Some code
+})
+defer sid.join()
+
 ```
 
 ## More on functions
