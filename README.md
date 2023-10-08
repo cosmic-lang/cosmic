@@ -17,5 +17,5 @@
 - Pattern Matching
 - Automatic memory management by default
   - Variables will be stack or GC allocated based on usage and type specification
-- Can disable GC and manually manage heap memory with allocators
+- Can manually manage heap memory with allocators, and can disable GC entirely
 - References for when safety is a priority, Pointers for when it's not
