@@ -8,13 +8,17 @@
 `Ruka` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 
 # Features
-- Strong Static Typing
-- Type Inference
-- First Class Types, Errors, Functions, and Modules
-- Shared Functionality with Interfaces called Behaviours
-- Compile Time Execution
-- Pattern Matching
+- Strong static typing
+- Type inference
+- First class Types, Errors, Functions, and Modules
+- Shared functionality with interfaces called Behaviours
+- Pattern matching
+- Metaprogramming with compile time execution
+- Type reflection
 - Automatic memory management by default
   - Variables will be stack or GC allocated based on usage and type specification
-- Can manually manage heap memory with allocators, and can disable GC entirely
+  - Can manually manage heap memory with allocators
+- Per project langauge customization
+  - Disable GC
+  - Type inference customization
 - References for when safety is a priority, Pointers for when it's not
