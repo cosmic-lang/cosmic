@@ -299,7 +299,7 @@ cannot be mutated, unless they are passed in the unique or exclusive modes
   - `uni` unique mode, ownership of reference is moved into function
   - `exc` exclusive mode, only one active reference to value so safe to mutate
 - All types
-  - `meta` or `@` meta mode
+  - `comp` or `@` compile time mode
 ```elixir
 let x, y = 12, 11
 
@@ -568,12 +568,12 @@ let player = Player{} # If field values are not provided they will be set to the
 system(&player)
 ```
 
-## Meta Expressions
-Metaporgramming in `Ruka` is done using meta expressions, which is just `Ruka` code executed at compule time
+## Compile Time Expressions
+Metaprogramming in `Ruka` is done using compile time expressions, which is just `Ruka` code executed at compile time
 
-The return of meta expressions can be stored in let, but they will no longer be usable in later meta expressions
+The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
 ```elixir
-# `@` or `meta` preceeding a identifier states that this parameter must be known at compile time
+# `@` or `comp` preceeding a identifier states that this parameter must be known at compile time
 const Vector = (@t: typeid): typeid {
   return struct{
     x: t,
@@ -586,8 +586,8 @@ const t = int
 let Pos = Vector(t) # This cannot be used in meta expressions 
                      #   because it is executed at runtime
 # Or compile time:
-let Pos = meta Vector(t) # This can be used in later meta expressions as long as it is not assigned to again
-const Pos = @Vector(t) # This can be used in later meta expressions
+let Pos = comp Vector(t) # This can be used in later compile time expressions as long as it is not assigned to again
+const Pos = @Vector(t) # This can be used in later compile time expressions
 
 # Blocks can also be run at compile time
 const screen_size = @{
@@ -628,7 +628,7 @@ intList.insert(12)
   - /   : Namespace
   - ()  : Function Call 
   - &   : Reference/Address 
-  - @   : Meta Expression 
+  - @   : Compile Time Expression 
   - *   : Dereference 
   - $   : Built in function
 - Arithmetic Operators          - Wrapping - Saturating
