@@ -13,19 +13,17 @@ Bindings in `Ruka` follow the form of:
 with the parts surrounded by [] being optional.  
 
 ## Binding Declaration and Initialization
-There are three kinds of bindings:
+There are two kinds of bindings:
 
 - `const`  
 ```elixir
-# Constants can only be assigned to at compile time
-# and so must be a literal or result of a compile time
-# expression and must be initialized when declared.
+# Constants must be assign a value when declared, and cannot be reassigned
 const msg = "Hello, world!"
 ```
 
 - `let`  
 ```elixir
-# A runtime variable
+# A variable
 let year = 2023
 year = 2024
 ```
@@ -48,10 +46,10 @@ while (boolean := someFunc()) { # Will loop until someFunc returns false
 
 Bindings of the same type can be grouped together.
 ``` elixir
-# Var and let bindings still don't need to be initialized right away
+# let bindings still don't need to be initialized right away
 let (
   x = 72,
-  y = 12
+  y
 )
 
 ```
