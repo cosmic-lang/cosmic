@@ -41,7 +41,7 @@ Assignment in `Ruka` can also be done as an expression using ":=", which returns
 ```elixir
 let boolean = false
 # Assignment expression
-while boolean := someFunc() { # Will loop until someFunc returns false 
+while (boolean := someFunc()) { # Will loop until someFunc returns false 
   std.fmt.printf("{}", boolean)
 }
 ```
@@ -56,12 +56,7 @@ let (
 
 ```
 
-By default, bindings are allocated by the GC or stack allocated, depending on type usage.
-```elixir
-# This will be GC allocated
-let x = 12 # &int
-# This will be stack allocated
-let x: int = 12
+By default, bindings are allocated by the GC or stack allocated, depending on usage
 ```
 
 ## Type specification basics
@@ -75,10 +70,8 @@ but types can be specified if desired.
 
 If the binding is not initialized,
 then a type specification must be added.
-Again, by default bindings are allocated by the GC, therefore values are normally & types.
 ```elixir
   let x = 83
-  let x: &int = 83
 
   let name: string
 ```
@@ -89,23 +82,9 @@ In `Ruka` memory is GC/stack allocated by default. Memory can be allocated manua
   - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
 ```elixir
 let name: int = 12 # Stack allocated, will be freed at the end of scope
-let name: &int = 12 # GC allocated, will be freed after the reference goes out of scope
 
 let names: *[5]string = std.allocator.new([5]string) # Allocates an array and returns a pointer to it
 defer std.allocator.free(names) # Manual memory must be freed
-```
-
-Important note here. GC values are stored as reference, but are dereferenced automatically, so
-if a function expects a reference, it still must be passed with & which prevents the dereferencing.
-```elixir
-let name: &string = "hello" 
-
-const greet = (name: &string) {...}
-greet(name) # Error, type mismatch: &string expected, string received
-greet(&name) # Value is borrowed
-
-const greet2 = (name: string) {...}
-greet2(name) # Value is copied
 ```
 
 ## Basic Primitive Types
@@ -226,18 +205,24 @@ Single-line blocks are written using do:
 do: let x = 83
 ```
 
-Multi-line blocks are enclosed using braces: {} 
+Multi-line blocks are enclosed using braces: {} or do end
 ```elixir
 {
   let x = 83
 }
+
+do
+  let x = 75
+end
 ```
 
 ## Conditionals
 ```elixir
-if condition {
+if (condition) {
 
-} else if another_condition {
+} else if (another_condition) {
+
+} else if let pattern {
 
 } else {
 
@@ -247,19 +232,17 @@ if condition {
 ## Loops
 `Ruka` has two looping constructs, range-based for loops, and while loops.
 ```elixir
-for iterable |i| {
+for (iterable) |i| {
 
 }
 
-while condition {
+while (condition) {
 
 }
 ```
 
 ## Function Basics
-All functions in `Ruka` are anonymous, so function definition involves storing a function literal in a binding.
-Important note, functions are not closures therefore they can only access their parameters or any locally defined
-variables.
+All functions in `Ruka` are anonymous closures, so function definition involves storing a function literal in a binding.
 
 Anonymous function creation follows the form of:
 <pre>
@@ -311,12 +294,13 @@ const add_three = (x, y, z: int): int do: return x + y + z
 ## Modes
 Parameters can have constraints on them, called modes. Reference types can only be mutated
 in the scope they are defined in. Values passed to functions by reference
-cannot be mutated, unless they are passed in the unique or exclusive modes
+cannot be mutated, unless they are passed in the unique or exclusive modes. This
+may be able to be relaxed, so all values behind references can be modified
 - Reference types
   - `uni` unique mode, ownership of reference is moved into function
   - `exc` exclusive mode, only one active reference to value so safe to mutate
 - All types
-  - `@` compile time mode
+  - `comp` or `@` compile time mode
 ```elixir
 let x, y = 12, 11
 
@@ -356,7 +340,7 @@ const Other = struct{
 }
 
 let pos = .{x: 12, y: 13} # .{} is the syntax to create anonymous struct instances, type will be inferred
-let pos = Pos{x: 12, y: 13}
+let pos = Pos{x: 12, y: 13} # Can also specify name of struct
 # Functional updates, creates a copy of pos, with y changed to 11
 let pos2 = .{...pos, y: 11}
 
@@ -423,6 +407,19 @@ const Constants = module{
 
 let area = Constants.PI * (radius ** 2)
 ```
+Modules can be extended using functional updates
+```elixir
+const Constants = module{
+  const PI = 3.14
+}
+
+const MoreConstants = module{
+  ...Constants
+  const TwoPi = Constants.PI * 2
+  const Avogadros = 6.022e-23
+}
+```
+
 ## Pattern Matching
 ```elixir
 const Result = enum{
@@ -446,6 +443,16 @@ match x {
 When files are imported, they are stored as modules.
 ```elixir
 const std = $import("std")
+```
+
+## Signals
+Channels
+```elixir
+```
+
+## Strands
+Green threads
+```elixir
 ```
 
 ## More on functions
@@ -487,7 +494,7 @@ std.testing.assert(result.quo == 2)
 # The arguments are packaged together into a tuple, which can then be indexed
 const variadic = (...args) {
   let size = $len(args)
-  for 0..size |i| {
+  for (0..size) |i| {
     std.fmt.printf("{} ", args[i])
   }
 }
@@ -562,12 +569,12 @@ let player = Player{} # If field values are not provided they will be set to the
 system(&player)
 ```
 
-## Compile Time
-`Ruka` can run code at compile time instead of run time.
+## Compile Time Expressions
+Metaprogramming in `Ruka` is done using compile time expressions, which is just `Ruka` code executed at compile time
 
-The return of compile time expressions can be stored in let, but they will no longer be usable in later compile time expressions
+The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
 ```elixir
-# @ preceeding a identifier states that this parameter must be known at compile time
+# `@` or `comp` preceeding a identifier states that this parameter must be known at compile time
 const Vector = (@t: typeid): typeid {
   return struct{
     x: t,
@@ -577,32 +584,31 @@ const Vector = (@t: typeid): typeid {
 
 const t = int
 # The function :Vector could be called at runtime:
-let Pos = Vector(t) # This cannot be used in compile time expressions 
+let Pos = Vector(t) # This cannot be used in meta expressions 
                      #   because it is executed at runtime
 # Or compile time:
-let Pos = @Vector(t) # This can no longer be used in later compile time expressions
-const Pos = @Vector(t) # This can still be used in later compile time expressions
+let Pos = comp Vector(t) # This can be used in later compile time expressions as long as it is not assigned to again
+const Pos = @Vector(t) # This can be used in later compile time expressions
 
-# Blocks can also be compile time
-# Blocks can be specified with {...} or {...}
-const screen_size = @ {
+# Blocks can also be run at compile time
+const screen_size = @{
   return {1920, 1080}
 }
-
+```
 ## First Class Modules
 Modules are first class in `Ruka`, so they can be passed into and out of functions
-```elxir
+```elixir
 # To create a generic ds with methods, you must return a struct with static bindings
 const List = (@type: typeid): moduleid {
   return module{
-    const t = struct{
+    const Node = struct{
+      next: &Self,
+      data: type
+    }
+    
+    pub const t = struct{
       head: &Node,
       size: uint
-    }
-
-    const Node = struct{
-      next: &Node,
-      data: type
     }
 
     const insert<uni &t> = (value: type) {...}
