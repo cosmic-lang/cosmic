@@ -41,7 +41,7 @@ Assignment in `Ruka` can also be done as an expression using ":=", which returns
 ```elixir
 let boolean = false
 # Assignment expression
-while boolean := someFunc() { # Will loop until someFunc returns false 
+while (boolean := someFunc()) { # Will loop until someFunc returns false 
   std.fmt.printf("{}", boolean)
 }
 ```
@@ -56,12 +56,7 @@ let (
 
 ```
 
-By default, bindings are allocated by the GC or stack allocated, depending on type usage.
-```elixir
-# This will be GC allocated
-let x = 12 # &int
-# This will be stack allocated
-let x: int = 12
+By default, bindings are allocated by the GC or stack allocated, depending on usage
 ```
 
 ## Type specification basics
@@ -75,10 +70,8 @@ but types can be specified if desired.
 
 If the binding is not initialized,
 then a type specification must be added.
-Again, by default bindings are allocated by the GC, therefore values are normally & types.
 ```elixir
   let x = 83
-  let x: &int = 83
 
   let name: string
 ```
@@ -89,23 +82,9 @@ In `Ruka` memory is GC/stack allocated by default. Memory can be allocated manua
   - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
 ```elixir
 let name: int = 12 # Stack allocated, will be freed at the end of scope
-let name: &int = 12 # GC allocated, will be freed after the reference goes out of scope
 
 let names: *[5]string = std.allocator.new([5]string) # Allocates an array and returns a pointer to it
 defer std.allocator.free(names) # Manual memory must be freed
-```
-
-Important note here. GC values are stored as reference, but are dereferenced automatically, so
-if a function expects a reference, it still must be passed with & which prevents the dereferencing.
-```elixir
-let name: &string = "hello" 
-
-const greet = (name: &string) {...}
-greet(name) # Error, type mismatch: &string expected, string received
-greet(&name) # Value is borrowed
-
-const greet2 = (name: string) {...}
-greet2(name) # Value is copied
 ```
 
 ## Basic Primitive Types
