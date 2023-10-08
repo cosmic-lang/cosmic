@@ -29,6 +29,7 @@ pub const Token = union(enum) {
   if_cond,
   if_else,
   else_cond,
+  as,
   // Assignment
   assign,
   assign_exp,
