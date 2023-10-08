@@ -218,7 +218,7 @@ if (condition) {
 
 } else if (another_condition) {
 
-} else if let pattern {
+} else if let pattern = value {
 
 } else {
 
