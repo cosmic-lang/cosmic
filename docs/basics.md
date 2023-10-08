@@ -116,15 +116,15 @@ greet2(name) # Value is copied/Passed by value
 ## Basic Primitive Types
 Here is a list of `Ruka`'s primitive types:
 - `int`    
-  - 12, architecture dep}ent size
+  - 12, architecture dependent size
 - `i#`     
   - \# bit signed integer i.e. i16
 - `uint` 
-  - 12, architecture dep}ent size
+  - 12, architecture dependent size
 - `u#`     
   - \# bit unsigned integer i.e. u8
 - `float`  
-  - 12.2, architecture dep}ent size
+  - 12.2, architecture dependent size
 - `f#`     
   - \# bit float i.e. f32
 - `byte`   
@@ -264,6 +264,12 @@ values must be returned explicitly
 
 A multi line body.
 ```elixir
+const add = (x, y) do
+  return x + y
+end
+
+or
+
 const add = (x, y) {
   return x + y
 }
@@ -386,8 +392,8 @@ const Player = struct{
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-const set_pos(exc p: &Player) = (pos: {f32, f32}) do: ...
-const read_health(p: &Player) = (health: int) do: ...
+const set_pos<exc p: &Player> = (pos: {f32, f32}) do: ...
+const read_health<p: &Player> = (health: int) do: ...
 
 # Receiver types can be normal types, pointer types, reference types, and compile time types
 ```
@@ -471,7 +477,7 @@ const sort = (slice: []i32, pred: fn (i32, i32) -> bool) {
 
 const arr = [41, 22, 31, 84, 75]
 # The types of the anonymous function passed will be inferred
-sort(arr[..], (lhs, rhs) {: lhs > rhs)
+sort(arr[..], (lhs, rhs) do: lhs > rhs)
 
 ```
 
@@ -508,8 +514,8 @@ Behaviours cannot specify data members, only methods
 const Entity = behaviour{
   # Method types have restrictions on the receiver type, which goes after fn
   # Both of these methods require receivers to be exc& (a exclusive mode reference)
-  update_pos: fn (exc&)({f32, f32}) -> (),
-  update_health: fn (exc&)(int) -> () 
+  update_pos: fn <exc&>({f32, f32}) -> void,
+  update_health: fn <exc&>(int) -> void
 }
 
 const system = (exc entity: &Entity, ...) do: ...
@@ -524,8 +530,8 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   identifiers, parameter types, and return types
-const update_pos(exc p: &Player) = (pos: {f32, f32}) do: ...
-const update_health(exc p: &Player) = (health: int) do: ...
+const update_pos<exc p: &Player> = (pos: {f32, f32}) do: ...
+const update_health<exc p: &Player> = (health: int) do: ...
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -572,7 +578,7 @@ const List = (@type: typeid): typeid {
       data: type
     }
 
-    const insert(uni &t) = (value: type) {...}
+    const insert<uni &t> = (value: type) {...}
   }
 }
 
@@ -592,6 +598,7 @@ intList.insert(12)
   - &   : Reference/Address 
   - @   : Compile Time Expression 
   - *   : Dereference 
+  - $   : Built in function
 - Arithmetic Operators          - Wrapping - Saturating
   - +   : Addition                - +%      - +|
   - -   : Subtraction             - -%      - -|
@@ -616,12 +623,12 @@ intList.insert(12)
 - Bitwise Operators
   - &   : Bitwise AND
   - |   : Bitwise OR
-  - ^  : Bitwise XOR
+  - ^   : Bitwise XOR
   - ~   : Bitwise Negation
 - Type Symbols
   - type | type     : Union
   - !type           : Type or error
-  - ?type           : Type or void
+  - ?type           : Type or null
   - *type           : Pointer
   - &type           : Let Reference
   - []type          : Slice, which is a reference and a length
@@ -631,6 +638,6 @@ intList.insert(12)
   - {type, ...}     : Tuple
   - list(type)      : List
   - range(type)     : Range, type must be integer types or byte
-  - fn (params) -> return      : Function
-  - fn (rec)(params) -> return : Method
+  - fn () -> ()     : Function
+  - fn <>() -> ()   : Method
 </pre>

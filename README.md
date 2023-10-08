@@ -48,8 +48,8 @@ const Result = enum{
 }
 
 # The receiver follows the method identifier,
-# and is specified as a name and type surrounded by parenthesis
-const unwrap(r: &Result) = (): int {
+# and is specified as a name and type surrounded by <>
+const unwrap<r: &Result> = (): int {
   return match r {
     | .Ok(value) do: value,
     | .Err(msg) { 
@@ -73,8 +73,8 @@ let value = someResult.unwrap()
 In `Ruka` you use `Go` style interfaces, called `behaviours`, when you want shared functionality between types.
 ```elixir
 const MMIODevice = behaviour{
-  read: fn (&)(address: u32) -> u8,
-  write: fn (exc&)(address: u32, value: u8) -> ()
+  read: fn <&>(address: u32) -> u8,
+  write: fn <exc&>(address: u32, value: u8) -> ()
 }
 ```
 
@@ -86,11 +86,11 @@ const Ram = struct{
 }
 
 # After these two function definitons, Ram implements MMIODevice
-const read(r: &Ram) = (address: u32): u8 {
+const read<r: &Ram> = (address: u32): u8 {
   return r.memory[address]
 }
 
-const write(exc r: &Ram) = (address: u32, value: u32) {
+const write<exc r: &Ram> = (address: u32, value: u32) {
   r.memory[address] = value
 }
 ```

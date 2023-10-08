@@ -18,6 +18,7 @@ pub const Token = union(enum) {
   behaviour,
   true,
   false,
+  do_line,
   do,
   end,
   for_loop,
@@ -66,6 +67,9 @@ pub const Token = union(enum) {
   asterisk,
   slash,
   percent,
+  increment,
+  decrement,
+  power,
   // Bitwise Operators
   ampersand,
   pipe,
