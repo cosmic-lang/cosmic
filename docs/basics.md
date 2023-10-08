@@ -380,23 +380,6 @@ if let .ok(z) = x {
 }
 ```
 
-## Methods and Receivers
-
-Types can be given methods using receivers
-```elixir
-const Player = struct{
-  pos: {f32, f32},
-  health: int
-}
-
-# Methods for types are declared by specifying a reciever after the indentifier
-# This can be used to add functionality to primitive types
-const set_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
-const read_health<p: &Player> = (health: int) do: # code
-
-# Receiver types can be normal types, pointer types, reference types, and compile time types
-```
-
 ## Modules
 In `Ruka`, modules are collections of bindings. Bindings can be let or const.
 All modules are anonymous, named modules are made by storing modules in bindings
@@ -418,6 +401,54 @@ const MoreConstants = module{
   const TwoPi = Constants.PI * 2
   const Avogadros = 6.022e-23
 }
+```
+## Circuits
+`Ruka` has an extension called `Silver`, which integrates HDL into the language for simple FPGA development.
+
+Refer to `Silver` for details
+```elixir
+# Hardware circuit instantiation must be done at compile time
+# Ports will connect to mmio
+# The returned structure contains functions to interact w/ hardware through the mmio
+
+# This creates a circuit type
+const AndGate = circuit{ 
+  port (
+    x: in, u1
+    y: in, u1
+    z: out, u1
+  )
+  
+  arch (
+    z = x & y
+  )
+}
+
+let and = @AndGate{} # This creates an instance of AndGate, 
+                     # which must be done at compile time
+
+and.put(x: 1, y: 1)
+
+let result = and.get(:z) # Output ports are setup with signals,
+                         # so reading from a output port blocks 
+                         # execution until the signal is high
+```
+
+## Methods and Receivers
+
+Types can be given methods using receivers
+```elixir
+const Player = struct{
+  pos: {f32, f32},
+  health: int
+}
+
+# Methods for types are declared by specifying a reciever after the indentifier
+# This can be used to add functionality to primitive types
+const set_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
+const read_health<p: &Player> = (health: int) do: # code
+
+# Receiver types can be normal types, pointer types, reference types, and compile time types
 ```
 
 ## Pattern Matching

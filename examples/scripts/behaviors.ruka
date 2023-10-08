@@ -42,7 +42,7 @@ const read_pos<e: &Enemy> = () {
   e.pos
 }
 
-# Instanciating enemy and player
+# Instantiating enemy and player
 let (
   player = Player{}
   enemy = Enemy{}
