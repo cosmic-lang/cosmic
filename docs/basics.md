@@ -473,7 +473,7 @@ const std = $import("std")
 ```
 
 ## Signals
-Channels
+Reactivity
 ```elixir
 # name: &string, update_name: .{...}
 let name, update_name = $signal(string)
