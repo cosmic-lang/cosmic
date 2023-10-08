@@ -24,3 +24,6 @@ A general purpose, statically typed, programming language.
   - Disable GC
   - Type inference customization
 - References for when safety is a priority, Pointers for when it's not
+
+# Stretch Goal: Silver
+`Ruka` has an extension called `Silver`, which integrated `Ruka` and HDL for simple FPGA development
