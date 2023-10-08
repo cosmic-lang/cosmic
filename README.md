@@ -16,7 +16,7 @@ A general purpose, statically typed, programming language.
 - Metaprogramming with compile time execution
 - Type reflection
 - Automatic memory management by default
-  - Variables will be stack or GC allocated based on usage and type specification
+  - Variables are stack or GC allocated based on usage
   - Can manually manage heap memory with allocators
 - Per project langauge customization
   - Disable GC
