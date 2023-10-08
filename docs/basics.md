@@ -48,7 +48,7 @@ Bindings of the same type can be grouped together.
 ``` elixir
 # let bindings still don't need to be initialized right away
 let (
-  x = 72,
+  x = 72
   y
 )
 
@@ -122,6 +122,7 @@ Here is a list of `Ruka`'s primitive types:
   - Also used for identifiers, when used for identifiers the ":" can be ommited.
   - When used for map keys, the ":" is moved to the rhs
   - When types are specified for bindings, the ":" is moved to the rhs
+- `anytype`
 
 ## Primitive Data Collections
 `Ruka` has a few primitive data collections for you to use:
@@ -410,9 +411,9 @@ Refer to `Silver` for details
 # This creates a circuit type
 const AndGate = circuit{ 
   port (
-    x: in, u1
-    y: in, u1
-    z: out, u1
+    x(in: u1)
+    y(in: u1)
+    z(out: u1)
   )
   
   arch (
