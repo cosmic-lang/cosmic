@@ -18,11 +18,11 @@ A general purpose, statically typed, programming language.
 - Green threads called `Strings`
 - Reactivity with `Signals`
 - Automatic memory management by default
-  - Variables are stack or GC allocated based on usage
-  - Can manually manage heap memory with allocators
+    - Variables are stack or GC allocated based on usage
+    - Can manually manage heap memory with allocators
 - Per project language customization
-  - Disable GC
-  - Type inference customization
+    - Disable GC
+    - Type inference customization
 - References for when safety is a priority, Pointers for when it's not
 
 # Stretch Goal: Silver
@@ -31,35 +31,34 @@ A general purpose, statically typed, programming language.
 # Example: Linked List
 ```elixir
 const List = (@type: typeid): moduleid do
-  return module {
-    const node = struct {
-      next: ?Self,
-      data: type
-    }
-
-    pub const t = struct {
-      head: ?node,
-      size: uint
-    }
-
-    def insert<exc l: &t> = (value: type) {
-      if (l.size == 0) {
-        l.head = node{
-          next: null,
-          data: value
+    return module {
+        const node = struct {
+            next: ?Self,
+            data: type
         }
-      } else {
-        let tmp = l.head
 
-        l.head = node{
-          next: tmp,
-          data: value
+        pub const t = struct {
+            head: ?node,
+            size: uint
         }
-      }
 
-      l.size++ 
+        def insert<exc l: &t> = (value: type) {
+            if (l.size == 0) {
+                l.head = node{
+                    next: null,
+                    data: value
+                }
+            } else {
+                let tmp = l.head
+
+                l.head = node{
+                    next: tmp,
+                    data: value
+                }
+            }
+            l.size++ 
+        }
     }
-  }
 end
 
 let names = List(string).t{}
