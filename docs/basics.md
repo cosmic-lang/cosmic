@@ -434,6 +434,28 @@ match x {
 
 ## Error Handling
 ```elixir
+# Returns a union (void | error)
+const func1 = (): !void {
+
+}
+
+# Will throw exception if error
+let v: void = func1() as void
+# If error, returns error from current function
+let v: void = func1()?
+
+# Returns a union (int | null)
+const func2 = (): ?int {
+
+}
+
+# Will throw exception if null
+let i: int = func2() as int
+# If null, returns error from current function
+let i: int = func2()? 
+# Null and false is treated as false, everything else is treated as true
+# Can give a default value if return is null with |
+let i: int = func2() | 12 
 ```
 
 ## File imports
