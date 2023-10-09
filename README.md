@@ -27,3 +27,44 @@ A general purpose, statically typed, programming language.
 
 # Stretch Goal: Silver
 `Ruka` has an extension called `Silver`, which integrated `Ruka` and HDL for simple FPGA development
+
+# Example
+```elixir
+const List = (@type: typeid): moduleid do
+  return module {
+    const node = struct {
+      next: ?Self,
+      data: type
+    }
+
+    pub const t = struct {
+      head: ?node,
+      size: uint
+    }
+
+    def insert<exc l: &t> = (value: type) {
+      if (l.size == 0) {
+        l.head = node{
+          next: null,
+          data: value
+        }
+      } else {
+        let tmp = l.head
+
+        l.head = node{
+          next: tmp,
+          data: value
+        }
+      }
+
+      l.size++ 
+    }
+  }
+end
+
+let names = List(string).t{}
+
+names.insert("foo")
+names.insert("bar")
+names.insert("foobar")
+```
