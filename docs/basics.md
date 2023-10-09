@@ -296,7 +296,7 @@ in the scope they are defined in. Values passed to functions by reference
 cannot be mutated, unless they are passed in the unique or exclusive modes. This
 may be able to be relaxed, so all values behind references can be modified
 - Reference types
-  - `loc` local mode
+  - `loc` local mode, reference cannot escape scope
   - `uni` unique mode, ownership of reference is moved into function
   - `exc` exclusive mode, only one active reference to value so safe to mutate
 - All types
