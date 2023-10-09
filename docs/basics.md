@@ -110,6 +110,7 @@ Here is a list of `Ruka`'s primitive types:
   - true, false
 - `void` 
   - also (), represents nothing.
+- `null`
 - `typeid` 
   - i32, int, char, MyStructure. Types are values in `Ruka`
 - `moduleid`
@@ -721,8 +722,8 @@ intList.insert(12)
   - ~   : Bitwise Negation
 - Type Symbols
   - type | type     : Union
-  - !type           : Type or error
-  - ?type           : Type or null
+  - !type           : type | error
+  - ?type           : type | null
   - *type           : Pointer
   - &type           : Borrowed/Reference Type
   - []type          : Slice, which is a reference and a length
