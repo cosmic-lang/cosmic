@@ -8,7 +8,7 @@
 ## Bindings
 Bindings in `Ruka` follow the form of:  
 <pre>
-  kind ident [: type] [= expression];
+  kind tag [: type] [= expression];
 </pre>
 with the parts surrounded by [] being optional.  
 
@@ -61,7 +61,7 @@ When declaring bindings, types are usually inferred based on later usage of the 
 but types can be specified if desired.
 
 <pre>
-  kind ident [: type] [= expression];
+  kind tag [: type] [= expression];
 </pre>
 
 If the binding is not initialized,
@@ -114,12 +114,13 @@ Here is a list of `Ruka`'s primitive types:
   - i32, int, char, MyStructure. Types are values in `Ruka`
 - `moduleid`
   - Namespaces
+- `error`
 - `range` 
   - 0..10, 5..=15
 - `tag`   
   - :quick :skip
   - Polymorphic enumerations, i.e. don't need to be part of a type. 
-  - Also used for identifiers, when used for identifiers the ":" can be ommited.
+  - Also used for tagifiers, when used for identifiers the ":" can be ommited.
   - When used for map keys, the ":" is moved to the rhs
   - When types are specified for bindings, the ":" is moved to the rhs
 - `anytype`
@@ -249,7 +250,7 @@ the body is a block
 
 Function definition follows the form of:
 <pre>
-  kind ident [: type] = anonymous fn;
+  kind tag [: type] = anonymous fn;
 </pre>
 
 A single-line body function
@@ -434,15 +435,17 @@ match x {
 
 ## Error Handling
 ```elixir
-# Returns a union (void | error)
-const func1 = (): !void {
-
+# Returns a union (string | error)
+const func1 = (): !string {
+  if (...) {
+    return error.someError
+  }
 }
 
 # Will throw exception if error
-let v: void = func1() as void
+let s: string = func1() as string
 # If error, returns error from current function
-let v: void = func1()?
+let s: string = func1()!
 
 # Returns a union (int | null)
 const func2 = (): ?int {
@@ -519,7 +522,7 @@ let result = and.get(:z) # Output ports are setup with signals,
 # Functions can return multiple data types.
 # Functions can return multiple pieces of data, 
 #   but they must be assigned to multiple bindings when called.
-# Return values can be given identifiers to declare bindings to use for returning, 
+# Return values can be given tagifiers to declare bindings to use for returning, 
 # allowing for naked returns
 const div = (x, y: int): (quo, rem: int) {
   quo = x / y
@@ -549,7 +552,7 @@ const div = (x, y: int): struct{quo, rem: int} {
 let result = div(12, 5)
 std.testing.assert(result.quo == 2)
 
-# Functions can take variadic arguments using ...ident syntax.
+# Functions can take variadic arguments using ...tag syntax.
 # The arguments are packaged together into a tuple, which can then be indexed
 const variadic = (...args) {
   let size = $len(args)
@@ -619,7 +622,7 @@ const Player = struct{
 }
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
-#   identifiers, parameter types, and return types
+#   tagifiers, parameter types, and return types
 const update_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
 const update_health<exc p: &Player> = (health: int) do: # code
 
@@ -633,7 +636,7 @@ Metaprogramming in `Ruka` is done using compile time expressions, which is just 
 
 The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
 ```elixir
-# `@` or `comp` preceeding a identifier states that this parameter must be known at compile time
+# `@` or `comp` preceeding a tagifier states that this parameter must be known at compile time
 const Vector = (@t: typeid): typeid {
   return struct{
     x: t,
