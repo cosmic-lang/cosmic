@@ -3,16 +3,16 @@
 
 pub const Token = union(enum) {
   // Literals
-  identifier: []u8,
+  tag: []u8,
   integer: isize,
   float: f32,
   string: []u8,
-  tag: []u8,
   regex: []u8,
   // Keywords
   constant,
   let,
   ret,
+  def,
   structure,
   enumeration,
   behaviour,
@@ -36,6 +36,7 @@ pub const Token = union(enum) {
   // Modes
   uni,
   exc,
+  loc,
   // Punctuation
   dot,
   comma,
