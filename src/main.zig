@@ -27,6 +27,7 @@ pub fn main() !void {
   const params = comptime clap.parseParamsComptime(
     \\-h, --help          Displays help and exits.
     \\-v, --version       Displays version and exits.
+    \\-c, --compile <str> Compiles file at relative path.
     \\-s, --script <str>  Runs script file at relative path.
     \\-r, --repl          Starts interactive repl.
     \\
@@ -53,6 +54,9 @@ pub fn main() !void {
     defer repl.deinit();
     // Start repl
     try repl.run();
+  } else if (res.args.compile) |path| {
+    // Compile file
+    try script.run(&allocator, path, EXTENSION, MAX_BYTES);
   } else if (res.args.script) |path| {
     // Interpret script
     try script.run(&allocator, path, EXTENSION, MAX_BYTES);
