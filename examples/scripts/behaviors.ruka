@@ -20,11 +20,11 @@ const Player = struct{
 }
 
 # Implementing Entity for player
-const set_pos<exc p: &Player> = (pos: {f32, f32}) {
+def set_pos<exc p: &Player> = (pos: {f32, f32}) {
   p.pos = pos
 }
 
-const read_pos<p: &Player> = (): {f32, f32} {
+def read_pos<p: &Player> = (): {f32, f32} {
   p.pos
 }
 
@@ -34,11 +34,11 @@ const Enemy = struct{
 }
 
 # Implementing Entity for enemy
-const set_pos<exc e: &Enemy> = (pos) {
+def set_pos<exc e: &Enemy> = (pos) {
   e.pos = pos
 }
 
-const read_pos<e: &Enemy> = () {
+def read_pos<e: &Enemy> = () {
   e.pos
 }
 

@@ -295,6 +295,7 @@ in the scope they are defined in. Values passed to functions by reference
 cannot be mutated, unless they are passed in the unique or exclusive modes. This
 may be able to be relaxed, so all values behind references can be modified
 - Reference types
+  - `loc` local mode
   - `uni` unique mode, ownership of reference is moved into function
   - `exc` exclusive mode, only one active reference to value so safe to mutate
 - All types
@@ -412,10 +413,8 @@ const Player = struct{
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-const set_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
-const read_health<p: &Player> = (health: int) do: # code
-
-# Receiver types can be normal types, pointer types, reference types, and compile time types
+def set_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
+def read_health<p: &Player> = (health: int) do: # code
 ```
 
 ## Pattern Matching
@@ -445,7 +444,7 @@ const func1 = (): !string {
 # Will throw exception if error
 let s: string = func1() as string
 # If error, returns error from current function
-let s: string = func1()!
+let s: string = func1().!
 
 # Returns a union (int | null)
 const func2 = (): ?int {
@@ -455,7 +454,7 @@ const func2 = (): ?int {
 # Will throw exception if null
 let i: int = func2() as int
 # If null, returns error from current function
-let i: int = func2()? 
+let i: int = func2().? 
 # Null and false is treated as false, everything else is treated as true
 # Can give a default value if return is null with |
 let i: int = func2() | 12 
@@ -623,8 +622,8 @@ const Player = struct{
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-const update_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
-const update_health<exc p: &Player> = (health: int) do: # code
+def update_pos<exc p: &Player> = (pos: {f32, f32}) do: # code
+def update_health<exc p: &Player> = (health: int) do: # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -673,7 +672,7 @@ const List = (@type: typeid): moduleid {
       size: uint
     }
 
-    const insert<uni &t> = (value: type) {...}
+    def insert<uni &t> = (value: type) {...}
   }
 }
 
