@@ -36,28 +36,32 @@ pub const Scanner = struct {
 
     fn is_alphabetic(self: *Self) bool {
         switch (self.char) {
-            
+            'a'...'z',
+            'A'...'Z',
+            '_' => return true
         }
     }
     
     fn is_numeric(self: *Self) bool {
         switch (self.char) {
-            
+           '0'...'9',
+           '.' => return true
         }
     }
     
     fn is_alphanumeric(self: *Self) bool {
-        switch (self.char) {
-            
+        if (self.numeric() and self.is_alphabetic()) {
+            return true;
         }
     }
 
     pub fn scan(self: *Self) !std.ArrayList(Token) {
         while (self.advance != null) {
             switch (self.char) {
-                
+                 
             }
         }
+
         try self.tokens.append(Token{.identifier = self.source});
         return self.tokens;
     }
