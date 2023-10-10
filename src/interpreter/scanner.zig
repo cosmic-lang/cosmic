@@ -17,6 +17,9 @@ pub const Scanner = struct {
     pub fn init(allocator: *const std.mem.Allocator, source: []u8) Self {
         return Self{
             .source = source,
+            .current_char = 0,
+            .peek_char = 1,
+            .char = source[0],
             .tokens = std.ArrayList(Token).init(allocator.*),
         };
     }
@@ -62,7 +65,7 @@ pub const Scanner = struct {
             }
         }
 
-        try self.tokens.append(Token{.identifier = self.source});
+        try self.tokens.append(Token{.tag = self.source});
         return self.tokens;
     }
 };

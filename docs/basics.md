@@ -367,28 +367,24 @@ in the scope they are defined in. Values passed to functions by borrow
 cannot be mutated, unless they are passed in the unique or exclusive modes. This
 may be able to be relaxed, so all values behind borrows can be modified
 - Borrow types
-  - `local` or `'l` local mode, borrow cannot escape scope
-  - `unique` or `'u` unique mode, ownership of borrow is moved into function
-  - `exclusive` or `'e`exclusive mode, only one active borrow to value so safe to mutate
+  - `local` local mode, borrow cannot escape scope
+  - `move` unique mode, ownership of borrow is moved into function
+  - `mut` exclusive mode, only one active borrow to value so safe to mutate
 - All types
-  - `compile` or `$` compile time mode
+  - `comptime` or `$` compile time mode
 ```
 let x, y = 12, 11
 
-const use = (uni x: &int) {}
-const use = (x: &'u int) {}
+const use = (move x: &int) {}
 
 const add = (x, y: &int) {
   use(&x)
-  return x + y # Error x used uniquely so cannot be used twice
+  return x + y # Error x used after move
 }
 
 let name = "foo"
 
-const rename = (exc name: &string) {
-  name = "bar"
-}
-const rename = (name: &'e string) {
+const rename = (mut name: &string) {
   name = "bar"
 }
 
@@ -414,10 +410,10 @@ const Other = record {
   y = 32.1 # float
 }
 
-let pos = .{x: 12, y: 13} # .{} is the syntax to create anonymous record instances, type will be inferred
-let pos = Pos{x: 12, y: 13} # Can also specify name of record
+let pos = .{x = 12, y = 13} # .{} is the syntax to create anonymous record instances, type will be inferred
+let pos = Pos{x = 12, y = 13} # Can also specify name of record
 # Functional updates, creates a copy of pos, with y changed to 11
-let pos2 = .{...pos, y: 11}
+let pos2 = .{...pos, y = 11}
 
 let pos_x = pos.x
 let pos_y = pos.y
@@ -489,7 +485,7 @@ const Player = record {
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-def set_pos[p: &'e Player] = (pos: {f32, f32}) do: self.pos = pos
+def set_pos[mut p: & Player] = (pos: {f32, f32}) do: self.pos = pos
 
 # Receiver tag can be inferred to be self
 def read_health[&Player] = (health: int) do: return self.health
@@ -578,7 +574,7 @@ std.testing.assert(result[0] == 2)
 const div = (x, y: int): record{quo, rem: int} {
   let quo = x / y
   let rem = x % y
-  return .{quo: quo, rem: rem} # if names match field tags, can ommit field name 
+  return .{quo = quo, rem = rem} # if names match field tags, can ommit field name 
                                 #   ie .{quo, rem}
 }
 
@@ -586,6 +582,7 @@ let result = div(12, 5)
 std.testing.assert(result.quo == 2)
 
 # Anytype infers the function type at compile time where called, think templates
+# If multiple args, they are treated as a tuple
 # Must be the final argument
 const variadic = (args: anytype) {
   let size = @len(args)
@@ -600,15 +597,15 @@ const tagged_tuple = (tup: anytype) {
   }
 }
 
-tagged_array(name: "hello", email: "foo@bar.baz")
+tagged_tuple(name: "hello", email: "foo@bar.baz")
 
-const tagged_tuple = (tup: anytype) {
+const struct = (tup: anytype) {
   for (@typeOf(tup).members) |member| {
 
   }
 }
 
-tagged_array(name: "hello", email: "foo@bar.baz")
+struct(.{...})
 
 # Functions can be taken as parameters and returned from functions
 const sort = (slice: []i32, pred: fn (i32, i32) -> bool) {
@@ -656,11 +653,11 @@ Behaviours cannot specify data members, only methods
 const Entity = behaviour {
   # Method types have restrictions on the receiver type, which goes after fn
   # Both of these methods require receivers to be &'e' (a exclusive mode borrow)
-  update_pos: fn [&'e]({f32, f32}) -> void,
-  update_health: fn [&'e](int) -> void
+  update_pos: fn [mut&]({f32, f32}) -> void,
+  update_health: fn [mut&](int) -> void
 }
 
-const system = (entity: &'e Entity) do: # code
+const system = (mut entity: &Entity) do: # code
 
 # Behaviours are implemented implicitly
 const Player = record {
@@ -672,20 +669,20 @@ const Player = record {
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-def update_pos[&'e Player] = (pos: {f32, f32}) do: # code
-def update_health[&'e Player] = (health: int) do: # code
+def update_pos[mut &Player] = (pos: {f32, f32}) do: # code
+def update_health[mut &Player] = (health: int) do: # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
 system(&player)
 ```
 
-## Compile Time Expressions
-Metaprogramming in `Ruka` is done using compile time expressions, which is just `Ruka` code executed at compile time
+## Comptime Expressions
+Metaprogramming in `Ruka` is done using comptime expressions, which is just `Ruka` code executed at compile time
 
 The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
 ```
-# `$` or `compile` preceeding a tagifier states that this parameter must be known at compile time
+# `$` or `comptime` preceeding a tagifier states that this parameter must be known at compile time
 const Vector = ($t: typeid): typeid {
   return record{
     x: t,
@@ -698,7 +695,7 @@ const t = int
 let Pos = Vector(t) # This cannot be used in meta expressions 
                      #   because it is executed at runtime
 # Or compile time:
-let Pos = compile Vector(t) # This can be used in later compile time expressions as long as it is not assigned to again
+let Pos = comptime Vector(t) # This can be used in later compile time expressions as long as it is not assigned to again
 const Pos = $Vector(t) # This can be used in later compile time expressions
 
 # Blocks can also be run at compile time
@@ -722,7 +719,7 @@ const List = ($type: typeid): moduleid {
       size: uint
     }
 
-    def insert[&'u t] = (value: type) {...}
+    def insert[mut &t] = (value: type) {...}
   }
 }
 
@@ -740,7 +737,7 @@ intList.insert(12)
   - .   : Member Access 
   - ()  : Function Call 
   - &   : Borrow 
-  - $   : Compile Time Mode
+  - $   : Comptime Mode
   - *   : Dereference
   - @   : Built in function
 - Arithmetic Operators          - Wrapping - Saturating
