@@ -154,6 +154,11 @@ let x, y = pos # The lhs braces are not required
 
 std.testing.assert(x == 10 && y == 15)
 ```
+- `Tagged Tuple`
+each {k, v} pair can be indexed
+```
+let tagged_tuple = {name: "foo", age: 25, likes_ramen: true}
+```
 
 - `List`
 ```
@@ -398,13 +403,13 @@ name # "bar"
 All records are anonymous. Members can be accessed with the `.` operator. Members can also be accessed by indexing with a tag, provided the tag is known at compile time.
 ```
 # Record definitions only contain data members, methods are added separately
-const Pos = record{ # record{} is the syntax to create anonymous record type
+const Pos = record { # record{} is the syntax to create anonymous record type
   x: int, 
   y: int
 }
 
 # Record members can be given default values, the types will be inferred
-const Other = record{
+const Other = record {
   x = 12, # int
   y = 32.1 # float
 }
@@ -424,11 +429,11 @@ let val = x + y + z
 std.testing.assert(x == 12 && y == 13 && z == 12)
 ```
 
-- `Tagged`  
+- `Variant`  
 
 Tagged unions, anonymous. If a tag is not given a type, it is given void. Can specify tag integer type
 ```
-const Result = tagged(u8) {
+const Result = variant(u8) {
   ok(int),
   err(string),
   other
@@ -438,13 +443,13 @@ let x = Result.ok(12)
 let y = Result.err("Some error message")
 let o = Result.other
 
-# Tagged can be pattern matched, to access inner values, errors if rhs is not the matching tag
+# Variant can be pattern matched, to access inner values, errors if rhs is not the matching tag
 let Result.ok(z) = x
 
 std.testing.assert(z == 12)
 
-# Tagged can also be used for branching based on if the pattern matches or not
-# The tagged type can be inferred
+# Variant can also be used for branching based on if the pattern matches or not
+# The variant type can be inferred
 if let .ok = x |z| {
   std.fmt.printf("{}", z)
 }
@@ -454,7 +459,7 @@ if let .ok = x |z| {
 In `Ruka`, modules are collections of bindings. Bindings can be let or const.
 All modules are anonymous, named modules are made by storing modules in bindings
 ```
-const Constants = module{
+const Constants = module {
   const PI = 3.14
 }
 
@@ -462,11 +467,11 @@ let area = Constants.PI * (radius ** 2)
 ```
 Modules can be extended using functional updates
 ```
-const Constants = module{
+const Constants = module {
   const PI = 3.14
 }
 
-const MoreConstants = module{
+const MoreConstants = module {
   ...Constants
   const TwoPi = Constants.PI * 2
   const Avogadros = 6.022e-23
@@ -477,16 +482,17 @@ const MoreConstants = module{
 
 Types can be given methods using receivers
 ```
-const Player = record{
+const Player = record {
   pos: {f32, f32},
   health: int
 }
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-def set_pos[p: &'e Player] = (pos: {f32, f32}) do: # code
+def set_pos[p: &'e Player] = (pos: {f32, f32}) do: self.pos = pos
+
 # Receiver tag can be inferred to be self
-def read_health[&Player] = (health: int) do: # code
+def read_health[&Player] = (health: int) do: return self.health
 ```
 
 ## File imports
@@ -499,7 +505,7 @@ const std = @import("std")
 Reactivity
 ```
 # name: &string, update_name: signal
-let name, update_name = signal{type: string}
+let name, update_name = @signal(string)
 ```
 
 ## Strings
@@ -521,7 +527,7 @@ Refer to `Silver` for details
 # The returned structure contains functions to interact w/ hardware through the mmio
 
 # This creates a circuit type
-const AndGate = circuit{ 
+const AndGate = circuit { 
   port (
     x(in: u1)
     y(in: u1)
@@ -579,14 +585,30 @@ const div = (x, y: int): record{quo, rem: int} {
 let result = div(12, 5)
 std.testing.assert(result.quo == 2)
 
-# Functions can take variadic arguments using ...tag syntax.
-# The arguments are packaged together into a tuple, which can then be indexed
-const variadic = (...args) {
+# Anytype infers the function type at compile time where called, think templates
+# Must be the final argument
+const variadic = (args: anytype) {
   let size = @len(args)
   for (0..size) |i| {
     std.fmt.printf("{} ", args[i])
   }
 }
+
+const tagged_tuple = (tup: anytype) {
+  for (tup) |{t, v}| {
+
+  }
+}
+
+tagged_array(name: "hello", email: "foo@bar.baz")
+
+const tagged_tuple = (tup: anytype) {
+  for (@typeOf(tup).members) |member| {
+
+  }
+}
+
+tagged_array(name: "hello", email: "foo@bar.baz")
 
 # Functions can be taken as parameters and returned from functions
 const sort = (slice: []i32, pred: fn (i32, i32) -> bool) {
@@ -650,8 +672,8 @@ const Player = record {
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-def update_pos[p: &'e Player] = (pos: {f32, f32}) do: # code
-def update_health[p: &'e Player] = (health: int) do: # code
+def update_pos[&'e Player] = (pos: {f32, f32}) do: # code
+def update_health[&'e Player] = (health: int) do: # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -759,9 +781,8 @@ intList.insert(12)
   - %{key, value}   : Map
   - {type, ...}     : Tuple
   - list(type)      : List
-  - ...             : Variadic Argument
   - ..(type)        : Exclusive Range, type must be integer types or byte
-  - ..=(type)       : Inclusive Range, type must be integer types or byte
+  - ...(type)       : Inclusive Range, type must be integer types or byte
   - fn () -> ()     : Function
   - fn ()|| -> ()   : Closure
   - fn []() -> ()   : Method

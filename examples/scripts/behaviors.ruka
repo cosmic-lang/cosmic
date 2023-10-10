@@ -20,12 +20,12 @@ const Player = record {
 }
 
 # Implementing Entity for player
-def set_pos[p: &'e Player] = (pos: {f32, f32}) {
-  p.pos = pos
+def set_pos[&'e Player] = (pos: {f32, f32}) {
+  self.pos = pos
 }
 
-def read_pos[p: &Player] = (): {f32, f32} {
-  p.pos
+def read_pos[&Player] = (): {f32, f32} {
+  self.pos
 }
 
 # A record representing an enemy
@@ -34,12 +34,12 @@ const Enemy = record {
 }
 
 # Implementing Entity for enemy
-def set_pos[e: &'e Enemy] = (pos) {
-  e.pos = pos
+def set_pos[&'e Enemy] = (pos) {
+  self.pos = pos
 }
 
-def read_pos[e: &Enemy] = () {
-  e.pos
+def read_pos[&Enemy] = () {
+  self.pos
 }
 
 # Instantiating enemy and player

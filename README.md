@@ -44,25 +44,25 @@ const List = ($type: typeid): moduleid do
             size: uint
         }
 
-        def insert[l: &'e t] = (value: type) {
-            if (l.size == 0) {
-                l.head = node{
+        def insert[&'e t] = (value: type) {
+            if (self.size == 0) {
+                self.head = node {
                     next: null,
                     data: value
                 }
-                l.size++ 
-            } else if (l.size <= max_size) {
-                let tmp = l.head
+                self.size++ 
+            } else if (self.size <= max_size) {
+                let tmp = self.head
 
-                l.head = node{
+                self.head = node {
                     next: tmp,
                     data: value
                 }
-                l.size++ 
+                self.size++ 
             }
         }
 
-        const set_max = (size: usize) |*| {
+        const set_max = (size: usize) |max_size| {
             max_size.* = size
         }
     }
