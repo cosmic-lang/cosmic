@@ -1,7 +1,7 @@
 # Shared behaviour of entities
 const Entity = behaviour {
-  set_pos: fn [mut&]({f32, f32}) -> void,
-  read_pos: fn [&]() -> {f32, f32}
+  set_pos: fn (mut&)({f32, f32}) -> void,
+  read_pos: fn (&)() -> {f32, f32}
 }
 
 # A function with accepts a behaviour instead of a type
@@ -20,11 +20,11 @@ const Player = record {
 }
 
 # Implementing Entity for player
-def set_pos[mut &Player] = (pos: {f32, f32}) {
+def set_pos(mut &Player) = (pos: {f32, f32}) {
   self.pos = pos
 }
 
-def read_pos[&Player] = (): {f32, f32} {
+def read_pos(&Player) = (): {f32, f32} {
   self.pos
 }
 
@@ -34,11 +34,11 @@ const Enemy = record {
 }
 
 # Implementing Entity for enemy
-def set_pos[mut &Enemy] = (pos) {
+def set_pos(mut &Enemy) = (pos) {
   self.pos = pos
 }
 
-def read_pos[&Enemy] = () {
+def read_pos(&Enemy) = () {
   self.pos
 }
 

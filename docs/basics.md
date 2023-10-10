@@ -485,10 +485,10 @@ const Player = record {
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-def set_pos[mut p: & Player] = (pos: {f32, f32}) do: self.pos = pos
+def set_pos(mut p: & Player) = (pos: {f32, f32}) do: self.pos = pos
 
 # Receiver tag can be inferred to be self
-def read_health[&Player] = (health: int) do: return self.health
+def read_health(&Player) = (health: int) do: return self.health
 ```
 
 ## File imports
@@ -653,8 +653,8 @@ Behaviours cannot specify data members, only methods
 const Entity = behaviour {
   # Method types have restrictions on the receiver type, which goes after fn
   # Both of these methods require receivers to be &'e' (a exclusive mode borrow)
-  update_pos: fn [mut&]({f32, f32}) -> void,
-  update_health: fn [mut&](int) -> void
+  update_pos: fn (mut&)({f32, f32}) -> void,
+  update_health: fn (mut&)(int) -> void
 }
 
 const system = (mut entity: &Entity) do: # code
@@ -669,8 +669,8 @@ const Player = record {
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-def update_pos[mut &Player] = (pos: {f32, f32}) do: # code
-def update_health[mut &Player] = (health: int) do: # code
+def update_pos(mut &Player) = (pos: {f32, f32}) do: # code
+def update_health(mut &Player) = (health: int) do: # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -782,5 +782,5 @@ intList.insert(12)
   - ...(type)       : Inclusive Range, type must be integer types or byte
   - fn () -> ()     : Function
   - fn ()|| -> ()   : Closure
-  - fn []() -> ()   : Method
+  - fn ()() -> ()   : Method
 ```

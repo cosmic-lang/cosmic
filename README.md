@@ -44,7 +44,7 @@ const List = ($type: typeid): moduleid do
             size: uint
         }
 
-        def insert[mut &t] = (value: type) {
+        def insert(mut &t) = (value: type) {
             if (self.size == 0) {
                 self.head = node {
                     next: null,
