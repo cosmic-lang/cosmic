@@ -32,14 +32,4 @@ pub fn run(allocator: *const std.mem.Allocator, path: []const u8, ext: []const u
     // Scan file
     var scanner = Scanner.init(allocator, source);
     defer scanner.deinit();
-
-    var tokens = [1]Token{try scanner.next_token()};
-
-    // Print tokens
-    for (tokens) |token| {
-        switch (token) {
-            Token.tag => |ident| std.debug.print("{s}", .{ident}),
-            else => {}
-        }
-    }
 }

@@ -1,13 +1,16 @@
 //!
 //!
 
+const std = @import("std");
+
 pub const Token = union(enum) {
+    const Self = @This();
     // Literals
-    tag: []u8,
+    tag: []const u8,
     integer: isize,
     float: isize, isize,
-    string: []u8,
-    regex: []u8,
+    string: []const u8,
+    regex: []const u8,
     // Keywords
     Const,
     Let,
@@ -85,5 +88,28 @@ pub const Token = union(enum) {
     greater,
     greatereq,
     equality,
-    noteq
+    noteq,
+    // Others
+    newline,
+    illegal,
+    eof,
+
+    pub fn try_keyword(string: []const u8) ?Token {
+        if (std.mem.eql(u8, string, "const")) {
+            return Token.Const; 
+        } else if (std.mem.eql(u8, string, "let")) {
+            return Token.Let; 
+        } else {
+            return null;
+        }
+    }
+
+    pub fn of_char(char: u8) Token {
+        return switch (char) {
+            '=' => Token.assign,
+            '\n' => Token.newline,
+            '\x00' => Token.eof,
+            else => Token.illegal
+        };
+    }
 };
