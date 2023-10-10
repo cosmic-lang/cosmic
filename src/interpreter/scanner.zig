@@ -28,7 +28,7 @@ pub const Scanner = struct {
         self.tokens.deinit(); 
     }
 
-    fn advance(self: *Self) ?void {
+    fn advance(self: *Self) ?u8 {
         if (self.pos + 1 > self.source.len) {
             return null;
         }
@@ -36,6 +36,8 @@ pub const Scanner = struct {
         self.pos = self.read;
         self.read += 1;
         self.char = self.source[self.pos];
+        
+        return self.char;
     }
 
     fn peek(self: *Self) u8 {
@@ -63,11 +65,13 @@ pub const Scanner = struct {
         }
     }
 
-    pub fn next_token(self: *Self) Token {
-        while (self.advance != null) {
-            switch (self.char) {
+    pub fn next_token(self: *Self) !Token {
+        while (self.advance()) |char| {
+            switch (char) {
               else => return Token{.tag = self.source}
             }
         }
+
+        return error.Eof;
     }
 };
