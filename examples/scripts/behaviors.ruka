@@ -1,11 +1,11 @@
 # Shared behaviour of entities
-const Entity = behaviour{
-  set_pos: fn <exc&>({f32, f32}) -> void,
-  read_pos: fn <&>() -> {f32, f32}
+const Entity = behaviour {
+  set_pos: fn [&'e]({f32, f32}) -> void,
+  read_pos: fn [&]() -> {f32, f32}
 }
 
 # A function with accepts a behaviour instead of a type
-const movementSystem = (entity: exc &Entity) {
+const movementSystem = (entity: &'e Entity) {
   let {x, y} = entity.read_pos()
 
   x += 10.0
@@ -14,31 +14,31 @@ const movementSystem = (entity: exc &Entity) {
   entity.set_pos({x, y})
 }
 
-# A struct representing a player
-const Player = struct{
+# A record representing a player
+const Player = record {
   pos: {f32, f32}
 }
 
 # Implementing Entity for player
-def set_pos<exc p: &Player> = (pos: {f32, f32}) {
+def set_pos[p: &'e Player] = (pos: {f32, f32}) {
   p.pos = pos
 }
 
-def read_pos<p: &Player> = (): {f32, f32} {
+def read_pos[p: &Player] = (): {f32, f32} {
   p.pos
 }
 
-# A struct representing an enemy
-const Enemy = struct{
+# A record representing an enemy
+const Enemy = record {
   pos: {f32, f32}
 }
 
 # Implementing Entity for enemy
-def set_pos<exc e: &Enemy> = (pos) {
+def set_pos[e: &'e Enemy] = (pos) {
   e.pos = pos
 }
 
-def read_pos<e: &Enemy> = () {
+def read_pos[e: &Enemy] = () {
   e.pos
 }
 

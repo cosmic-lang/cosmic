@@ -29,34 +29,41 @@ A general purpose, statically typed, programming language.
 `Ruka` has an extension called `Silver`, which integrated `Ruka` and HDL for simple FPGA development
 
 # Example: Linked List
-```elixir
-const List = (@type: typeid): moduleid do
+```
+const List = ($type: typeid): moduleid do
     return module {
-        const node = struct {
-            next: ?Self,
+        let max_size = 100
+
+        const node = record {
+            next: ?@this(),
             data: type
         }
 
-        pub const t = struct {
+        pub const t = record {
             head: ?node,
             size: uint
         }
 
-        def insert<exc l: &t> = (value: type) {
+        def insert[l: &'e t] = (value: type) {
             if (l.size == 0) {
                 l.head = node{
                     next: null,
                     data: value
                 }
-            } else {
+                l.size++ 
+            } else if (l.size <= max_size) {
                 let tmp = l.head
 
                 l.head = node{
                     next: tmp,
                     data: value
                 }
+                l.size++ 
             }
-            l.size++ 
+        }
+
+        const set_max = (size: usize) |*| {
+            max_size.* = size
         }
     }
 end
