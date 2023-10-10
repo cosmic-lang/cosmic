@@ -62,7 +62,7 @@ const List = ($type: typeid): moduleid do
             }
         }
 
-        const set_max = (size: usize) |max_size| {
+        const set_max = (size: usize) |*| {
             max_size.* = size
         }
     }
