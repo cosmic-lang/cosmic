@@ -9,16 +9,16 @@ pub const Scanner = struct {
     const Self = @This();
 
     source: []u8,
-    current_char: usize,
-    peek_char: usize,
+    pos: usize,
+    read: usize,
     char: u8,
     tokens: std.ArrayList(Token),
 
     pub fn init(allocator: *const std.mem.Allocator, source: []u8) Self {
         return Self{
             .source = source,
-            .current_char = 0,
-            .peek_char = 1,
+            .pos = 0,
+            .read = 1,
             .char = source[0],
             .tokens = std.ArrayList(Token).init(allocator.*),
         };
@@ -29,12 +29,17 @@ pub const Scanner = struct {
     }
 
     fn advance(self: *Self) ?void {
-        if (self.current_char + 1 > self.source.len) {
+        if (self.pos + 1 > self.source.len) {
             return null;
         }
 
-        self.current_char += 1;
-        self.char = self.source[self.current_char];
+        self.pos = self.read;
+        self.read += 1;
+        self.char = self.source[self.pos];
+    }
+
+    fn peek(self: *Self) u8 {
+        return self.source[self.read];
     }
 
     fn is_alphabetic(self: *Self) bool {
@@ -58,14 +63,11 @@ pub const Scanner = struct {
         }
     }
 
-    pub fn scan(self: *Self) !std.ArrayList(Token) {
+    pub fn next_token(self: *Self) Token {
         while (self.advance != null) {
             switch (self.char) {
-                 
+              else => return Token{.tag = self.source}
             }
         }
-
-        try self.tokens.append(Token{.tag = self.source});
-        return self.tokens;
     }
 };
