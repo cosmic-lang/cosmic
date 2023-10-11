@@ -44,6 +44,7 @@ pub const Token = union(enum) {
     Mut,
     Move,
     Local,
+    Compile,
     // Assignment
     assign,
     assign_exp,
@@ -161,6 +162,8 @@ pub const Token = union(enum) {
             return Token.Move; 
         } else if (std.mem.eql(u8, string, "local")) {
             return Token.Local; 
+        } else if (std.mem.eql(u8, string, "comptime")) {
+            return Token.Comptime; 
         } else {
             return null;
         }
