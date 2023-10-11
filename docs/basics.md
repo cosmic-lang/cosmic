@@ -229,9 +229,9 @@ const Result = tagged{
 let x = Result.ok(12)
 
 match x {
-  | Result.ok(val) do: std.fmt.println("{}", val),
-  | .err(err) do: std.fmt.println(err)
-  | val when is?(val) # Match gaurds using when
+  | Result.ok => |val| std.fmt.println("{}", val),
+  | .err => |err| std.fmt.println(err)
+  | val when is?(val) => {}# Match gaurds using when
 }
 ```
 
@@ -276,7 +276,7 @@ if (condition) {
 
 } else if (another_condition) {
 
-} else if let tagged_pattern = value |inner| {
+} else if let variant = value |inner| {
 
 } else if let pattern = value {
 
