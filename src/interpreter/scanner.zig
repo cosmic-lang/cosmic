@@ -36,20 +36,14 @@ pub const Scanner = struct {
     pos: usize,
     read: usize,
     char: u8,
-    tokens: std.ArrayList(Token),
 
-    pub fn init(allocator: *const std.mem.Allocator, source: []const u8) Self {
+    pub fn init(source: []const u8) Self {
         return Self{
             .source = source,
             .pos = 0,
             .read = 1,
             .char = source[0],
-            .tokens = std.ArrayList(Token).init(allocator.*),
         };
-    }
-
-    pub fn deinit(self: *Self) void {
-        self.tokens.deinit(); 
     }
     
     fn advance(self: *Self) void {
@@ -194,8 +188,7 @@ test "scanner" {
     };
     
     // Scan file
-    var scanner = Scanner.init(&std.testing.allocator, source[0..]);
-    defer scanner.deinit();
+    var scanner = Scanner.init(source[0..]);
 
     var tokens = std.ArrayList(Token).init(std.testing.allocator);
     defer tokens.deinit();

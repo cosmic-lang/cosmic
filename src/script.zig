@@ -30,6 +30,6 @@ pub fn run(allocator: *const std.mem.Allocator, path: []const u8, ext: []const u
     const source = try file.reader().readAllAlloc(allocator.*, max_bytes);
 
     // Scan file
-    var scanner = Scanner.init(allocator, source);
-    defer scanner.deinit();
+    var scanner = Scanner.init(source);
+    _ = scanner;
 }
