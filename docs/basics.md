@@ -77,8 +77,8 @@ In `Ruka` memory is GC/stack allocated by default. Memory can be allocated manua
 ```
 let name: int = 12 # GC/stack allocated
 
-let names: *[5]string = std.allocator.new([5]string) # Allocates an array and returns a pointer to it
-defer std.allocator.free(names) # Manual memory must be freed
+let names: *[5]string = std.mem.allocator.new([5]string) # Allocates an array and returns a pointer to it
+defer std.mem.allocator.free(names) # Manual memory must be freed
 ```
 
 ## Basic Primitive Types
@@ -131,7 +131,7 @@ Here is a list of `Ruka`'s primitive types:
 # Arrays are static, their sizes cannot change and must be known at compile time
 let arr = [1, 2, 3, 4, 5]
 let num = arr[2]
-std.testing.assert(num == 3)
+std.testing.expect(num == 3)
 ```
 
 - `Dynamic Array`
@@ -139,7 +139,7 @@ std.testing.assert(num == 3)
 # Can change size
 let arr = [|1, 2, 3|]
 let num = arr[1]
-std.testing.assert(num == 2)
+std.testing.expect(num == 2)
 ```
 
 - `Tuple`  
@@ -147,12 +147,12 @@ Tuples can be indexed, or destructured using pattern matching. The $len() functi
 ```
 let pos = {10, 15}
 
-std.testing.assert(@len(pos) == 2)
+std.testing.expect(@len(pos) == 2)
 
 let {x, y} = {pos[0], pos[1]}
 let x, y = pos # The lhs braces are not required
 
-std.testing.assert(x == 10 && y == 15)
+std.testing.expect(x == 10 && y == 15)
 ```
 - `Tagged Tuple`
 each {k, v} pair can be indexed
@@ -165,7 +165,7 @@ let tagged_tuple = {name: "foo", age: 25, likes_ramen: true}
 # Can change size
 let list = {|1, 2, 3|}
 let num = list[1]
-std.testing.assert(num == 2)
+std.testing.expect(num == 2)
 ```
 
 - `Map`
@@ -182,7 +182,7 @@ let atomic_mass = %{
 }
 
 let carbon_mass = atomic_mass[:carbon]
-std.testing.assert(carbon_mass == 15.999) # For floats == only compares the whole number
+std.testing.expect(carbon_mass == 15.999) # For floats == only compares the whole number
 ```
 
 ## String interpolation
@@ -437,7 +437,7 @@ let o = Result.other
 # Variant can be pattern matched, to access inner values, errors if rhs is not the matching tag
 let Result.ok(z) = x
 
-std.testing.assert(z == 12)
+std.testing.expect(z == 12)
 
 # Variant can also be used for branching based on if the pattern matches or not
 # The variant type can be inferred
@@ -564,7 +564,7 @@ const div = (x, y: int): {int, int} {
 }
 
 let result = div(12, 5)
-std.testing.assert(result[0] == 2)
+std.testing.expect(result[0] == 2)
 
 const div = (x, y: int): record{quo, rem: int} {
   let quo = x / y
@@ -574,7 +574,7 @@ const div = (x, y: int): record{quo, rem: int} {
 }
 
 let result = div(12, 5)
-std.testing.assert(result.quo == 2)
+std.testing.expect(result.quo == 2)
 
 # Anytype infers the function type at compile time where called, think templates
 # If multiple args, they are treated as a tuple
