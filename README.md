@@ -44,7 +44,7 @@ const List = ($type: typeid): moduleid => {
             size: uint
         }
 
-        def insert(mut &t) = (value: type) => {
+        def insert(mut &t) = (value: type) => |max_size| {
             if (self.size == 0) {
                 self.head = node {
                     next: null,
@@ -62,7 +62,7 @@ const List = ($type: typeid): moduleid => {
             }
         }
 
-        const set_max = (size: usize) |*| => {
+        const set_max = (size: usize) => |max_size| {
             max_size.* = size
         }
     }
