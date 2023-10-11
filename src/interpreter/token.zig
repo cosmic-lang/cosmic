@@ -22,9 +22,9 @@ pub const Token = union(enum) {
     Module,
     Defer,
     When,
+    Inline,
     True,
     False,
-    DoLine,
     Do,
     End,
     For,
@@ -119,12 +119,12 @@ pub const Token = union(enum) {
             return Token.Defer; 
         } else if (std.mem.eql(u8, string, "when")) {
             return Token.When; 
+        } else if (std.mem.eql(u8, string, "inline")) {
+            return Token.Inline; 
         } else if (std.mem.eql(u8, string, "true")) {
             return Token.True; 
         } else if (std.mem.eql(u8, string, "false")) {
             return Token.False; 
-        } else if (std.mem.eql(u8, string, "do:")) {
-            return Token.DoLine; 
         } else if (std.mem.eql(u8, string, "do")) {
             return Token.Do; 
         } else if (std.mem.eql(u8, string, "end")) {

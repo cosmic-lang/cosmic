@@ -317,7 +317,7 @@ All functions in `Ruka` are anonymous closures, so function definition involves 
 
 Anonymous function creation follows the form of:
 <pre>
-  ([mode] parameter [: type]) [: return type] body;
+  ([mode] parameter [: type]) [: return type] => body;
 </pre>
 the body is a block
 
@@ -328,20 +328,20 @@ Function definition follows the form of:
 
 A single-line body function
 ```
-const hello = () do: return "Hello, world!"
+const hello = () => return "Hello, world!"
 ```
 values must be returned explicitly
 
 
 A multi line body.
 ```
-const add = (x, y) do
+const add = (x, y) => do
   return x + y
 end
 
 or
 
-const add = (x, y) {
+const add = (x, y) => {
   return x + y
 }
 ```
@@ -355,11 +355,11 @@ const foo: fn () -> ()
 const bar: fn void -> void
 
 # Types can be specified for multiple parameters at a time.
-const add = (x, y: int): int {
+const add = (x, y: int): int => {
   return x + y
 }
 
-const add_three = (x, y, z: int): int do: return x + y + z
+const add_three = (x, y, z: int): int => do: return x + y + z
 ```
 
 ## Modes
@@ -376,16 +376,16 @@ may be able to be relaxed, so all values behind borrows can be modified
 ```
 let x, y = 12, 11
 
-const use = (move x: &int) {}
+const use = (move x: &int) => {}
 
-const add = (x, y: &int) {
+const add = (x, y: &int) => {
   use(&x)
   return x + y # Error x used after move
 }
 
 let name = "foo"
 
-const rename = (mut name: &string) {
+const rename = (mut name: &string) => {
   name = "bar"
 }
 
@@ -481,10 +481,10 @@ const Player = record {
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-def set_pos(mut p: & Player) = (pos: {f32, f32}) do: self.pos = pos
+def set_pos(mut p: & Player) = (pos: {f32, f32}) => self.pos = pos
 
 # Receiver tag can be inferred to be self
-def read_health(&Player) = (health: int) do: return self.health
+def read_health(&Player) = (health: int) => return self.health
 ```
 
 ## File imports
@@ -549,7 +549,7 @@ let result = and.get(:z) # Output ports are setup with signals,
 #   but they must be assigned to multiple bindings when called.
 # Return values can be given tagifiers to declare bindings to use for returning, 
 # allowing for naked returns
-const div = (x, y: int): (quo, rem: int) {
+const div = (x, y: int): (quo, rem: int) => {
   quo = x / y
   rem = x % y
   return
@@ -558,7 +558,7 @@ const div = (x, y: int): (quo, rem: int) {
 let quo, rem = div(12, 5)
 
 # Returning a tuple or record allows the return to be stored in a single binding
-const div = (x, y: int): {int, int} {
+const div = (x, y: int): {int, int} => {
   let quo = x / y
   let rem = x % y
   return {quo, rem}
@@ -567,7 +567,7 @@ const div = (x, y: int): {int, int} {
 let result = div(12, 5)
 std.testing.expect(result[0] == 2)
 
-const div = (x, y: int): record{quo, rem: int} {
+const div = (x, y: int): record{quo, rem: int} => {
   let quo = x / y
   let rem = x % y
   return .{quo = quo, rem = rem} # if names match field tags, can ommit field name 
@@ -580,14 +580,14 @@ std.testing.expect(result.quo == 2)
 # Anytype infers the function type at compile time where called, think templates
 # If multiple args, they are treated as a tuple
 # Must be the final argument
-const variadic = (args: anytype) {
+const variadic = (args: anytype) => {
   let size = @len(args)
   for (0..size) |i| {
     std.fmt.printf("{} ", args[i])
   }
 }
 
-const tagged_tuple = (tup: anytype) {
+const tagged_tuple = (tup: anytype) => {
   for (tup) |{t, v}| {
 
   }
@@ -595,8 +595,8 @@ const tagged_tuple = (tup: anytype) {
 
 tagged_tuple(name: "hello", email: "foo@bar.baz")
 
-const struct = (tup: anytype) {
-  for (@typeOf(tup).members) |member| {
+const struct = (tup: anytype) => {
+  inline for (@typeOf(tup).members) |member| {
 
   }
 }
@@ -604,7 +604,7 @@ const struct = (tup: anytype) {
 struct(.{...})
 
 # Functions can be taken as parameters and returned from functions
-const sort = (slice: []i32, pred: fn (i32, i32) -> bool) {
+const sort = (slice: []i32, pred: fn (i32, i32) -> bool) => {
   # code
   if pred(slice[i], slice[j]) {
   # code
@@ -620,8 +620,8 @@ sort(arr[..], (lhs, rhs) do: lhs > rhs)
 The `Pipeline` operator "|>" takes the result of the expression before it,
 and inputs it into the first argument of the function after it
 ```
-const scan = (source: string): []tokens do: # code
-const parse = (source: []tokens): Ast do: # code
+const scan = (source: string): []tokens => # code
+const parse = (source: []tokens): Ast => # code
 
 let source = "some source code"
 
@@ -653,7 +653,7 @@ const Entity = behaviour {
   update_health: fn (mut&)(int) -> void
 }
 
-const system = (mut entity: &Entity) do: # code
+const system = (mut entity: &Entity) => # code
 
 # Behaviours are implemented implicitly
 const Player = record {
@@ -665,8 +665,8 @@ const Player = record {
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-def update_pos(mut &Player) = (pos: {f32, f32}) do: # code
-def update_health(mut &Player) = (health: int) do: # code
+def update_pos(mut &Player) = (pos: {f32, f32}) => # code
+def update_health(mut &Player) = (health: int) => # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -679,7 +679,7 @@ Metaprogramming in `Ruka` is done using comptime expressions, which is just `Ruk
 The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
 ```
 # `$` or `comptime` preceeding a tagifier states that this parameter must be known at compile time
-const Vector = ($t: typeid): typeid {
+const Vector = ($t: typeid): typeid => {
   return record{
     x: t,
     y: t
@@ -703,7 +703,7 @@ const screen_size = ${
 Modules are first class in `Ruka`, so they can be passed into and out of functions
 ```
 # To create a generic ds with methods, you must return a record with static bindings
-const List = ($type: typeid): moduleid {
+const List = ($type: typeid): moduleid => {
   return module {
     const Node = record {
       next: &@this(),
@@ -715,7 +715,7 @@ const List = ($type: typeid): moduleid {
       size: uint
     }
 
-    def insert[mut &t] = (value: type) {...}
+    def insert[mut &t] = (value: type) => {...}
   }
 }
 

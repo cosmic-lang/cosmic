@@ -30,7 +30,7 @@ A general purpose, statically typed, programming language.
 
 # Example: Linked List
 ```
-const List = ($type: typeid): moduleid do
+const List = ($type: typeid): moduleid => do
     return module {
         let max_size = 100
 
@@ -44,7 +44,7 @@ const List = ($type: typeid): moduleid do
             size: uint
         }
 
-        def insert(mut &t) = (value: type) {
+        def insert(mut &t) = (value: type) => {
             if (self.size == 0) {
                 self.head = node {
                     next: null,
@@ -62,7 +62,7 @@ const List = ($type: typeid): moduleid do
             }
         }
 
-        const set_max = (size: usize) |*| {
+        const set_max = (size: usize) |*| => {
             max_size.* = size
         }
     }

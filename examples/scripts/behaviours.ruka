@@ -5,7 +5,7 @@ const Entity = behaviour {
 }
 
 # A function with accepts a behaviour instead of a type
-const movementSystem = (mut entity: &Entity) {
+const movementSystem = (mut entity: &Entity) => {
   let {x, y} = entity.read_pos()
 
   x += 10.0
@@ -20,11 +20,11 @@ const Player = record {
 }
 
 # Implementing Entity for player
-def set_pos(mut &Player) = (pos: {f32, f32}) {
+def set_pos(mut &Player) = (pos: {f32, f32}) => {
   self.pos = pos
 }
 
-def read_pos(&Player) = (): {f32, f32} {
+def read_pos(&Player) = (): {f32, f32} => {
   self.pos
 }
 
@@ -34,11 +34,11 @@ const Enemy = record {
 }
 
 # Implementing Entity for enemy
-def set_pos(mut &Enemy) = (pos) {
+def set_pos(mut &Enemy) = (pos) => {
   self.pos = pos
 }
 
-def read_pos(&Enemy) = () {
+def read_pos(&Enemy) = () => {
   self.pos
 }
 
