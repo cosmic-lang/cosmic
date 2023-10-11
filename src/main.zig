@@ -3,7 +3,7 @@ const cli = @import("cli.zig");
 const script = @import("script.zig");
 const clap = @import("clap");
 
-const MAX_BYTES = 1024^2;
+const MAX_BYTES = std.math.maxInt(u32);
 const VERSION = "0.0.1";
 const EXTENSION = ".ruka";
 const PROMPT = "Ruka>";
