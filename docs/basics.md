@@ -110,9 +110,9 @@ Here is a list of `Ruka`'s primitive types:
   - also (), represents nothing.
 - `null`
 - `typeid` 
-  - i32, int, char, MyStructure. Types are values in `Ruka`
+  - i32, int, char, MyRecord. Types are values in `Ruka`
 - `moduleid`
-  - Namespaces
+  - similar to records
 - `error`
 - `range` 
   - 0..10, 5...15
@@ -129,7 +129,7 @@ Here is a list of `Ruka`'s primitive types:
 - `Array`
 ```
 # Arrays are static, their sizes cannot change and must be known at compile time
-let arr = [1, 2, 3, 4, 5]
+let arr = [5]{1, 2, 3, 4, 5}
 let num = arr[2]
 std.testing.expect(num == 3)
 ```
@@ -137,7 +137,7 @@ std.testing.expect(num == 3)
 - `Dynamic Array`
 ```
 # Can change size
-let arr = [|1, 2, 3|]
+let arr = [dyn]{1, 2, 3}
 let num = arr[1]
 std.testing.expect(num == 2)
 ```
@@ -163,7 +163,7 @@ let tagged_tuple = {name: "foo", age: 25, likes_ramen: true}
 - `List`
 ```
 # Can change size
-let list = {|1, 2, 3|}
+let list = [list]{1, 2, 3}
 let num = list[1]
 std.testing.expect(num == 2)
 ```
@@ -230,6 +230,7 @@ let x = Result.ok(12)
 match x {
   | Result.ok(val) do: std.fmt.println("{}", val),
   | .err(err) do: std.fmt.println(err)
+  | val when is?(val) # Match gaurds using when
 }
 ```
 
@@ -772,7 +773,7 @@ intList.insert(12)
   - [dyn]type       : Dynamic Array
   - %{key, value}   : Map
   - {type, ...}     : Tuple
-  - list(type)      : List
+  - [list]type      : List
   - ..(type)        : Exclusive Range, type must be integer types or byte
   - ...(type)       : Inclusive Range, type must be integer types or byte
   - fn () -> ()     : Function

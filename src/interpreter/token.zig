@@ -20,6 +20,8 @@ pub const Token = union(enum) {
     Variant,
     Behaviour,
     Module,
+    Defer,
+    When,
     True,
     False,
     DoLine,
@@ -36,6 +38,8 @@ pub const Token = union(enum) {
     Anytype,
     And,
     Or,
+    Dyn,
+    List,
     // Modes
     Mut,
     Move,
@@ -111,6 +115,10 @@ pub const Token = union(enum) {
             return Token.Behaviour; 
         } else if (std.mem.eql(u8, string, "module")) {
             return Token.Module; 
+        } else if (std.mem.eql(u8, string, "defer")) {
+            return Token.Defer; 
+        } else if (std.mem.eql(u8, string, "when")) {
+            return Token.When; 
         } else if (std.mem.eql(u8, string, "true")) {
             return Token.True; 
         } else if (std.mem.eql(u8, string, "false")) {
@@ -143,6 +151,10 @@ pub const Token = union(enum) {
             return Token.And; 
         } else if (std.mem.eql(u8, string, "or")) {
             return Token.Or; 
+        } else if (std.mem.eql(u8, string, "dyn")) {
+            return Token.Dyn; 
+        } else if (std.mem.eql(u8, string, "list")) {
+            return Token.List; 
         } else if (std.mem.eql(u8, string, "mut")) {
             return Token.Mut; 
         } else if (std.mem.eql(u8, string, "move")) {
