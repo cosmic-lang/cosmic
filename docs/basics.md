@@ -16,27 +16,27 @@ with the parts surrounded by [] being optional.
 There are two kinds of bindings:
 
 - `const`  
-```
+```rust
 # Constants must be assign a value when declared, and cannot be reassigned
 const msg = "Hello, world!"
 ```
 
 - `let`  
-```
+```rust
 # A variable
 let year = 2023
 year = 2024
 ```
 
 `Ruka` supports multiple assignment
-```
+```rust
 let x = 12
 let y = 31
 x, y = y, x # swaps bindings with no need for temporary bindings
 ```
 
 Assignment in `Ruka` can also be done as an expression using ":=", which returns the rhs value
-```
+```rust
 let boolean = false
 # Assignment expression
 while (boolean := someFunc()) { # Will loop until someFunc returns false 
@@ -45,7 +45,7 @@ while (boolean := someFunc()) { # Will loop until someFunc returns false
 ```
 
 Bindings of the same type can be grouped together.
-``` 
+```rust 
 # let bindings still don't need to be initialized right away
 let (
   x = 72
@@ -64,7 +64,7 @@ but types can be specified if desired.
 
 If the binding is not initialized,
 then a type specification must be added.
-```
+```rust
   let x = 83
 
   let name: string
@@ -74,7 +74,7 @@ then a type specification must be added.
 In `Ruka` memory is GC/stack allocated by default. Memory can be allocated manually using an allocator if desired. And GC can be disabled completely on a pre project basis.
 - Manual management:
   - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
-```
+```rust
 let name: int = 12 # GC/stack allocated
 
 let names: *[5]string = std.mem.allocator.new([5]string) # Allocates an array and returns a pointer to it
@@ -127,7 +127,7 @@ Here is a list of `Ruka`'s primitive types:
 ## Primitive Data Collections
 `Ruka` has a few primitive data collections for you to use:
 - `Array`
-```
+```rust
 # Arrays are static, their sizes cannot change and must be known at compile time
 let arr = [5]{1, 2, 3, 4, 5}
 let num = arr[2]
@@ -135,7 +135,7 @@ std.testing.expect(num == 3)
 ```
 
 - `Dynamic Array`
-```
+```rust
 # Can change size
 let arr = [dyn]{1, 2, 3}
 let num = arr[1]
@@ -144,7 +144,7 @@ std.testing.expect(num == 2)
 
 - `Tuple`  
 Tuples can be indexed, or destructured using pattern matching. The $len() function can be used to assess the length of a tuple
-```
+```rust
 let pos = {10, 15}
 
 std.testing.expect(@len(pos) == 2)
@@ -156,12 +156,12 @@ std.testing.expect(x == 10 && y == 15)
 ```
 - `Tagged Tuple`
 each {k, v} pair can be indexed
-```
+```rust
 let tagged_tuple = {name: "foo", age: 25, likes_ramen: true}
 ```
 
 - `List`
-```
+```rust
 # Can change size
 let list = [list]{1, 2, 3}
 let num = list[1]
@@ -169,7 +169,7 @@ std.testing.expect(num == 2)
 ```
 
 - `Map`
-```
+```rust
 # Can change size
 let atomic_mass = %{
   beryllium: 9.1022,
@@ -186,7 +186,7 @@ std.testing.expect(carbon_mass == 15.999) # For floats == only compares the whol
 ```
 
 ## String interpolation
-```
+```rust
 let fname = "foo"
 let lname = "bar"
 
@@ -194,21 +194,21 @@ let name = "#{foo} #{bar}"
 ```
 
 ## String concatenation
-```
+```rust
 let fname = "foo"
 let lname = "bar"
 
-let name = foo + " " + bar
+let name = foo ++ " " ++ bar
 ```
 
 ## Blocks
 Single-line blocks are written using do:
-```
+```rust
 do: let x = 83
 ```
 
 Multi-line blocks are enclosed using braces: {} or do end
-```
+```rust
 {
   let x = 83
 }
@@ -219,10 +219,11 @@ end
 ```
 
 ## Pattern Matching
-```
+```rust
 const Result = tagged{
   ok(int),
-  err(string)
+  err(string),
+  other
 }
 
 let x = Result.ok(12)
@@ -235,7 +236,7 @@ match x {
 ```
 
 ## Error Handling
-```
+```rust
 # Returns a result, which is a union (string | error)
 const func1 = (): !string {
   if (...) {
@@ -270,7 +271,7 @@ let i: int = func2() | 12
 ```
 
 ## Conditionals
-```
+```rust
 if (condition) {
 
 } else if (another_condition) {
@@ -296,7 +297,7 @@ unless (condition) {
 
 ## Loops
 `Ruka` has two looping constructs, range-based for loops, and while loops.
-```
+```rust
 for (iterable, iterable2) |i, i2| {
 
 }
@@ -327,21 +328,21 @@ Function definition follows the form of:
 </pre>
 
 A single-line body function
-```
+```rust
 const hello = () => return "Hello, world!"
 ```
 values must be returned explicitly
 
 
 A multi line body.
-```
+```rust
 const add = (x, y) => {
   return x + y
 }
 ```
 
 ## Function type specification
-```
+```rust
 # Functions that take no parameters have empty "()" before the arrow.
 # Void returns can be specified in two ways.
 # The return type must always be specified in type specifications.
@@ -367,7 +368,7 @@ may be able to be relaxed, so all values behind borrows can be modified
   - `mut` exclusive mode, only one active borrow to value so safe to mutate
 - All types
   - `comptime` or `$` compile time mode
-```
+```rust
 let x, y = 12, 11
 
 const use = (move x: &int) => {}
@@ -392,7 +393,7 @@ name # "bar"
 - `Record`  
 
 All records are anonymous. Members can be accessed with the `.` operator. Members can also be accessed by indexing with a tag, provided the tag is known at compile time.
-```
+```rust
 # Record definitions only contain data members, methods are added separately
 const Pos = record { # record{} is the syntax to create anonymous record type
   x: int, 
@@ -418,7 +419,7 @@ let pos_z = pos[:x]
 - `Variant`  
 
 Tagged unions, anonymous. If a tag is not given a type, it is given void. Can specify tag integer type
-```
+```rust
 const Result = variant(u8) {
   ok(int),
   err(string),
@@ -444,7 +445,7 @@ if let .ok = x |z| {
 ## Modules
 In `Ruka`, modules are collections of bindings. Bindings can be let or const.
 All modules are anonymous, named modules are made by storing modules in bindings
-```
+```rust
 const Constants = module {
   const PI = 3.14
 }
@@ -452,7 +453,7 @@ const Constants = module {
 let area = Constants.PI * (radius ** 2)
 ```
 Modules can be extended using functional updates
-```
+```rust
 const Constants = module {
   const PI = 3.14
 }
@@ -467,7 +468,7 @@ const MoreConstants = module {
 ## Methods and Receivers
 
 Types can be given methods using receivers
-```
+```rust
 const Player = record {
   pos: {f32, f32},
   health: int
@@ -483,20 +484,20 @@ def read_health(&Player) = (health: int) => return self.health
 
 ## File imports
 When files are imported, they are stored as modules.
-```
+```rust
 const std = @import("std")
 ```
 
 ## Signals
 Reactivity
-```
+```rust
 # name: &string, update_name: signal
 let name, update_name = @signal(string)
 ```
 
 ## Strings
 Green threads
-```
+```rust
 let sid = @spawn(() {
   # Some code
 })
@@ -507,7 +508,7 @@ defer sid.join()
 `Ruka` has an extension called `Silver`, which integrates HDL into the language for simple FPGA development.
 
 Refer to `Silver` for details
-```
+```rust
 # Hardware circuit instantiation must be done at compile time
 # Ports will connect to mmio
 # The returned structure contains functions to interact w/ hardware through the mmio
@@ -537,7 +538,7 @@ let result = and.get(:z) # Output ports are setup with signals,
 
 
 ## More on functions
-```
+```rust
 # Functions can return multiple data types.
 # Functions can return multiple pieces of data, 
 #   but they must be assigned to multiple bindings when called.
@@ -614,7 +615,7 @@ sort(arr[..], (lhs, rhs) do: lhs > rhs)
 ## Pipeline Operator
 The `Pipeline` operator "|>" takes the result of the expression before it,
 and inputs it into the first argument of the function after it
-```
+```rust
 const scan = (source: string): []tokens => # code
 const parse = (source: []tokens): Ast => # code
 
@@ -639,7 +640,7 @@ let greeting = "!dlrow ,olleh"
 `Ruka` doesn't have inheritance, instead `Ruka` uses interfaces called `behaviours`.
 
 Behaviours cannot specify data members, only methods
-```
+```rust
 # Behaviour definition
 const Entity = behaviour {
   # Method types have restrictions on the receiver type, which goes after fn
@@ -672,7 +673,7 @@ system(&player)
 Metaprogramming in `Ruka` is done using comptime expressions, which is just `Ruka` code executed at compile time
 
 The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
-```
+```rust
 # `$` or `comptime` preceeding a tagifier states that this parameter must be known at compile time
 const Vector = ($t: typeid): typeid => {
   return record{
@@ -696,7 +697,7 @@ const screen_size = ${
 ```
 ## First Class Modules
 Modules are first class in `Ruka`, so they can be passed into and out of functions
-```
+```rust
 # To create a generic ds with methods, you must return a record with static bindings
 const List = ($type: typeid): moduleid => {
   return module {

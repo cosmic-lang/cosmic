@@ -29,7 +29,7 @@ A general purpose, statically typed, programming language.
 `Ruka` has an extension called `Silver`, which integrated `Ruka` and HDL for simple FPGA development
 
 # Example: Linked List
-```
+```rust
 const List = ($type: typeid): moduleid => {
     return module {
         let max_size = 100
