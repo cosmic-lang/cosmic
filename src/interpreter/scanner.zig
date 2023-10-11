@@ -52,6 +52,7 @@ pub const Scanner = struct {
         } else {
             self.char = self.source[self.read];
         }
+
         self.pos = self.read;
         self.read = self.read + 1;
     }
@@ -135,12 +136,13 @@ pub const Scanner = struct {
         } else {
             const char = self.char;
             self.advance();
+
             return Token.of_char(char);
         }
     }
 };
 
-fn test_tokens(expected: []const Token, got: []const Token) void {
+fn test_tokens(expected: []const Token, got: []const Token) !void {
     for (expected, got) |e, g| {
         std.debug.assert(@intFromEnum(e) == @intFromEnum(g));
 
@@ -148,19 +150,18 @@ fn test_tokens(expected: []const Token, got: []const Token) void {
             .tag => |etag| {
                 switch (g) {
                     .tag => |gtag| {
-                        std.debug.assert(std.mem.eql(u8, etag, gtag));
+                        try std.testing.expect(std.mem.eql(u8, etag, gtag));
                     },
-                    else => {}
+                    else => try std.testing.expect(false)
                 }
             },
             .integer => |eint| {
                 switch (g) {
                     .integer => |gint| {
-                        std.debug.assert(eint == gint);
+                        try std.testing.expect(eint == gint);
                     },
-                    else => {}
+                    else => try std.testing.expect(false)
                 }
-
             },
             else => {}
         }
@@ -188,7 +189,7 @@ test "scanner" {
     };
     
     // Scan file
-    var scanner = Scanner.init(source[0..]);
+    var scanner = Scanner.init(source);
 
     var tokens = std.ArrayList(Token).init(std.testing.allocator);
     defer tokens.deinit();
@@ -197,7 +198,7 @@ test "scanner" {
         try tokens.append(token);
     }
 
-    test_tokens(expected[0..], tokens.items);
+    try test_tokens(expected[0..], tokens.items);
     // Print tokens
     //std.debug.print("\n", .{});
     //for (tokens.items) |token| {
