@@ -143,6 +143,12 @@ pub const Token = union(enum) {
             return Token.And; 
         } else if (std.mem.eql(u8, string, "or")) {
             return Token.Or; 
+        } else if (std.mem.eql(u8, string, "mut")) {
+            return Token.Mut; 
+        } else if (std.mem.eql(u8, string, "move")) {
+            return Token.Move; 
+        } else if (std.mem.eql(u8, string, "local")) {
+            return Token.Local; 
         } else {
             return null;
         }
@@ -150,7 +156,44 @@ pub const Token = union(enum) {
 
     pub fn of_char(char: u8) Token {
         return switch (char) {
+            //
             '=' => Token.assign,
+            //
+            '.' => Token.dot,
+            ',' => Token.comma,
+            '\'' => Token.quote,
+            '\"' => Token.doublequote,
+            '`' => Token.tick,
+            '(' => Token.lparen,
+            ')' => Token.rparen,
+            '[' => Token.lbracket,
+            ']' => Token.rbracket,
+            '{' => Token.lbrace,
+            '}' => Token.rbrace,
+            '\\' => Token.backslash,
+            ':' => Token.colon,
+            ';' => Token.semicolon,
+            //
+            '@' => Token.address,
+            '$' => Token.cash,
+            '#' => Token.pound,
+            '!' => Token.bang,
+            '?' => Token.question,
+            //
+            '+' => Token.plus,
+            '-' => Token.minus,
+            '*' => Token.asterisk,
+            '/' => Token.slash,
+            '%' => Token.percent,
+            //
+            '&' => Token.ampersand,
+            '|' => Token.pipe,
+            '^' => Token.caret,
+            '~' => Token.tilde,
+            //
+            '<' => Token.lesser,
+            '>' => Token.greater,
+            //
             '\n' => Token.newline,
             '\x00' => Token.eof,
             else => Token.illegal
