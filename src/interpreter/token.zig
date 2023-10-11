@@ -99,6 +99,50 @@ pub const Token = union(enum) {
             return Token.Const; 
         } else if (std.mem.eql(u8, string, "let")) {
             return Token.Let; 
+        } else if (std.mem.eql(u8, string, "return")) {
+            return Token.Return; 
+        } else if (std.mem.eql(u8, string, "def")) {
+            return Token.Def; 
+        } else if (std.mem.eql(u8, string, "record")) {
+            return Token.Record; 
+        } else if (std.mem.eql(u8, string, "variant")) {
+            return Token.Variant; 
+        } else if (std.mem.eql(u8, string, "behaviour")) {
+            return Token.Behaviour; 
+        } else if (std.mem.eql(u8, string, "module")) {
+            return Token.Module; 
+        } else if (std.mem.eql(u8, string, "true")) {
+            return Token.True; 
+        } else if (std.mem.eql(u8, string, "false")) {
+            return Token.False; 
+        } else if (std.mem.eql(u8, string, "do:")) {
+            return Token.DoLine; 
+        } else if (std.mem.eql(u8, string, "do")) {
+            return Token.Do; 
+        } else if (std.mem.eql(u8, string, "end")) {
+            return Token.End; 
+        } else if (std.mem.eql(u8, string, "for")) {
+            return Token.For; 
+        } else if (std.mem.eql(u8, string, "while")) {
+            return Token.While; 
+        } else if (std.mem.eql(u8, string, "break")) {
+            return Token.Break; 
+        } else if (std.mem.eql(u8, string, "continue")) {
+            return Token.Continue; 
+        } else if (std.mem.eql(u8, string, "match")) {
+            return Token.Match; 
+        } else if (std.mem.eql(u8, string, "if")) {
+            return Token.If; 
+        } else if (std.mem.eql(u8, string, "else")) {
+            return Token.Else; 
+        } else if (std.mem.eql(u8, string, "as")) {
+            return Token.As; 
+        } else if (std.mem.eql(u8, string, "anytype")) {
+            return Token.Anytype; 
+        } else if (std.mem.eql(u8, string, "and")) {
+            return Token.And; 
+        } else if (std.mem.eql(u8, string, "or")) {
+            return Token.Or; 
         } else {
             return null;
         }
