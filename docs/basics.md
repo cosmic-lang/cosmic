@@ -418,11 +418,6 @@ let pos2 = .{...pos, y = 11}
 let pos_x = pos.x
 let pos_y = pos.y
 let pos_z = pos[:x]
-
-using pos
-let val = x + y + z
-
-std.testing.assert(x == 12 && y == 13 && z == 12)
 ```
 
 - `Variant`  
