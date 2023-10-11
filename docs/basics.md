@@ -580,7 +580,8 @@ std.testing.expect(result.quo == 2)
 # Anytype infers the function type at compile time where called, think templates
 # If multiple args, they are treated as a tuple
 # Must be the final argument
-const variadic = (args: anytype) => {
+# ...tag can be used as shorthand for anytype tuples
+const variadic = (...args) => {
   let size = @len(args)
   for (0..size) |i| {
     std.fmt.printf("{} ", args[i])
