@@ -335,12 +335,6 @@ values must be returned explicitly
 
 A multi line body.
 ```
-const add = (x, y) => do
-  return x + y
-end
-
-or
-
 const add = (x, y) => {
   return x + y
 }

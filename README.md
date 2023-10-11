@@ -30,7 +30,7 @@ A general purpose, statically typed, programming language.
 
 # Example: Linked List
 ```
-const List = ($type: typeid): moduleid => do
+const List = ($type: typeid): moduleid => {
     return module {
         let max_size = 100
 
@@ -66,7 +66,7 @@ const List = ($type: typeid): moduleid => do
             max_size.* = size
         }
     }
-end
+}
 
 let names = List(string).t{}
 
