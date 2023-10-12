@@ -8,7 +8,7 @@ pub const Token = union(enum) {
     // Literals
     tag: []const u8,
     integer: isize,
-    float: isize, isize,
+    float: std.meta.Tuple(&.{isize, isize}),
     string: []const u8,
     regex: []const u8,
     // Keywords
@@ -44,7 +44,7 @@ pub const Token = union(enum) {
     Mut,
     Move,
     Local,
-    Compile,
+    Comptime,
     // Assignment
     assign,
     assign_exp,
@@ -98,6 +98,16 @@ pub const Token = union(enum) {
     newline,
     illegal,
     eof,
+
+    //pub fn try_keyword(string: []const u8) ?Self {
+    //    inline for (@typeInfo(Token).Union.fields) |field| {
+    //        if (std.mem.eql(u8, string, field.name)) {
+    //            return @unionInit(Self, field.name, undefined); 
+    //        }
+    //    }
+    //
+    //    return null;
+    //}
 
     pub fn try_keyword(string: []const u8) ?Token {
         if (std.mem.eql(u8, string, "const")) {
