@@ -176,12 +176,12 @@ test "scanner" {
         ;
 
     const expected = [_]Token{
-        Token.Const,
+        Token.@"const",
         Token{.tag = "x"},
         Token.assign,
         Token{.integer = 12},
         Token.newline,
-        Token.Let,
+        Token.let,
         Token{.tag = "y"},
         Token.assign,
         Token{.integer = 13},
