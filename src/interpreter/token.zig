@@ -98,6 +98,8 @@ pub const Token = union(enum) {
     eof,
 
     pub fn try_keyword(string: []const u8) ?Self {
+        //@memcpy(tmp, string);
+        //set first char to capital so dont have @"" fields
         inline for (@typeInfo(Token).Union.fields) |field| {
             if (std.mem.eql(u8, string[0..string.len], field.name)) {
                 return @unionInit(Self, field.name, undefined); 
