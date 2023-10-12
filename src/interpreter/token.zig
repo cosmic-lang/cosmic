@@ -101,7 +101,7 @@ pub const Token = union(enum) {
         //@memcpy(tmp, string);
         //set first char to capital so dont have @"" fields
         inline for (@typeInfo(Token).Union.fields) |field| {
-            if (std.mem.eql(u8, string[0..string.len], field.name)) {
+            if (std.mem.eql(u8, string, field.name)) {
                 return @unionInit(Self, field.name, undefined); 
             }
         }
