@@ -231,7 +231,7 @@ let x = Result.ok(12)
 match x {
   | Result.ok => |val| std.fmt.println("{}", val),
   | .err => |err| std.fmt.println(err)
-  | val when is?(val) => {}# Match gaurds using when
+  | val when is?(val) => {} # Match gaurds using when
 }
 ```
 
@@ -318,7 +318,7 @@ All functions in `Ruka` are anonymous closures, so function definition involves 
 
 Anonymous function creation follows the form of:
 <pre>
-  ([mode] parameter [: type]) [: return type] => body;
+  ([mode] parameter [: type]) [: return type] => [|closure|]body;
 </pre>
 the body is a block
 
