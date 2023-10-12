@@ -109,6 +109,10 @@ pub const Token = union(enum) {
         return null;
     }
 
+    //pub fn try_keyword(string: []const u8) ?Self {
+    //  
+    //}
+
     pub fn of_char(char: u8) Token {
         return switch (char) {
             //
