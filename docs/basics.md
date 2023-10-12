@@ -198,7 +198,7 @@ let name = "#{foo} #{bar}"
 let fname = "foo"
 let lname = "bar"
 
-let name = foo ++ " " ++ bar
+let name = foo <> " " <> bar
 ```
 
 ## Blocks
@@ -230,9 +230,40 @@ let x = Result.ok(12)
 
 match x {
   | Result.ok => |val| std.fmt.println("{}", val),
-  | .err => |err| std.fmt.println(err)
-  | val when is?(val) => {} # Match gaurds using when
+  | .err => |err| std.fmt.println(err),
+  # Cases can be guarded using when followed by a condition
+  # If the condition returns true, that case will execute
+  | when is?(x) => |val| {}
 }
+
+let source = "int main() {}"
+
+# The beginning of strings can be pattern matched,
+# capturing the remaining portion of the string as a slice
+match (source) {
+  | <"int"> => |rest| {
+    std.fmt.print("{}\n", rest)
+  }
+}
+
+let nums = [5]{1, 4, 2, 6, 8}
+
+# Slices can be matched
+match (nums[..]) {
+  | [] => {
+    # Matches an empty slice
+  },
+  | [] => |elem| {
+    # Matches a slice with one element
+  },
+  | [..] => |elem, rest| {
+    # Matches a slice with atleast two elements
+  },
+  | [..] => |_, rest| {
+    # Captures can be ignored with "_"
+  }
+}
+
 ```
 
 ## Error Handling
