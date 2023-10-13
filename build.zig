@@ -30,7 +30,21 @@ pub fn build(b: *std.Build) void {
     });
 
     exe.addModule("clap", clap.module("clap"));
-    //exe.linkLibrary(clap.artifact("clap"));
+    exe.addModule("llvm", b.createModule(.{
+        .source_file = .{
+            .path = "llvm/llvm.zig"
+        }
+    }));
+
+    switch (target.getOsTag()) {
+        .linux => exe.linkSystemLibrary("LLVM-16"),
+        .macos => {
+            exe.addLibraryPath(.{.path = "/usr/local/opt/llvm/lib"});
+            exe.linkSystemLibrary("LLVM");
+        },
+        else => exe.linkSystemLibrary("LLVM")
+    }
+    exe.linkLibC();
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default

@@ -1,0 +1,9 @@
+const std = @import("std")
+
+const greeting: string = "Hello, {}! From {}"
+let name = "Foo"
+let year = 2023
+
+const greet = (greeting: string, name: string, year: i32) => {
+    return std.fmt.string(greeting, name, year)
+}
