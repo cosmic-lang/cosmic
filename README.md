@@ -15,7 +15,7 @@ Development is following three main stages:
 - Strong static typing
 - Type inference
 - First class `Types`, `Errors`, `Functions`, and `Modules`
-- Shared functionality with interfaces called `Behaviours`
+- Shared functionality with interfaces called `Traits`
 - Pattern matching
 - Meta-programming with compile time execution
 - Type reflection

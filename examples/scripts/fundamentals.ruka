@@ -5,5 +5,5 @@ let name = "Foo"
 let year = 2023
 
 const greet = (greeting: string, name: string, year: i32) => {
-    return std.fmt.string(greeting, name, year)
+  return std.fmt.string(greeting, name, year)
 }
