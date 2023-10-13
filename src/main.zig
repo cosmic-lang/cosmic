@@ -1,7 +1,9 @@
 const std = @import("std");
+
+const clap = @import("clap");
+
 const cli = @import("cli.zig");
 const script = @import("script.zig");
-const clap = @import("clap");
 
 const MAX_BYTES = std.math.maxInt(u32);
 const VERSION = "0.0.1";
@@ -65,3 +67,40 @@ pub fn main() !void {
         return cli.help(HEADER, VERSION, &params);
     }
 }
+
+//const llvm = @import("llvm");
+//
+//const target = llvm.target;
+//const types = llvm.types;
+//const core = llvm.core;
+//
+//pub fn main() !void {
+//    _ = target.LLVMInitializeNativeTarget();
+//    _ = target.LLVMInitializeNativeAsmPrinter();
+//    _ = target.LLVMInitializeNativeAsmParser();
+//
+//    var module: types.LLVMModuleRef = core.LLVMModuleCreateWithName("sum_module");
+//    var params: [2]types.LLVMTypeRef = [_]types.LLVMTypeRef{
+//        core.LLVMInt32Type(),
+//        core.LLVMInt32Type()
+//    };
+//
+//    // Create a function that computes the sum of two integers
+//    const func_type: types.LLVMTypeRef = core.LLVMFunctionType(core.LLVMInt32Type(), &params, 2, 0);
+//    const sum_func: types.LLVMValueRef = core.LLVMAddFunction(module, "sum", func_type);
+//    const entry: types.LLVMBasicBlockRef = core.LLVMAppendBasicBlock(sum_func, "entry");
+//    const builder: types.LLVMBuilderRef = core.LLVMCreateBuilder();
+//    core.LLVMPositionBuilderAtEnd(builder, entry);
+//    const arg1: types.LLVMValueRef = core.LLVMGetParam(sum_func, 0);
+//    const arg2: types.LLVMValueRef = core.LLVMGetParam(sum_func, 1);
+//    const sum: types.LLVMValueRef = core.LLVMBuildAdd(builder, arg1, arg2, "sum");
+//    _ = core.LLVMBuildRet(builder, sum);
+//
+//    // Dump the LLVM module to stdout
+//    core.LLVMDumpModule(module);
+//
+//    // Clean up LLVM resources
+//    core.LLVMDisposeBuilder(builder);
+//    core.LLVMDisposeModule(module);
+//    core.LLVMShutdown();
+//}
