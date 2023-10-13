@@ -117,11 +117,10 @@ Here is a list of `Ruka`'s primitive types:
 - `range` 
   - 0..10, 5...15
 - `tag`   
-  - :quick :skip
-  - Polymorphic enumerations, i.e. don't need to be part of a type. 
-  - Also used for identifiers, when used for identifiers the ":" can be omitted.
-  - When used for map keys, the ":" is moved to the rhs
-  - When types are specified for bindings, the ":" is moved to the rhs
+  - 'quick 'skip
+  - Polymorphic enums, i.e. don't need to be part of a type. 
+  - Also used for identifiers, when used for identifiers the "'" can be omitted.
+  - When used for map keys, the "'" is moved to the rhs
 - `anytype`
 
 ## Primitive Data Collections
@@ -430,7 +429,7 @@ let pos2 = .{...pos, y = 11}
 
 let pos_x = pos.x
 let pos_y = pos.y
-let pos_z = pos[:x]
+let pos_z = pos['x]
 ```
 
 - `Variant`  
@@ -548,7 +547,7 @@ let and = $AndGate{} # This creates an instance of AndGate,
 
 and.put(x: 1, y: 1)
 
-let result = and.get(:z) # Output ports are setup with signals,
+let result = and.get('z) # Output ports are setup with signals,
                          # so reading from a output port blocks 
                          # execution until the signal is high
 ```
