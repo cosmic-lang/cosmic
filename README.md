@@ -2,7 +2,11 @@
 A general purpose, statically typed, programming language.
 
 # ! In Early Development
-`Ruka` is currently in the design stage, so the language has yet to be implemented, and everything is subject to drastic change.
+Implementation of `Ruka` has just started, so it is not usable yet.  
+Development is following three main stages:
+- Stage 1: Scanning/Parsing [in progress]
+- Stage 2: Simple Interpreter
+- Stage 3: Compilation, either using LLVM or to ASM directly
 
 # License
 `Ruka` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
@@ -10,17 +14,15 @@ A general purpose, statically typed, programming language.
 # Features
 - Strong static typing
 - Type inference
-- First class Types, Errors, Functions, and Modules
+- First class `Types`, `Errors`, `Functions`, and `Modules`
 - Shared functionality with interfaces called `Behaviours`
 - Pattern matching
 - Meta-programming with compile time execution
 - Type reflection
-- Green threads called `Strings`
-- Reactivity with `Signals`
 - Automatic memory management by default
-  - Variables are stack or GC allocated based on usage
-  - Can manually manage heap memory with allocators
-- Per project language customization
-  - Disable GC
-  - Type inference customization
-- References for when safety is a priority, Pointers for when it's not
+    - Variables are stack or GC allocated based on usage
+    - Can manually manage heap memory with allocators
+- Borrows for when safety is a priority, Pointers for when it's not
+
+# Stretch Goal: Silver
+`Ruka` has an extension called `Silver`, which integrated `Ruka` and HDL for simple FPGA development
