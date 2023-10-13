@@ -802,3 +802,50 @@ intList.insert(12)
   - fn ()|| -> ()   : Closure
   - fn ()() -> ()   : Method
 ```
+
+## Example: Linked List
+```rust
+const List = ($type: typeid): moduleid => {
+    return module {
+        let max_size = 100
+
+        const node = record {
+            next: ?@this(),
+            data: type
+        }
+
+        pub const t = record {
+            head: ?node,
+            size: uint
+        }
+
+        def insert(mut &t) = (value: type) => |max_size| {
+            if (self.size == 0) {
+                self.head = node {
+                    next: null,
+                    data: value
+                }
+                self.size++ 
+            } else if (self.size <= max_size) {
+                let tmp = self.head
+
+                self.head = node {
+                    next: tmp,
+                    data: value
+                }
+                self.size++ 
+            }
+        }
+
+        const set_max = (size: usize) => |max_size| {
+            max_size.* = size
+        }
+    }
+}
+
+let names = List(string).t{}
+
+names.insert("foo")
+names.insert("bar")
+names.insert("foobar")
+```
