@@ -202,20 +202,12 @@ let name = foo <> " " <> bar
 ```
 
 ## Blocks
-Single-line blocks are written using do:
-```elixir
-do: let x = 83
-```
 
-Multi-line blocks are enclosed using braces: {} or do end
+Multi-line blocks are enclosed using braces: {}
 ```elixir
 {
   let x = 83
 }
-
-do
-  let x = 75
-end
 ```
 
 ## Pattern Matching
