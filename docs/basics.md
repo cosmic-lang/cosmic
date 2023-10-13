@@ -622,13 +622,13 @@ const tagged_tuple = (tup: anytype) => {
 
 tagged_tuple(name: "hello", email: "foo@bar.baz")
 
-const struct = (tup: anytype) => {
+const struct = ($tup: anytype) => {
   inline for (@typeOf(tup).members) |member| {
 
   }
 }
 
-struct(.{...})
+$struct(.{...})
 
 # Functions can be taken as parameters and returned from functions
 const sort = (slice: []i32, pred: fn (i32, i32) -> bool) => {
