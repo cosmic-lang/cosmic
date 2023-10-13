@@ -241,7 +241,7 @@ let source = "int main() {}"
 # The beginning of strings can be pattern matched,
 # capturing the remaining portion of the string as a slice
 match (source) {
-  | <"int"> => |rest| {
+  | <"int", ...> => |rest| {
     std.fmt.print("{}\n", rest)
   }
 }
@@ -333,6 +333,10 @@ for (iterable, iterable2) |i, i2| {
 
 }
 
+while (condition) {
+
+}
+
 while (optional()) |value| {
 
 }
@@ -363,7 +367,6 @@ A single-line body function
 const hello = () => return "Hello, world!"
 ```
 values must be returned explicitly
-
 
 A multi line body.
 ```elixir
@@ -468,7 +471,7 @@ std.testing.expect(z == 12)
 
 # Variant can also be used for branching based on if the pattern matches or not
 # The variant type can be inferred
-if let .ok = x |z| {
+if (.ok := x) |z| {
   std.fmt.printf("{}", z)
 }
 ```
@@ -639,7 +642,7 @@ const sort = (slice: []i32, pred: fn (i32, i32) -> bool) => {
 
 const arr = [41, 22, 31, 84, 75]
 # The types of the anonymous function passed will be inferred
-sort(arr[..], (lhs, rhs) do: lhs > rhs)
+sort(arr[..], (lhs, rhs) => lhs > rhs)
 
 ```
 
