@@ -12,37 +12,37 @@ pub const Token = union(enum) {
     string: []const u8,
     regex: []const u8,
     // Keywords
-    @"const",
-    let,
-    @"return",
-    def,
-    record,
-    variant,
-    behaviour,
-    module,
-    @"defer",
-    when,
-    @"inline",
-    @"true",
-    @"false",
-    @"for",
-    @"while",
-    @"break",
-    @"continue",
-    match,
-    @"if",
-    @"else",
-    as,
-    @"anytype",
-    @"and",
-    @"or",
-    dyn,
-    list,
+    Const,
+    Let,
+    Return,
+    Def,
+    Record,
+    Variant,
+    Behaviour,
+    Module,
+    Defer,
+    When,
+    Inline,
+    True,
+    False,
+    For,
+    While,
+    Break,
+    Continue,
+    Match,
+    If,
+    Else,
+    As,
+    Anytype,
+    And,
+    Or,
+    Dyn,
+    List,
     // Modes
-    mut,
-    move,
-    local,
-    @"comptime",
+    Mut,
+    Move,
+    Local,
+    Comptime,
     // Assignment
     assign,
     assign_exp,
@@ -97,20 +97,15 @@ pub const Token = union(enum) {
     illegal,
     eof,
 
-    pub fn try_keyword(string: []const u8) ?Self {
-        //@memcpy(tmp, string);
-        //set first char to capital so dont have @"" fields
-        inline for (@typeInfo(Token).Union.fields) |field| {
-            if (std.mem.eql(u8, string, field.name)) {
-                return @unionInit(Self, field.name, undefined); 
-            }
-        }
-    
-        return null;
-    }
-
     //pub fn try_keyword(string: []const u8) ?Self {
-    //  
+    //    //@memcpy(tmp, string);
+    //    inline for (@typeInfo(Token).Union.fields) |field| {
+    //        if (std.mem.eql(u8, string, field.name)) {
+    //            return @unionInit(Self, field.name, undefined); 
+    //        }
+    //    }
+    //
+    //    return null;
     //}
 
     pub fn of_char(char: u8) Token {

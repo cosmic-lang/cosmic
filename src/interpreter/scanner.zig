@@ -37,13 +37,33 @@ pub const Scanner = struct {
     read: usize,
     char: u8,
 
-    pub fn init(source: []const u8) Self {
-        return Self{
+    keywords: std.StringHashMap(Token),
+
+    pub fn init(source: []const u8, allocator: std.mem.Allocator) !Self {
+        var self = Self{
             .source = source,
             .pos = 0,
             .read = 1,
             .char = source[0],
+            .keywords = std.StringHashMap(Token).init(allocator),
         };
+
+        // Setup keyword hash
+        try self.keywords.put("const", Token.Const);
+        try self.keywords.put("let", Token.Let);
+        try self.keywords.put("return", Token.Return);
+        try self.keywords.put("def", Token.Def);
+        try self.keywords.put("record", Token.Record);
+        try self.keywords.put("variant", Token.Variant);
+        try self.keywords.put("behaviour", Token.Behaviour);
+        try self.keywords.put("module", Token.Module);
+
+        return self;
+    }
+
+    pub fn deinit(self: *Self) void {
+        self.keywords.deinit();
+
     }
     
     fn advance(self: *Self) void {
@@ -103,6 +123,11 @@ pub const Scanner = struct {
         return self.source[start..end];
     }
 
+    fn try_keyword(self: *Self, string: []const u8) ?Token {
+      return self.keywords.get(string);
+
+    }
+
     fn skip_whitespace(self: *Self) void {
         switch (self.char) {
             ' ', '\r', '\t' => {
@@ -123,7 +148,7 @@ pub const Scanner = struct {
         if (is_alphabetic(self.char)) {
             var tag = self.read_tag();
 
-            if (Token.try_keyword(tag)) |keyword| {
+            if (self.try_keyword(tag)) |keyword| {
                 return keyword;
             } else {
                 return Token{.tag = tag};
@@ -176,12 +201,12 @@ test "scanner" {
         ;
 
     const expected = [_]Token{
-        Token.@"const",
+        Token.Const,
         Token{.tag = "x"},
         Token.assign,
         Token{.integer = 12},
         Token.newline,
-        Token.let,
+        Token.Let,
         Token{.tag = "y"},
         Token.assign,
         Token{.integer = 13},
@@ -189,7 +214,8 @@ test "scanner" {
     };
     
     // Scan file
-    var scanner = Scanner.init(source);
+    var scanner = try Scanner.init(source, std.testing.allocator);
+    defer scanner.deinit();
 
     var tokens = std.ArrayList(Token).init(std.testing.allocator);
     defer tokens.deinit();

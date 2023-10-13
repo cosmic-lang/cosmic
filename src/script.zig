@@ -7,7 +7,7 @@ const Token = @import("interpreter/token.zig").Token;
 const Scanner = @import("interpreter/scanner.zig").Scanner;
 
 
-pub fn run(allocator: *const std.mem.Allocator, path: []const u8, ext: []const u8, max_bytes: usize) !void {
+pub fn run(allocator: std.mem.Allocator, path: []const u8, ext: []const u8, max_bytes: usize) !void {
     // Check for valid file extension, return if invalid
     const extension = std.fs.path.extension(path);
     if (!std.mem.eql(u8, extension, ext)) {
@@ -27,9 +27,9 @@ pub fn run(allocator: *const std.mem.Allocator, path: []const u8, ext: []const u
     defer file.close();
 
     // Read source from file
-    const source = try file.reader().readAllAlloc(allocator.*, max_bytes);
+    const source = try file.reader().readAllAlloc(allocator, max_bytes);
 
     // Scan file
-    var scanner = Scanner.init(source);
-    _ = scanner;
+    var scanner = try Scanner.init(source, allocator);
+    defer scanner.deinit();
 }

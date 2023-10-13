@@ -56,10 +56,10 @@ pub fn main() !void {
         try repl.run();
     } else if (res.args.compile) |path| {
         // Compile file
-        try script.run(&allocator, path, EXTENSION, MAX_BYTES);
+        try script.run(allocator, path, EXTENSION, MAX_BYTES);
     } else if (res.args.script) |path| {
         // Interpret script
-        try script.run(&allocator, path, EXTENSION, MAX_BYTES);
+        try script.run(allocator, path, EXTENSION, MAX_BYTES);
     } else {
         // Show help
         return cli.help(HEADER, VERSION, &params);
