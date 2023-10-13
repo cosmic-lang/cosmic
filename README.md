@@ -25,4 +25,4 @@ Development is following three main stages:
 - Borrows for when safety is a priority, Pointers for when it's not
 
 # Stretch Goal: Silver
-`Ruka` has an extension called `Silver`, which integrated `Ruka` and HDL for simple FPGA development
+`Ruka` may have an extension called `Silver`, which integrates `Ruka` and HDL for simple FPGA development
