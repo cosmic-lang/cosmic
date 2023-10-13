@@ -55,10 +55,11 @@ pub const Scanner = struct {
         try self.keywords.put("const", .Const);
         try self.keywords.put("let", .Let);
         try self.keywords.put("return", .Return);
+        try self.keywords.put("fn", .Fn);
         try self.keywords.put("def", .Def);
         try self.keywords.put("record", .Record);
-        try self.keywords.put("variant", .Variant);
-        try self.keywords.put("behaviour", .Behaviour);
+        try self.keywords.put("enum", .Enum);
+        try self.keywords.put("trait", .Trait);
         try self.keywords.put("module", .Module);
         try self.keywords.put("defer", .Defer);
         try self.keywords.put("when", .When);
@@ -77,7 +78,7 @@ pub const Scanner = struct {
         try self.keywords.put("and", .And);
         try self.keywords.put("or", .Or);
         try self.keywords.put("dyn", .Dyn);    
-        try self.keywords.put("mut", .Mut);
+        try self.keywords.put("mut", .Mutable);
         try self.keywords.put("mov", .Move);
         try self.keywords.put("loc", .Local);
         try self.keywords.put("comptime", .Comptime);

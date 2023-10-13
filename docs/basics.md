@@ -119,7 +119,7 @@ Here is a list of `Ruka`'s primitive types:
 - `tag`   
   - :quick :skip
   - Polymorphic enumerations, i.e. don't need to be part of a type. 
-  - Also used for tagifiers, when used for identifiers the ":" can be ommited.
+  - Also used for identifiers, when used for identifiers the ":" can be omitted.
   - When used for map keys, the ":" is moved to the rhs
   - When types are specified for bindings, the ":" is moved to the rhs
 - `anytype`
@@ -154,18 +154,10 @@ let x, y = pos # The lhs braces are not required
 
 std.testing.expect(x == 10 && y == 15)
 ```
-- `Tagged Tuple`
-each {k, v} pair can be indexed
+- `Named Tuple`
+each {k, v} pair can be indexed, this is just syntactic sugar for creating tuples of two element tuples
 ```elixir
 let tagged_tuple = {name: "foo", age: 25, likes_ramen: true}
-```
-
-- `List`
-```elixir
-# Can change size
-let list = [list]{1, 2, 3}
-let num = list[1]
-std.testing.expect(num == 2)
 ```
 
 - `Map`
@@ -198,7 +190,7 @@ let name = "#{foo} #{bar}"
 let fname = "foo"
 let lname = "bar"
 
-let name = foo <> " " <> bar
+let name = foo ++ " " ++ bar
 ```
 
 ## Blocks
@@ -212,7 +204,7 @@ Multi-line blocks are enclosed using braces: {}
 
 ## Pattern Matching
 ```elixir
-const Result = tagged{
+const Result = enum {
   ok(int),
   err(string),
   other
@@ -220,7 +212,7 @@ const Result = tagged{
 
 let x = Result.ok(12)
 
-match x {
+match (x) {
   | Result.ok => |val| std.fmt.println("{}", val),
   | .err => |err| std.fmt.println(err),
   # Cases can be guarded using when followed by a condition
@@ -233,7 +225,7 @@ let source = "int main() {}"
 # The beginning of strings can be pattern matched,
 # capturing the remaining portion of the string as a slice
 match (source) {
-  | <"int", ...> => |rest| {
+  | "int", ... => |rest| {
     std.fmt.print("{}\n", rest)
   }
 }
@@ -299,9 +291,7 @@ if (condition) {
 
 } else if (another_condition) {
 
-} else if let variant = value |inner| {
-
-} else if let pattern = value {
+} else if (variant := value) |inner| {
 
 } else if (optional()) |not_null| {
 
@@ -380,7 +370,7 @@ const add = (x, y: int): int => {
   return x + y
 }
 
-const add_three = (x, y, z: int): int => do: return x + y + z
+const add_three = (x, y, z: int): int => return x + y + z
 ```
 
 ## Modes
@@ -389,24 +379,25 @@ in the scope they are defined in. Values passed to functions by borrow
 cannot be mutated, unless they are passed in the unique or exclusive modes. This
 may be able to be relaxed, so all values behind borrows can be modified
 - Borrow types
-  - `local` local mode, borrow cannot escape scope
-  - `move` unique mode, ownership of borrow is moved into function
-  - `mut` exclusive mode, only one active borrow to value so safe to mutate
+  - `&` borrow mode, pass by reference
+      - `loc` local mode, borrow cannot escape scope
+      - `mov` unique mode, ownership of borrow is moved into function
+      - `mut` exclusive mode, only one active borrow to value so safe to mutate
 - All types
   - `comptime` or `$` compile time mode
 ```elixir
 let x, y = 12, 11
 
-const use = (move x: &int) => {}
+const use = (mov& x: int) => {}
 
-const add = (x, y: &int) => {
+const add = (&x, y: int) => {
   use(&x)
   return x + y # Error x used after move
 }
 
 let name = "foo"
 
-const rename = (mut name: &string) => {
+const rename = (mut& name: string) => {
   name = "bar"
 }
 
@@ -446,7 +437,7 @@ let pos_z = pos[:x]
 
 Tagged unions, anonymous. If a tag is not given a type, it is given void. Can specify tag integer type
 ```elixir
-const Result = variant(u8) {
+const Result = enum(u8) {
   ok(int),
   err(string),
   other
@@ -502,7 +493,7 @@ const Player = record {
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-def set_pos(mut p: & Player) = (pos: {f32, f32}) => self.pos = pos
+def set_pos(mut& p: Player) = (pos: {f32, f32}) => self.pos = pos
 
 # Receiver tag can be inferred to be self
 def read_health(&Player) = (health: int) => return self.health
@@ -604,6 +595,7 @@ std.testing.expect(result.quo == 2)
 # ...tag can be used as shorthand for anytype tuples
 const variadic = (...args) => {
   let size = @len(args)
+
   for (0..size) |i| {
     std.fmt.printf("{} ", args[i])
   }
@@ -662,22 +654,22 @@ let greeting = "!dlrow ,olleh"
 
 ```
 
-## Behaviours
-`Ruka` doesn't have inheritance, instead `Ruka` uses interfaces called `behaviours`.
+## Traits
+`Ruka` doesn't have inheritance, instead `Ruka` uses interfaces called `traits`.
 
-Behaviours cannot specify data members, only methods
+Traits cannot specify data members, only methods
 ```elixir
 # Behaviour definition
-const Entity = behaviour {
+const Entity = trait {
   # Method types have restrictions on the receiver type, which goes after fn
   # Both of these methods require receivers to be &'e' (a exclusive mode borrow)
   update_pos: fn (mut&)({f32, f32}) -> void,
   update_health: fn (mut&)(int) -> void
 }
 
-const system = (mut entity: &Entity) => # code
+const system = (mut& entity: Entity) => # code
 
-# Behaviours are implemented implicitly
+# Traits are implemented implicitly
 const Player = record {
   # Members which are unique to each instance of the record are declared like parameters
   pos: {f32, f32},
@@ -687,8 +679,8 @@ const Player = record {
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-def update_pos(mut &Player) = (pos: {f32, f32}) => # code
-def update_health(mut &Player) = (health: int) => # code
+def update_pos(mut& Player) = (pos: {f32, f32}) => # code
+def update_health(mut& Player) = (health: int) => # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -728,16 +720,16 @@ Modules are first class in `Ruka`, so they can be passed into and out of functio
 const List = ($type: typeid): moduleid => {
   return module {
     const Node = record {
-      next: &@this(),
+      next: @this(),
       data: type
     }
     
     pub const t = record {
-      head: &Node,
+      head: Node,
       size: uint
     }
 
-    def insert[mut &t] = (value: type) => {...}
+    def insert(mut& t) = (value: type) => {...}
   }
 }
 
@@ -789,58 +781,55 @@ intList.insert(12)
   - !type           : type | error
   - ?type           : type | null
   - *type           : Pointer
-  - &type           : Borrowed Type
-  - []type          : Slice, which is a borrow and a length
+  - []type          : Slice, which is a pointer and a length
   - [size]type      : Array
   - [dyn]type       : Dynamic Array
-  - %{key, value}   : Map
   - {type, ...}     : Tuple
-  - [list]type      : List
+  - %{key, value}   : Map
   - ..(type)        : Exclusive Range, type must be integer types or byte
   - ...(type)       : Inclusive Range, type must be integer types or byte
   - fn () -> ()     : Function
-  - fn ()|| -> ()   : Closure
   - fn ()() -> ()   : Method
 ```
 
 ## Example: Linked List
 ```rust
 const List = ($type: typeid): moduleid => {
-    return module {
-        let max_size = 100
+  return module {
+    let max_size = 100
 
-        const node = record {
-            next: ?@this(),
-            data: type
-        }
-
-        pub const t = record {
-            head: ?node,
-            size: uint
-        }
-
-        def insert(mut &t) = (value: type) => |max_size| {
-            if (self.size == 0) {
-                self.head = node {
-                    next: null,
-                    data: value
-                }
-                self.size++ 
-            } else if (self.size <= max_size) {
-                let tmp = self.head
-
-                self.head = node {
-                    next: tmp,
-                    data: value
-                }
-                self.size++ 
-            }
-        }
-
-        const set_max = (size: usize) => |max_size| {
-            max_size.* = size
-        }
+    const node = record {
+      next: ?@this(),
+      data: type
     }
+
+    pub const t = record {
+      head: ?node,
+      size: uint
+    }
+
+    def insert(mut& t) = (value: type) => |max_size| {
+      if (self.size == 0) {
+        self.head = node {
+          next: null,
+          data: value
+        }
+        self.size++ 
+      } else if (self.size <= max_size) {
+        let tmp = self.head
+
+        self.head = node {
+          next: tmp,
+          data: value
+        }
+        self.size++ 
+      }
+    }
+
+    const set_max = (size: usize) => |max_size| {
+      max_size.* = size
+    }
+  }
 }
 
 let names = List(string).t{}
