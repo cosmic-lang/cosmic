@@ -51,6 +51,8 @@ let (
   x = 72
   y
 )
+# If done on the same line, must be separated by commas
+let (x, y)
 
 ```
 ## Type specification basics
