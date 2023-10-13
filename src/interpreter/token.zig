@@ -37,7 +37,6 @@ pub const Token = union(enum) {
     And,
     Or,
     Dyn,
-    List,
     // Modes
     Mut,
     Move,
