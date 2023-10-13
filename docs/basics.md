@@ -107,20 +107,19 @@ Here is a list of `Ruka`'s primitive types:
 - `bool` 
   - true, false
 - `void` 
-  - also (), represents nothing.
+  - also ().
 - `null`
 - `typeid` 
   - i32, int, char, MyRecord. Types are values in `Ruka`
 - `moduleid`
-  - similar to records
 - `error`
 - `range` 
   - 0..10, 5...15
 - `tag`   
-  - 'quick 'skip
+  - :quick :skip
   - Polymorphic enums, i.e. don't need to be part of a type. 
-  - Also used for identifiers, when used for identifiers the "'" can be omitted.
-  - When used for map keys, the "'" is moved to the rhs
+  - Also used for identifiers, when used for identifiers the ":" can be omitted.
+  - When used for map keys, the ":" is moved to the rhs
 - `anytype`
 
 ## Primitive Data Collections
@@ -151,7 +150,7 @@ std.testing.expect(@len(pos) == 2)
 let {x, y} = {pos[0], pos[1]}
 let x, y = pos # The lhs braces are not required
 
-std.testing.expect(x == 10 && y == 15)
+std.testing.expect(x == 10 and y == 15)
 ```
 - `Named Tuple`
 each {k, v} pair can be indexed, this is just syntactic sugar for creating tuples of two element tuples
@@ -201,6 +200,41 @@ Multi-line blocks are enclosed using braces: {}
 }
 ```
 
+## Error Handling
+```elixir
+# Returns a result, which is a union (string or error)
+const func1 = (): !string {
+  if (...) {
+    return error.someError
+  }
+}
+
+# Returns a result, which is a union (void or error)
+const func1 = ()! {
+  if (...) {
+    return error.someError
+  }
+}
+
+# Will throw exception if error
+let s: string = func1() as string
+# If error, returns error from current function
+let s: string = func1().!
+
+# Returns a optional, which is a union (int or null)
+const func2 = (): ?int {
+
+}
+
+# Will throw exception if null
+let i: int = func2() as int
+# If null, returns error from current function
+let i: int = func2().? 
+# Null and false is treated as false, everything else is treated as true
+# Can give a default value if return is null with or
+let i: int = func2() or 12 
+```
+
 ## Pattern Matching
 ```elixir
 const Result = enum {
@@ -247,41 +281,6 @@ match (nums[..]) {
   }
 }
 
-```
-
-## Error Handling
-```elixir
-# Returns a result, which is a union (string | error)
-const func1 = (): !string {
-  if (...) {
-    return error.someError
-  }
-}
-
-# Returns a result, which is a union (void | error)
-const func1 = ()! {
-  if (...) {
-    return error.someError
-  }
-}
-
-# Will throw exception if error
-let s: string = func1() as string
-# If error, returns error from current function
-let s: string = func1().!
-
-# Returns a optional, which is a union (int | null)
-const func2 = (): ?int {
-
-}
-
-# Will throw exception if null
-let i: int = func2() as int
-# If null, returns error from current function
-let i: int = func2().? 
-# Null and false is treated as false, everything else is treated as true
-# Can give a default value if return is null with |
-let i: int = func2() | 12 
 ```
 
 ## Conditionals
@@ -429,7 +428,7 @@ let pos2 = .{...pos, y = 11}
 
 let pos_x = pos.x
 let pos_y = pos.y
-let pos_z = pos['x]
+let pos_z = pos[:x]
 ```
 
 - `Variant`  
@@ -508,7 +507,7 @@ const std = @import("std")
 Reactivity
 ```elixir
 # name: &string, update_name: signal
-let name, update_name = @signal(string)
+let (name, update_name) = @signal(string)
 ```
 
 ## Strings
@@ -629,8 +628,8 @@ Traits cannot specify data members, only methods
 const Entity = trait {
   # Method types have restrictions on the receiver type, which goes after fn
   # Both of these methods require receivers to be &'e' (a exclusive mode borrow)
-  update_pos: fn (mut&)({f32, f32}) -> void,
-  update_health: fn (mut&)(int) -> void
+  update_pos: fn (mut&)({f32, f32}) -> (),
+  update_health: fn (mut&)(int) -> ()
 }
 
 const system = (mut& entity: Entity) => # code
@@ -736,16 +735,16 @@ intList.insert(12)
 - Logical Operators
   - and : Logical And
   - or  : Logical Or
-  - !   : Logical Negation
+  - not : Logical Negation
 - Bitwise Operators
   - &   : Bitwise AND
   - |   : Bitwise OR
   - ^   : Bitwise XOR
-  - ~   : Bitwise Negation
+  - !   : Bitwise Negation
 - Type Symbols
-  - type | type     : Union
-  - !type           : type | error
-  - ?type           : type | null
+  - type or type    : Union
+  - !type           : type or error
+  - ?type           : type or null
   - *type           : Pointer
   - []type          : Slice, which is a pointer and a length
   - [size]type      : Array
