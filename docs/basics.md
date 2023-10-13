@@ -202,14 +202,14 @@ Multi-line blocks are enclosed using braces: {}
 
 ## Error Handling
 ```elixir
-# Returns a result, which is a union (string | error)
+# Returns a result, which is a union (string or error)
 const func1 = (): !string {
   if (...) {
     return error.someError
   }
 }
 
-# Returns a result, which is a union (void | error)
+# Returns a result, which is a union (void or error)
 const func1 = ()! {
   if (...) {
     return error.someError
@@ -221,7 +221,7 @@ let s: string = func1() as string
 # If error, returns error from current function
 let s: string = func1().!
 
-# Returns a optional, which is a union (int | null)
+# Returns a optional, which is a union (int or null)
 const func2 = (): ?int {
 
 }
@@ -231,7 +231,7 @@ let i: int = func2() as int
 # If null, returns error from current function
 let i: int = func2().? 
 # Null and false is treated as false, everything else is treated as true
-# Can give a default value if return is null with |
+# Can give a default value if return is null with or
 let i: int = func2() or 12 
 ```
 
@@ -428,7 +428,7 @@ let pos2 = .{...pos, y = 11}
 
 let pos_x = pos.x
 let pos_y = pos.y
-let pos_z = pos['x]
+let pos_z = pos[:x]
 ```
 
 - `Variant`  
@@ -742,9 +742,9 @@ intList.insert(12)
   - ^   : Bitwise XOR
   - !   : Bitwise Negation
 - Type Symbols
-  - type | type     : Union
-  - !type           : type | error
-  - ?type           : type | null
+  - type or type    : Union
+  - !type           : type or error
+  - ?type           : type or null
   - *type           : Pointer
   - []type          : Slice, which is a pointer and a length
   - [size]type      : Array
