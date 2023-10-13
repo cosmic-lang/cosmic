@@ -39,31 +39,53 @@ pub const Scanner = struct {
 
     keywords: std.StringHashMap(Token),
 
-    pub fn init(source: []const u8, allocator: std.mem.Allocator) !Self {
-        var self = Self{
+    pub fn new(source: []const u8) !Self {
+        return Self{
             .source = source,
             .pos = 0,
             .read = 1,
             .char = source[0],
-            .keywords = std.StringHashMap(Token).init(allocator),
+            .keywords = undefined,
         };
+    }
 
+    pub fn init(self: *Self, allocator: std.mem.Allocator) !void {
+        self.keywords = std.StringHashMap(Token).init(allocator);
         // Setup keyword hash
-        try self.keywords.put("const", Token.Const);
-        try self.keywords.put("let", Token.Let);
-        try self.keywords.put("return", Token.Return);
-        try self.keywords.put("def", Token.Def);
-        try self.keywords.put("record", Token.Record);
-        try self.keywords.put("variant", Token.Variant);
-        try self.keywords.put("behaviour", Token.Behaviour);
-        try self.keywords.put("module", Token.Module);
-
-        return self;
+        try self.keywords.put("const", .Const);
+        try self.keywords.put("let", .Let);
+        try self.keywords.put("return", .Return);
+        try self.keywords.put("fn", .Fn);
+        try self.keywords.put("def", .Def);
+        try self.keywords.put("record", .Record);
+        try self.keywords.put("enum", .Enum);
+        try self.keywords.put("trait", .Trait);
+        try self.keywords.put("module", .Module);
+        try self.keywords.put("defer", .Defer);
+        try self.keywords.put("when", .When);
+        try self.keywords.put("inline", .Inline);
+        try self.keywords.put("true", .True);
+        try self.keywords.put("false", .False);
+        try self.keywords.put("for", .For);
+        try self.keywords.put("while", .While);
+        try self.keywords.put("break", .Break);
+        try self.keywords.put("continue", .Continue);
+        try self.keywords.put("match", .Match);
+        try self.keywords.put("if", .If);
+        try self.keywords.put("else", .Else);
+        try self.keywords.put("as", .As);
+        try self.keywords.put("anytype", .Anytype);
+        try self.keywords.put("and", .And);
+        try self.keywords.put("or", .Or);
+        try self.keywords.put("dyn", .Dyn);    
+        try self.keywords.put("mut", .Mutable);
+        try self.keywords.put("mov", .Move);
+        try self.keywords.put("loc", .Local);
+        try self.keywords.put("comptime", .Comptime);
     }
 
     pub fn deinit(self: *Self) void {
         self.keywords.deinit();
-
     }
     
     fn advance(self: *Self) void {
@@ -214,7 +236,8 @@ test "scanner" {
     };
     
     // Scan file
-    var scanner = try Scanner.init(source, std.testing.allocator);
+    var scanner = try Scanner.new(source);
+    try scanner.init(std.testing.allocator);
     defer scanner.deinit();
 
     var tokens = std.ArrayList(Token).init(std.testing.allocator);
