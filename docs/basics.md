@@ -44,27 +44,6 @@ while (boolean := someFunc()) { # Will loop until someFunc returns false
 }
 ```
 
-`Ruka` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
-```
-let input = "foo"
-
-if (foo ~= r"foo|bar") {
-
-}
-
-let tup = {52, 74, 412, 33, 87, 36}
-
-if (pos ~= {_, 74, ...}) |rest| {
-
-}
-
-let nums = [5]{1, 2, 5, 3, 2}
-
-if (nums[..] ~= []{1, 2, ...}) |rest| {
-
-}
-```
-
 Bindings of the same type can be grouped together.
 ``` 
 # let bindings still don't need to be initialized right away
@@ -126,7 +105,7 @@ Here is a list of `Ruka`'s primitive types:
     \\ line
     \\ string
 - `regex`
-  - r"foo|bar"
+  - ~r"foo|bar"
 - `bool` 
   - true, false
 - `void` 
@@ -223,6 +202,48 @@ Multi-line blocks are enclosed using braces: {}
 }
 ```
 
+## Function Basics
+All functions in `Ruka` are anonymous closures, so function definition involves storing a function literal in a binding. Captured variables must be explicitly captured.
+
+Anonymous function creation follows the form of:
+<pre>
+  ([mode] parameter [: type]) [: return type] => [|captures|]body;
+</pre>
+the body is a block
+
+Function definition follows the form of:
+<pre>
+  kind tag [: type] = anonymous fn;
+</pre>
+
+A single-line body function
+```
+const hello = () => return "Hello, world!"
+```
+values must be returned explicitly
+
+A multi line body.
+```
+const add = (x, y) => {
+  return x + y
+}
+```
+Parameters can be positional, or named. Named parameters must be declared with ~ preceding the tag. They are inferred to be optional types, but their types can be set to standard types. If used as optional types, must be after all positional parameters.
+```
+const add = (x, y) => {
+  return x + y
+}
+
+add(1, 2) # x = 1, y = 2
+
+const add = (x, ~y) => {
+    return x + y
+}
+
+add(y: 1, 2) # y = 1, x = 2
+add(1) # x = 1, y = null
+```
+
 ## Error Handling
 ```
 # Returns a result, which is a union (string or error)
@@ -306,6 +327,29 @@ match (nums[..]) {
 
 ```
 
+`Ruka` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
+```
+let input = "foo"
+let reg = ~r"foo|bar"
+
+if (foo ~= reg) {
+
+}
+
+let tup = {52, 74, 412, 33, 87, 36}
+
+if (pos ~= {_, 74, ...}) |rest| {
+
+}
+
+let nums = [5]{1, 2, 5, 3, 2}
+
+if (nums[..] ~= []{1, 2, ...}) |rest| {
+
+}
+```
+
+
 ## Conditionals
 ```
 if (condition) {
@@ -348,33 +392,6 @@ while (result()) |value| {
 
 } catch |error| {
 
-}
-```
-
-## Function Basics
-All functions in `Ruka` are anonymous closures, so function definition involves storing a function literal in a binding.
-
-Anonymous function creation follows the form of:
-<pre>
-  ([mode] parameter [: type]) [: return type] => [|closure|]body;
-</pre>
-the body is a block
-
-Function definition follows the form of:
-<pre>
-  kind tag [: type] = anonymous fn;
-</pre>
-
-A single-line body function
-```
-const hello = () => return "Hello, world!"
-```
-values must be returned explicitly
-
-A multi line body.
-```
-const add = (x, y) => {
-  return x + y
 }
 ```
 
@@ -609,14 +626,6 @@ const variadic = (...args) => {
     std.fmt.printf("{} ", args[i])
   }
 }
-
-const tagged_tuple = (tup: anytype) => {
-  for (tup) |{t, v}| {
-
-  }
-}
-
-tagged_tuple(name: "hello", email: "foo@bar.baz")
 
 const struct = ($tup: anytype) => {
   inline for (@typeOf(tup).members) |member| {
