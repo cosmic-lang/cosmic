@@ -251,16 +251,16 @@ test "scanner" {
   // Print tokens
   //std.debug.print("\n", .{});
   //for (tokens.items) |token| {
-  //    switch (token) {
-  //        Token.tag => |ident| std.debug.print("{s} ", .{ident}),
-  //        Token.integer => |int| std.debug.print("{d} ", .{int}),
-  //        Token.Const => std.debug.print("const ", .{}),
-  //        Token.Let => std.debug.print("let ", .{}),
-  //        Token.assign => std.debug.print("= ", .{}),
-  //        Token.newline => std.debug.print("\n", .{}),
-  //        Token.eof => std.debug.print("eof", .{}),
-  //        else => {}
-  //    }
+  //  switch (token) {
+  //    Token.tag => |ident| std.debug.print("{s} ", .{ident}),
+  //    Token.integer => |int| std.debug.print("{d} ", .{int}),
+  //    Token.Const => std.debug.print("const ", .{}),
+  //    Token.Let => std.debug.print("let ", .{}),
+  //    Token.assign => std.debug.print("= ", .{}),
+  //    Token.newline => std.debug.print("\n", .{}),
+  //    Token.eof => std.debug.print("eof", .{}),
+  //    else => {}
+  //  }
   //}
 
   //std.debug.print("\n", .{});
