@@ -512,10 +512,31 @@ Reactivity
 let (name, update_name) = @signal(string)
 ```
 
+## Channels
+```
+# name: &string, update_name: signal
+let chan = @channel(string)
+
+for (0..10) |i| {
+  @spawn(() => |chan| {
+    chan.send(i)
+  })
+}
+
+let sum = 0
+for (0..10) {
+  sum += chan.receive()
+}
+
+for (chan.queue) |msg| {
+  sum += msg
+}
+```
+
 ## Strings
 Green threads
 ```
-let sid = @spawn(() {
+let sid = @spawn(() => {
   # Some code
 })
 defer sid.join()
