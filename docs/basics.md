@@ -163,7 +163,7 @@ let tagged_tuple = {name: "foo", age: 25, likes_ramen: true}
 - `Map`
 ```
 # Can change size
-let atomic_mass = %{
+let atomic_mass: %{tag => f32} = %{
   beryllium: 9.1022,
   carbon: 15.999
 }
