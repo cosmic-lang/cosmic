@@ -514,10 +514,10 @@ const Player = record {
 
 # Methods for types are declared by specifying a reciever after the indentifier
 # This can be used to add functionality to primitive types
-def set_pos(mut& p: Player) = (pos: {f32, f32}) => self.pos = pos
+const set_pos(mut& p: Player) = (pos: {f32, f32}) => self.pos = pos
 
 # Receiver tag can be inferred to be self
-def read_health(&Player) = (health: int) => return self.health
+const read_health(&Player) = (health: int) => return self.health
 ```
 
 ## File imports
@@ -531,6 +531,15 @@ Reactivity
 ```
 # name: &string, update_name: signal
 let (name, update_name) = @signal(string)
+```
+
+## Strings
+Green threads
+```
+let sid = @spawn(() => {
+  # Some code
+})
+defer sid.join()
 ```
 
 ## Channels
@@ -552,15 +561,6 @@ for (0..10) {
 for (chan.queue) |msg| {
   sum += msg
 }
-```
-
-## Strings
-Green threads
-```
-let sid = @spawn(() => {
-  # Some code
-})
-defer sid.join()
 ```
 
 ## More on functions
@@ -688,8 +688,8 @@ const Player = record {
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-def update_pos(mut& Player) = (pos: {f32, f32}) => # code
-def update_health(mut& Player) = (health: int) => # code
+const update_pos(mut& Player) = (pos: {f32, f32}) => # code
+const update_health(mut& Player) = (health: int) => # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -738,7 +738,7 @@ const List = ($type: typeid): moduleid => {
       size: uint
     }
 
-    def insert(mut& t) = (value: type) => {...}
+    const insert(mut& t) = (value: type) => {...}
   }
 }
 
@@ -786,7 +786,7 @@ intList.insert(12)
   - ^   : Bitwise XOR
   - !   : Bitwise Negation
 - Type Symbols
-  - type or type    : Union
+  - (type or type)  : Union
   - !type           : type or error
   - ?type           : type or null
   - *type           : Pointer
@@ -802,7 +802,7 @@ intList.insert(12)
 ```
 
 ## Example: Linked List
-```rust
+```
 const List = ($type: typeid): moduleid => {
   return module {
     let max_size = 100
@@ -817,7 +817,7 @@ const List = ($type: typeid): moduleid => {
       size: uint
     }
 
-    def insert(mut& t) = (value: type) => |max_size| {
+    const insert(mut& t) = (value: type) => |max_size| {
       if (self.size == 0) {
         self.head = node {
           next: null,

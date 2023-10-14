@@ -16,7 +16,6 @@ pub const Token = union(enum) {
   Let,
   Return,
   Fn,
-  Def,
   Record,
   Enum,
   Trait,

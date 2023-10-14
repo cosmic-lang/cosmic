@@ -56,7 +56,6 @@ pub const Scanner = struct {
     try self.keywords.put("let", .Let);
     try self.keywords.put("return", .Return);
     try self.keywords.put("fn", .Fn);
-    try self.keywords.put("def", .Def);
     try self.keywords.put("record", .Record);
     try self.keywords.put("enum", .Enum);
     try self.keywords.put("trait", .Trait);
