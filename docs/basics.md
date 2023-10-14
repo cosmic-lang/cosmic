@@ -8,7 +8,7 @@
 ## Bindings
 Bindings in `Ruka` follow the form of:  
 <pre>
-  kind tag [: type] [= expression];
+  kind tag [: type] [= expression]
 </pre>
 with the parts surrounded by [] being optional.  
 
