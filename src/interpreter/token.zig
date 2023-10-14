@@ -7,6 +7,7 @@ pub const Token = union(enum) {
   const Self = @This();
   // Literals
   tag: []const u8,
+  type: []const u8,
   integer: isize,
   float: std.meta.Tuple(&.{isize, isize}),
   string: []const u8,
