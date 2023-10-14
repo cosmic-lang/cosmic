@@ -39,7 +39,7 @@ pub fn build(b: *std.Build) void {
     switch (target.getOsTag()) {
         .linux => exe.linkSystemLibrary("LLVM-16"),
         .macos => {
-            exe.addLibraryPath(.{.path = "/usr/local/opt/llvm/lib"});
+            exe.addLibraryPath(.{.path = "/opt/homebrew/opt/llvm@16/lib"});
             exe.linkSystemLibrary("LLVM");
         },
         else => exe.linkSystemLibrary("LLVM")
