@@ -9,39 +9,39 @@ const clap = @import("clap");
 //};
 
 pub const Repl = struct {
-    const Self = @This();
+  const Self = @This();
 
-    prompt: []const u8,
+  prompt: []const u8,
 
-    pub fn init(prompt: []const u8, _: anytype) Self {
-        return Self {
-            .prompt = prompt
-        };
-    }
+  pub fn init(prompt: []const u8, _: anytype) Self {
+    return Self {
+      .prompt = prompt
+    };
+  }
 
-    pub fn deinit(_: *Self) void {
+  pub fn deinit(_: *Self) void {
 
-    }
+  }
 
-    pub fn run(self: *Self) !void {
-        std.debug.print("{s} ", .{self.prompt});
+  pub fn run(self: *Self) !void {
+    std.debug.print("{s} ", .{self.prompt});
 
-        //self.run();
-    }
+    //self.run();
+  }
 };
 
 pub fn help(
-    comptime header: []const u8, 
-    comptime version: []const u8, 
-    params: anytype
+  comptime header: []const u8, 
+  comptime version: []const u8, 
+  params: anytype
 ) !void {
-    std.debug.print(header ++ "\n", .{version});
-    std.debug.print("Subcommands:\n", .{});
+  std.debug.print(header ++ "\n", .{version});
+  std.debug.print("Subcommands:\n", .{});
 
-    return clap.help(
-        std.io.getStdErr().writer(), 
-        clap.Help, 
-        params, 
-        .{}
-    );
+  return clap.help(
+    std.io.getStdErr().writer(), 
+    clap.Help, 
+    params, 
+    .{}
+  );
 }
