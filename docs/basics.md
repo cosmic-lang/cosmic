@@ -35,12 +35,33 @@ let y = 31
 x, y = y, x # swaps bindings with no need for temporary bindings
 ```
 
-Assignment in `Ruka` can also be done as an expression using ":=", which returns the rhs value
+Assignment in `Ruka` can also be done as an expression using ":=", which returns the rhs value.
 ```
 let boolean = false
 # Assignment expression
 while (boolean := someFunc()) { # Will loop until someFunc returns false 
   std.fmt.printf("{}", boolean)
+}
+```
+
+`Ruka` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
+```
+let input = "foo"
+
+if (foo ~= r"foo|bar") {
+
+}
+
+let tup = {52, 74, 412, 33, 87, 36}
+
+if (pos ~= {_, 74, ...}) |rest| {
+
+}
+
+let nums = [5]{1, 2, 5, 3, 2}
+
+if (nums[..] ~= []{1, 2, ...}) |rest| {
+
 }
 ```
 
@@ -105,7 +126,7 @@ Here is a list of `Ruka`'s primitive types:
     \\ line
     \\ string
 - `regex`
-  - ~r"foo|bar"
+  - r"foo|bar"
 - `bool` 
   - true, false
 - `void` 
