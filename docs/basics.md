@@ -207,7 +207,7 @@ All functions in `Ruka` are anonymous closures, so function definition involves 
 
 Anonymous function creation follows the form of:
 <pre>
-  ([mode] parameter [: type]) [: return type] => [|captures|]body;
+  ([mode] parameter [: type]) [: return type] => [|captures|] body;
 </pre>
 the body is a block
 
@@ -254,7 +254,7 @@ const func1 = (): !string {
 }
 
 # Returns a result, which is a union (void or error)
-const func1 = ()! {
+const func1 = () !void {
   if (...) {
     return error.someError
   }
