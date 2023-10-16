@@ -33,4 +33,6 @@ pub fn run(allocator: std.mem.Allocator, path: []const u8, ext: []const u8, max_
   var scanner = try Scanner.new(source);
   try scanner.init(allocator);
   defer scanner.deinit();
+
+  std.debug.print("{s}\n", .{source});
 }
