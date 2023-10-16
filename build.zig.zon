@@ -1,6 +1,9 @@
 .{
     .name = "ruka",
     .version = "0.0.1",
+    .paths = .{
+      "src/"
+    },
     .dependencies = .{
         .clap = .{
             .url = "https://github.com/Hejsil/zig-clap/archive/refs/tags/0.7.0.tar.gz",
