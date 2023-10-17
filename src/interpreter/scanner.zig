@@ -106,12 +106,12 @@ pub const Scanner = struct {
     return self.source[self.read];
   }
 
-  fn read_tag(self: *Self) []const u8 {
+  fn read_seq(self: *Self, comptime pred: fn (u8) bool) []const u8 {
     const start = self.pos;
     var end: usize = self.source.len;
 
     while (self.peek()) |char| {
-      if (!is_alphanumeric(char)) {
+      if (!pred(char)) {
         end = self.read;
         self.advance();
         break;
@@ -123,25 +123,7 @@ pub const Scanner = struct {
     }
 
     return self.source[start..end];
-  }
 
-  fn read_number(self: *Self) []const u8 {
-    const start = self.pos;
-    var end: usize = self.source.len;
-
-    while (self.peek()) |char| {
-      if (!is_numeric(char)) {
-        end = self.read;
-        self.advance();
-        break;
-      }
-
-      self.advance();
-    } else {
-      self.advance();
-    }
-
-    return self.source[start..end];
   }
 
   fn try_keyword(self: *Self, string: []const u8) ?Token {
@@ -167,7 +149,7 @@ pub const Scanner = struct {
     self.skip_whitespace();
 
     if (is_alphabetic(self.char)) {
-      var tag = self.read_tag();
+      var tag = self.read_seq(is_alphanumeric);
 
       if (self.try_keyword(tag)) |keyword| {
         return keyword;
@@ -175,7 +157,7 @@ pub const Scanner = struct {
         return Token{.tag = tag};
       }
     } else if (is_numeric(self.char)) {
-      var number_str = self.read_number();
+      var number_str = self.read_seq(is_numeric);
       const number = try std.fmt.parseInt(i32, number_str, 10);
 
       return Token{.integer = number};
