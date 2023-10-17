@@ -246,3 +246,75 @@ test "scanner" {
 
   //std.debug.print("\n", .{});
 }
+
+test "operators" {
+  // Setup arena allocator
+  const source = 
+    \\<>{}[]()!?`~,.'";:/\|=+-*&^%$#@
+    ;
+
+  const expected = [_]Token{
+    .lesser,
+    .greater,
+    .lbrace,
+    .rbrace,
+    .lbracket,
+    .rbracket,
+    .lparen,
+    .rparen,
+    .bang,
+    .question,
+    .tick,
+    .tilde,
+    .comma,
+    .dot,
+    .quote,
+    .doublequote,
+    .semicolon,
+    .colon,
+    .slash,
+    .backslash,
+    .pipe,
+    .assign,
+    .plus,
+    .minus,
+    .asterisk,
+    .ampersand,
+    .caret,
+    .percent,
+    .dollar,
+    .pound,
+    .address,
+    .eof
+  };
+
+  // Scan file
+  var scanner = try Scanner.new(source);
+  try scanner.init(std.testing.allocator);
+  defer scanner.deinit();
+
+  var tokens = std.ArrayList(Token).init(std.testing.allocator);
+  defer tokens.deinit();
+
+  while (try scanner.next_token()) |token| {
+    try tokens.append(token);
+  }
+
+  try test_tokens(expected[0..], tokens.items);
+  // Print tokens
+  //std.debug.print("\n", .{});
+  //for (tokens.items) |token| {
+  //  switch (token) {
+  //    Token.tag => |ident| std.debug.print("{s} ", .{ident}),
+  //    Token.integer => |int| std.debug.print("{d} ", .{int}),
+  //    Token.Const => std.debug.print("const ", .{}),
+  //    Token.Let => std.debug.print("let ", .{}),
+  //    Token.assign => std.debug.print("= ", .{}),
+  //    Token.newline => std.debug.print("\n", .{}),
+  //    Token.eof => std.debug.print("eof", .{}),
+  //    else => {}
+  //  }
+  //}
+
+  //std.debug.print("\n", .{});
+}
