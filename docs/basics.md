@@ -542,6 +542,9 @@ const set_pos(mut& p: Player) = (pos: {f32, f32}) => self.pos = pos
 
 # Receiver tag can be inferred to be self
 const read_health(&Player) = (health: int) => return self.health
+
+# Can also be written using UFCS
+const read_health = (&self: Player, health: int) => return self.health
 ```
 
 ## File imports
@@ -814,7 +817,7 @@ intList.insert(12)
   - ..(type)        : Exclusive Range, type must be integer types or byte
   - ...(type)       : Inclusive Range, type must be integer types or byte
   - fn () -> ()     : Function
-  - fn ()() -> ()   : Method
+  - fn ()() -> ()   : Trait Method
 ```
 
 ## Example: Linked List
