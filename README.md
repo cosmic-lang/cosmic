@@ -3,7 +3,7 @@ A general purpose, statically typed, programming language.
 
 # ! In Early Development
 Implementation of `Ruka` has just started, so it is not usable yet.  
-Development is following three main stages:
+Initial development is following three main stages:
 - Stage 1: Scanning/Parsing [in progress]
 - Stage 2: Simple Interpreter
 - Stage 3: Compilation, either using LLVM or to ASM directly
