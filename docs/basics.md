@@ -244,6 +244,13 @@ add(y: 1, 2) # y = 1, x = 2
 add(1) # x = 1, y = null
 ```
 
+## Universal Function Call Syntax
+Functions can be called as methods, as long as the first parameter of the function
+is the same type as the expression the "method" is being called on
+```
+
+```
+
 ## Error Handling
 ```
 # Returns a result, which is a union (string or error)
