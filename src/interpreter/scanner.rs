@@ -66,12 +66,15 @@ impl <'a> Scanner<'a> {
   }
 
   /// Reads sequences of chars, used for tags and keywords
-  fn read_sequence(&mut self, func: fn (char) -> bool) -> &'a str {
-    let start = self.read;
-    let mut end = self.read;
-    while func(self.char) {
-      end += 1; 
+  fn read_tag(&mut self, start: usize, mut end: usize) -> &'a str {
+    if is_alphanumeric(self.char) {
       self.advance(1);
+      return self.read_tag(start, end + 1)
+    }
+
+    if self.char == '?' || self.char == '!' {
+      self.advance(1);
+      end += 1
     }
 
     return &self.source[start..end];
@@ -112,7 +115,7 @@ impl <'a> Scanner<'a> {
         self.next_token()
       }
       ch if is_alphabetical(ch) => {
-        let chars = self.read_sequence(|ch| {return is_alphanumeric(ch)});
+        let chars = self.read_tag(self.read, self.read);
         return match Token::try_keyword(chars) {
           Some(token) => token,
           None => Token::Tag(chars)
@@ -201,7 +204,7 @@ fn is_numeric(ch: char) -> bool {
 /// Returns true if char is a number or letter or '_'
 fn is_alphanumeric(ch: char) -> bool {
   return match ch {
-    ch if is_alphabetical(ch) | is_integer(ch) => true,
+    ch if is_alphabetical(ch) | is_integer(ch) => true, 
     _ => false
   }
 }
@@ -257,6 +260,45 @@ mod tests {
       Token::Float(12.2),
       Token::Dot,
       Token::Integer(4),
+      Token::Newline
+    ];
+  
+    let mut scanner = Scanner::new(&source);
+
+    let mut tokens = Vec::new();
+
+    loop {
+      let token = scanner.next_token();
+
+      if token == Token::Eof {
+        break;
+      } else {
+        tokens.push(token);
+      }
+    }
+
+    assert!(tokens == expected);
+  }
+  
+  #[test]
+  fn tags_n_keywords() {
+    use crate::prelude::*;
+
+    let source = "
+    hello
+    hey?
+    yo!
+    let
+    ";
+
+    let expected = [
+      Token::Tag("hello"),
+      Token::Newline,
+      Token::Tag("hey?"),
+      Token::Newline,
+      Token::Tag("yo!"),
+      Token::Newline,
+      Token::Let,
       Token::Newline
     ];
   
