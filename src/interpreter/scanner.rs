@@ -49,6 +49,17 @@ impl <'a> Scanner<'a> {
     return &self.source[start..end];
   }
 
+  fn read_number(&mut self) -> &'a str {
+    let start = self.read;
+    let mut end = self.read + 1;
+    while is_numeric(self.char) {
+      end += 1; 
+      self.advance();
+    }
+
+    return &self.source[start..end];
+  }
+
   pub fn next_token(&mut self) -> Token<'a> {
     return match self.char {
       ch if is_alphabetical(ch) => {
@@ -58,6 +69,18 @@ impl <'a> Scanner<'a> {
           None => Token::Tag(chars)
         }
       },
+      ch if is_integer(ch) => {
+        let chars = self.read_number();
+
+        return match chars.find('.') {
+          Some(_) => {
+            Token::Float(chars.parse::<f64>().unwrap())  
+          },
+          None => {
+            Token::Integer(chars.parse::<i64>().unwrap())
+          }
+        }
+      }
       ch => {
         self.advance();
         Token::of_char(ch)
@@ -73,16 +96,24 @@ fn is_alphabetical(ch: char) -> bool {
   }
 }
 
+fn is_integer(ch: char) -> bool {
+  return match ch {
+    '0'..='9' => true,
+    _ => false
+  }
+}
+
 fn is_numeric(ch: char) -> bool {
   return match ch {
-    '0'..='9' | '.' => true,
+    ch if is_integer(ch) => true,
+    '.' => true,
     _ => false
   }
 }
 
 fn is_alphanumeric(ch: char) -> bool {
   return match ch {
-    ch if is_alphabetical(ch) | is_numeric(ch) => true,
+    ch if is_alphabetical(ch) | is_integer(ch) => true,
     _ => false
   }
 }
