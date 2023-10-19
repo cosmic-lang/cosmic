@@ -40,7 +40,7 @@ Assignment in `Ruka` can also be done as an expression using ":=", which returns
 let boolean = false
 # Assignment expression
 while (boolean := someFunc()) { # Will loop until someFunc returns false 
-  std.fmt.printf("{}", boolean)
+  std/fmt.printf("{}", boolean)
 }
 ```
 
@@ -79,8 +79,8 @@ In `Ruka` memory is GC/stack allocated by default. Memory can be allocated manua
 ```
 let name: int = 12 # GC/stack allocated
 
-let names: *[5]string = std.mem.allocator.new([5]string) # Allocates an array and returns a pointer to it
-defer std.mem.allocator.free(names) # Manual memory must be freed
+let names: *[5]string = std/mem.allocator.new([5]string) # Allocates an array and returns a pointer to it
+defer std/mem.allocator.free(names) # Manual memory must be freed
 ```
 
 ## Basic Primitive Types
@@ -131,7 +131,7 @@ Here is a list of `Ruka`'s primitive types:
 # Arrays are static, their sizes cannot change and must be known at compile time
 let arr = [5]{1, 2, 3, 4, 5}
 let num = arr[2]
-std.testing.expect(num == 3)
+std/testing.expect(num == 3)
 ```
 
 - `Dynamic Array`
@@ -139,7 +139,7 @@ std.testing.expect(num == 3)
 # Can change size
 let arr = [dyn]{1, 2, 3}
 let num = arr[1]
-std.testing.expect(num == 2)
+std/testing.expect(num == 2)
 ```
 
 - `Tuple`  
@@ -147,12 +147,12 @@ Tuples can be indexed, or destructured using pattern matching. The $len() functi
 ```
 let pos = {10, 15}
 
-std.testing.expect(@len(pos) == 2)
+std/testing.expect(@len(pos) == 2)
 
 let {x, y} = {pos[0], pos[1]}
 let x, y = pos # The lhs braces are not required
 
-std.testing.expect(x == 10 and y == 15)
+std/testing.expect(x == 10 and y == 15)
 ```
 - `Named Tuple`
 each {k, v} pair can be indexed, this is just syntactic sugar for creating tuples of two element tuples
@@ -174,7 +174,7 @@ let atomic_mass = %{
 }
 
 let carbon_mass = atomic_mass[:carbon]
-std.testing.expect(carbon_mass == 15.999) # For floats == only compares the whole number
+std/testing.expect(carbon_mass == 15.999) # For floats == only compares the whole number
 ```
 
 ## String interpolation
@@ -297,8 +297,8 @@ const Result = enum {
 let x = Result.ok(12)
 
 match (x) {
-  | Result.ok => |val| std.fmt.println("{}", val),
-  | .err => |err| std.fmt.println(err),
+  | Result.ok => |val| std/fmt.println("{}", val),
+  | .err => |err| std/fmt.println(err),
   # Cases can be guarded using when followed by a condition
   # If the condition returns true, that case will execute
   | when is?(x) => |val| {}
@@ -310,7 +310,7 @@ let source = "int main() {}"
 # capturing the remaining portion of the string as a slice
 match (source) {
   | "int", ... => |rest| {
-    std.fmt.print("{}\n", rest)
+    std/fmt.print("{}\n", rest)
   }
 }
 
@@ -495,12 +495,12 @@ let o = Result.other
 # Variant can be pattern matched, to access inner values, errors if rhs is not the matching tag
 let Result.ok(z) = x
 
-std.testing.expect(z == 12)
+std/testing.expect(z == 12)
 
 # Variant can also be used for branching based on if the pattern matches or not
 # The variant type can be inferred
 if (.ok := x) |z| {
-  std.fmt.printf("{}", z)
+  std/fmt.printf("{}", z)
 }
 ```
 
@@ -541,16 +541,19 @@ const Player = record {
 const set_pos(mut& p: Player) = (pos: {f32, f32}) => self.pos = pos
 
 # Receiver tag can be inferred to be self
-const read_health(&Player) = (health: int) => return self.health
+const set_health(&Player) = (health: int) => self.health = health
 
 # Can also be written using UFCS
-const read_health = (&self: Player, health: int) => return self.health
+const set_health = (&self: Player, health: int) => self.health = health
+
+# And reciever can be inferred to be self
+const set_health = (&Player, health: int) => self.health = health
 ```
 
 ## File imports
 When files are imported, they are stored as modules.
 ```
-const std = @import("std")
+const std/= @import("std")
 ```
 
 ## Signals
@@ -613,7 +616,7 @@ const div = (x, y: int): {int, int} => {
 }
 
 let result = div(12, 5)
-std.testing.expect(result[0] == 2)
+std/testing.expect(result[0] == 2)
 
 const div = (x, y: int): record{quo, rem: int} => {
   let quo = x / y
@@ -623,7 +626,7 @@ const div = (x, y: int): record{quo, rem: int} => {
 }
 
 let result = div(12, 5)
-std.testing.expect(result.quo == 2)
+std/testing.expect(result.quo == 2)
 
 # Anytype infers the function type at compile time where called, think templates
 # If multiple args, they are treated as a tuple
@@ -633,7 +636,7 @@ const variadic = (...args) => {
   let size = @len(args)
 
   for (0..size) |i| {
-    std.fmt.printf("{} ", args[i])
+    std/fmt.printf("{} ", args[i])
   }
 }
 
@@ -707,8 +710,8 @@ const Player = record {
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-const update_pos(mut& Player) = (pos: {f32, f32}) => # code
-const update_health(mut& Player) = (health: int) => # code
+const update_pos = (mut& Player, pos: {f32, f32}) => # code
+const update_health = (mut& Player, health: int) => # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -757,7 +760,7 @@ const List = ($type: typeid): moduleid => {
       size: uint
     }
 
-    const insert(mut& t) = (value: type) => {...}
+    const insert = (mut& t, value: type) => {...}
   }
 }
 
@@ -769,6 +772,7 @@ intList.insert(12)
 `Ruka` has many operators and symbols, some have different meaning depending on context:
 ```
 - Miscelaneous Operators
+  - /   : Namespace Resolution
   - =   : Assignment 
   - :=  : Assignment Expression
   - []  : Index 
@@ -804,6 +808,8 @@ intList.insert(12)
   - |   : Bitwise OR
   - ^   : Bitwise XOR
   - !   : Bitwise Negation
+  - <<  : Bitshift Left
+  - >>  : Bitshift Right
 - Type Symbols
   - (type or type)  : Union
   - !type           : type or error

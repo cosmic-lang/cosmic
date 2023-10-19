@@ -83,6 +83,8 @@ pub enum Token<'a> {
   Pipe,
   Caret,
   Tilde,
+  Lshift,
+  Rshift,
   // Comparators
   Lesser,
   LesserEq,

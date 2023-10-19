@@ -143,29 +143,29 @@ impl <'a> Scanner<'a> {
         self.advance(2);
         Token::LesserEq
       },
+      '<' if self.peek() == '<' => {
+        self.advance(2);
+        Token::Lshift
+      },
       '>' if self.peek() == '=' => {
         self.advance(2);
         Token::GreaterEq
+      },
+      '>' if self.peek() == '>' => {
+        self.advance(2);
+        Token::Rshift
       },
       '!' if self.peek() == '=' => {
         self.advance(2);
         Token::NotEqual
       },
-      '=' => {
-        match self.peek() {
-          '>' => { 
+      '=' if self.peek() == '>' => {
             self.advance(2);
             Token::FatArrow
-          },
-          '=' => { 
+      },
+      '=' if self.peek() == '=' => { 
             self.advance(2);
             Token::Equal
-          },
-          _ => {
-            self.advance(1);
-            Token::of_char(self.char)
-          }
-        }
       },
       // All else
       ch => {
