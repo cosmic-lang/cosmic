@@ -1,3 +1,7 @@
+//!
+//!
+
+///
 #[derive(Debug, PartialEq)]
 pub enum Token<'a> {
   // Literals
@@ -93,6 +97,7 @@ pub enum Token<'a> {
 }
 
 impl <'a> Token<'a> {
+  // If tag matches a keyword returns Some(that keyword), else None
   pub fn try_keyword(tag: &str) -> Option<Token> {
     match tag {
       "const"    => Some(Token::Const),
@@ -128,6 +133,7 @@ impl <'a> Token<'a> {
     }
   }
 
+  // Returns the Token eqivalent of char
   pub fn of_char(ch: char) -> Token<'a> {
     match ch {
       //
