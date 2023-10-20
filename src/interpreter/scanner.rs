@@ -25,7 +25,7 @@ impl <'a> Scanner<'a> {
 
   /// Advances the scanner count number of times
   fn advance(&mut self, count: usize) {
-    let count = count.clamp(0, 2);
+    let count = count.clamp(0, 3);
 
     for _ in 0..count {
       self.read += 1;
@@ -42,6 +42,14 @@ impl <'a> Scanner<'a> {
   fn peek(&self) -> char {
     return match self.peek >= self.source.len() {
       false => self.source.chars().nth(self.peek).unwrap(),
+      true => '\0'
+    }
+  }
+  
+  /// Returns the next char at peek + count, skipping whitespace
+  fn peek_plus(&self, count: usize) -> char {
+    return match self.peek + count >= self.source.len() {
+      false => self.source.chars().nth(self.peek + count).unwrap(),
       true => '\0'
     }
   }
@@ -104,6 +112,53 @@ impl <'a> Scanner<'a> {
     return &self.source[start..end];
   }
 
+  /// Reads strings
+  fn read_string(&mut self, start: usize, end: usize) -> &'a str {
+    if self.char != '"' && self.read < self.source.len() {
+      self.advance(1);
+      return self.read_string(start, end + 1);
+    }
+
+    self.advance(1);
+    return &self.source[start..end];
+  }
+  
+  /// Reads multiline strings
+  fn read_multistring(&mut self, _start: usize, _end: usize) -> &'a str {
+    return ""
+  }
+
+  /// Checks for compound operators
+  fn compound_or_else(&mut self, rules: Vec<(char, Token<'a>)>, default: Token<'a>) -> Token<'a> {
+    match self.char {
+      ' ' | '\r' | '\t' => self.skip_whitespace(),
+      _ => self.advance(1)
+    }
+
+    for rule in rules {
+      if self.char == rule.0 {
+        self.advance(1);
+        return rule.1;
+      }
+    }
+
+    return default;
+  }
+  
+  /// Checks for three char compound operators
+  fn compound_three(&mut self, rules: Vec<(char, char, Token<'a>)>) -> Option<Token<'a>> {
+    for rule in rules {
+      if self.peek() == rule.0 {
+        if self.peek_plus(1) == rule.1 {
+          self.advance(3);
+          return Some(rule.2);
+        }
+      }
+    }
+
+    return None;
+  }
+
   /// Scans the next token from the source
   pub fn next_token(&mut self) -> Token<'a> {
     self.skip_whitespace();
@@ -127,45 +182,86 @@ impl <'a> Scanner<'a> {
 
         return match chars.find('.') {
           Some(_) => {
-            Token::Float(chars.parse::<f64>().unwrap())  
+            Token::Float(chars)  
           },
           None => {
-            Token::Integer(chars.parse::<i64>().unwrap())
+            Token::Integer(chars)
           }
         }
       },
+      // Strings
+      '"' => {
+        self.advance(1);
+        let chars = self.read_string(self.read, self.read);
+        Token::String(chars)
+      },
+      // Multiline Strings
+      '\\' if self.peek() == '\\' => {
+        self.advance(2);
+        let chars = self.read_multistring(self.read, self.read);
+        Token::String(chars)
+      },
       // Compound operators
-      '-' if self.peek() == '>' => {
-        self.advance(2);
-        Token::Arrow
+      '=' => {
+        self.compound_or_else(vec![
+          ('>', Token::FatArrow),
+          ('=', Token::Equal)
+        ], Token::Assign)
       },
-      '<' if self.peek() == '=' => {
-        self.advance(2);
-        Token::LesserEq
+      '+' => { 
+        self.compound_or_else(vec![
+          ('+', Token::Increment)
+        ], Token::Plus)
       },
-      '<' if self.peek() == '<' => {
-        self.advance(2);
-        Token::Lshift
+      '*' => { 
+        self.compound_or_else(vec![
+          ('*', Token::Power)
+        ], Token::Asterisk)
       },
-      '>' if self.peek() == '=' => {
-        self.advance(2);
-        Token::GreaterEq
+      '-' => {
+        self.compound_or_else(vec![
+          ('>', Token::Arrow),
+          ('-', Token::Decrement)
+        ], Token::Minus)
       },
-      '>' if self.peek() == '>' => {
-        self.advance(2);
-        Token::Rshift
+      '<' => {
+        self.compound_or_else(vec![
+          ('=', Token::LesserEq),
+          ('<', Token::Lshift)
+        ], Token::Lesser) 
       },
-      '!' if self.peek() == '=' => {
-        self.advance(2);
-        Token::NotEqual
+      '>' => {
+        self.compound_or_else(vec![
+          ('=', Token::GreaterEq),
+          ('>', Token::Rshift)
+        ], Token::Greater)  
       },
-      '=' if self.peek() == '>' => {
-            self.advance(2);
-            Token::FatArrow
+      '!' => {
+        self.compound_or_else(vec![
+          ('=', Token::NotEqual)
+        ], Token::Bang) 
       },
-      '=' if self.peek() == '=' => { 
-            self.advance(2);
-            Token::Equal
+      ':' => {
+        self.compound_or_else(vec![
+          ('=', Token::AssignExp)
+        ], Token::Colon)
+      },
+      '|' => { 
+        self.compound_or_else(vec![
+          ('>', Token::Pipeline)
+        ], Token::Pipe)
+      },
+      '.' => {
+        // Check for three char operator
+        match self.compound_three(vec![('.', '.', Token::RangeInc)]) {
+          Some(token) => token,
+          None => {
+            // Check for two char operator
+            self.compound_or_else(vec![
+              ('.', Token::RangeExc)
+            ], Token::Dot)    
+          }
+        }
       },
       // All else
       ch => {
@@ -212,15 +308,30 @@ fn is_alphanumeric(ch: char) -> bool {
 #[cfg(test)]
 mod tests {
   #[test]
-  fn scan_operators() {
+  fn operators() {
     use crate::prelude::*;
 
-    let source = "+-*/";
+    let source = "+-*/<>!@$%&^=|;:?,.";
     let expected = [
       Token::Plus,
       Token::Minus,
       Token::Asterisk,
-      Token::Slash
+      Token::Slash,
+      Token::Lesser,
+      Token::Greater,
+      Token::Bang,
+      Token::Address,
+      Token::Cash,
+      Token::Percent,
+      Token::Ampersand,
+      Token::Caret,
+      Token::Assign,
+      Token::Pipe,
+      Token::Semicolon,
+      Token::Colon,
+      Token::Question,
+      Token::Comma,
+      Token::Dot
     ];
   
     let mut scanner = Scanner::new(&source);
@@ -253,13 +364,13 @@ mod tests {
 
     let expected = [
       Token::Newline,
-      Token::Integer(1234),
+      Token::Integer("1234"),
       Token::Newline,
-      Token::Float(12.4),
+      Token::Float("12.4"),
       Token::Newline,
-      Token::Float(12.2),
+      Token::Float("12.2"),
       Token::Dot,
-      Token::Integer(4),
+      Token::Integer("4"),
       Token::Newline
     ];
   
@@ -270,6 +381,39 @@ mod tests {
     loop {
       let token = scanner.next_token();
 
+      if token == Token::Eof {
+        break;
+      } else {
+        tokens.push(token);
+      }
+    }
+
+    assert!(tokens == expected);
+  }
+  
+  #[test]
+  fn strings() {
+    use crate::prelude::*;
+
+    let source = "
+    \"12.2.1\"
+    \"hello\"
+    ";
+
+    let expected = [
+      Token::String("12.2.1"),
+      Token::Newline,
+      Token::String("hello"),
+      Token::Newline,
+    ];
+  
+    let mut scanner = Scanner::new(&source);
+
+    let mut tokens = Vec::new();
+
+    loop {
+      let token = scanner.next_token();
+      dbg!(&token);
       if token == Token::Eof {
         break;
       } else {
@@ -323,14 +467,17 @@ mod tests {
   fn compound_operators() {
     use crate::prelude::*;
 
-    let source = "<==>->!!=";
+    let source = "<==>->!!=..:=...";
 
     let expected = [
       Token::LesserEq,
       Token::FatArrow,
       Token::Arrow,
       Token::Bang,
-      Token::NotEqual
+      Token::NotEqual,
+      Token::RangeExc,
+      Token::AssignExp,
+      Token::RangeInc
     ];
   
     let mut scanner = Scanner::new(&source);
