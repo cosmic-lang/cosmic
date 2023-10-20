@@ -619,4 +619,51 @@ mod tests {
       assert!(t.tt == expected[pos])
     }
   }
+  
+  #[test]
+  fn assignment() {
+    use crate::prelude::*;
+
+    let source = "
+    let x: int = 12
+    const y: string := \"hello\"
+    ";
+
+    let expected = [
+      TokenType::Let,
+      TokenType::Tag("x"),
+      TokenType::Colon,
+      TokenType::Tag("int"),
+      TokenType::Assign,
+      TokenType::Integer("12"),
+      TokenType::Newline,
+      TokenType::Const,
+      TokenType::Tag("y"),
+      TokenType::Colon,
+      TokenType::Tag("string"),
+      TokenType::AssignExp,
+      TokenType::String("hello"),
+      TokenType::Newline
+    ];
+  
+    let mut scanner = Scanner::new(&source);
+
+    let mut tokens = Vec::new();
+
+    loop {
+      let token = scanner.next_token();
+
+      if token.tt == TokenType::Eof {
+        break;
+      } else {
+        tokens.push(token);
+      }
+    }
+
+    assert!(tokens.len() == expected.len());
+
+    for (pos, t) in tokens.iter().enumerate() {
+      assert!(t.tt == expected[pos])
+    }
+  }
 }
