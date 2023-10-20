@@ -201,6 +201,10 @@ impl <'a> Scanner<'a> {
         let chars = self.read_multistring(self.read, self.read);
         Token::String(chars)
       },
+      // Regex
+      '`' => {
+        Token::Regex("")
+      }
       // Compound operators
       '=' => {
         self.compound_or_else(vec![

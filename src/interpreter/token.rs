@@ -47,9 +47,6 @@ pub enum Token<'a> {
   // Punctuation
   Dot,
   Comma,
-  Quote,
-  DoubleQuote,
-  Tick,
   Lparen,
   Rparen,
   Lbracket,
@@ -143,9 +140,6 @@ impl <'a> Token<'a> {
       //
       '.'  => Token::Dot,
       ','  => Token::Comma,
-      '\'' => Token::Quote,
-      '\"' => Token::DoubleQuote,
-      '`'  => Token::Tick,
       '('  => Token::Lparen,
       ')'  => Token::Rparen,
       '['  => Token::Lbracket,
@@ -227,9 +221,6 @@ impl <'a> Token<'a> {
       // Puctuation
       Token::Dot          => ".",
       Token::Comma        => ",",
-      Token::Quote        => "\'",
-      Token::DoubleQuote  => "\"",
-      Token::Tick         => "`",
       Token::Lparen       => "(",
       Token::Rparen       => ")",
       Token::Lbracket     => "[",

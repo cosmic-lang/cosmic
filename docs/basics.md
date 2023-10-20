@@ -105,7 +105,7 @@ Here is a list of `Ruka`'s primitive types:
     \\ line
     \\ string
 - `regex`
-  - ~r"foo|bar"
+  - \`foo|bar\`
 - `bool` 
   - true, false
 - `void` 
@@ -337,7 +337,7 @@ match (nums[..]) {
 `Ruka` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
 ```
 let input = "foo"
-let reg = ~r"foo|bar"
+let reg = `foo|bar`
 
 if (foo ~= reg) {
 
