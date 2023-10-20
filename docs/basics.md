@@ -6,7 +6,7 @@
 ```
 
 ## Bindings
-Bindings in `Ruka` follow the form of:  
+Bindings in `Rex` follow the form of:  
 <pre>
   kind tag [: type] [= expression]
 </pre>
@@ -28,14 +28,14 @@ let year = 2023
 year = 2024
 ```
 
-`Ruka` supports multiple assignment
+`Rex` supports multiple assignment
 ```
 let x = 12
 let y = 31
 x, y = y, x # swaps bindings with no need for temporary bindings
 ```
 
-Assignment in `Ruka` can also be done as an expression using ":=", which returns the rhs value.
+Assignment in `Rex` can also be done as an expression using ":=", which returns the rhs value.
 ```
 let boolean = false
 # Assignment expression
@@ -73,7 +73,7 @@ then a type specification must be added.
 ```
 
 ## Memory Management
-In `Ruka` memory is GC/stack allocated by default. Memory can be allocated manually using an allocator if desired. And GC can be disabled completely on a pre project basis.
+In `Rex` memory is GC/stack allocated by default. Memory can be allocated manually using an allocator if desired. And GC can be disabled completely on a pre project basis.
 - Manual management:
   - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
 ```
@@ -84,7 +84,7 @@ defer std/mem.allocator.free(names) # Manual memory must be freed
 ```
 
 ## Basic Primitive Types
-Here is a list of `Ruka`'s primitive types:
+Here is a list of `Rex`'s primitive types:
 - `isize`    
   - 12, architecture dependent size
 - `i#`     
@@ -112,7 +112,7 @@ Here is a list of `Ruka`'s primitive types:
   - also ().
 - `null`
 - `typeid` 
-  - i32, int, char, MyRecord. Types are values in `Ruka`
+  - i32, int, char, MyRecord. Types are values in `Rex`
 - `moduleid`
 - `error`
 - `range` 
@@ -125,7 +125,7 @@ Here is a list of `Ruka`'s primitive types:
 - `anytype`
 
 ## Primitive Data Collections
-`Ruka` has a few primitive data collections for you to use:
+`Rex` has a few primitive data collections for you to use:
 - `Array`
 ```
 # Arrays are static, their sizes cannot change and must be known at compile time
@@ -203,7 +203,7 @@ Multi-line blocks are enclosed using braces: {}
 ```
 
 ## Function Basics
-All functions in `Ruka` are anonymous closures, so function definition involves storing a function literal in a binding. Captured variables must be explicitly captured.
+All functions in `Rex` are anonymous closures, so function definition involves storing a function literal in a binding. Captured variables must be explicitly captured.
 
 Anonymous function creation follows the form of:
 <pre>
@@ -334,7 +334,7 @@ match (nums[..]) {
 
 ```
 
-`Ruka` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
+`Rex` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
 ```
 let input = "foo"
 let reg = `foo|bar`
@@ -381,7 +381,7 @@ unless (condition) {
 ```
 
 ## Loops
-`Ruka` has two looping constructs, range-based for loops, and while loops.
+`Rex` has two looping constructs, range-based for loops, and while loops.
 ```
 for (iterable, iterable2) |i, i2| {
 
@@ -505,7 +505,7 @@ if (.ok := x) |z| {
 ```
 
 ## Modules
-In `Ruka`, modules are collections of bindings. Bindings can be let or const.
+In `Rex`, modules are collections of bindings. Bindings can be let or const.
 All modules are anonymous, named modules are made by storing modules in bindings
 ```
 const Constants = module {
@@ -686,7 +686,7 @@ let greeting = "!dlrow ,olleh"
 ```
 
 ## Traits
-`Ruka` doesn't have inheritance, instead `Ruka` uses interfaces called `traits`.
+`Rex` doesn't have inheritance, instead `Rex` uses interfaces called `traits`.
 
 Traits cannot specify data members, only methods
 ```
@@ -719,7 +719,7 @@ system(&player)
 ```
 
 ## Comptime Expressions
-Metaprogramming in `Ruka` is done using comptime expressions, which is just `Ruka` code executed at compile time
+Metaprogramming in `Rex` is done using comptime expressions, which is just `Rex` code executed at compile time
 
 The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
 ```
@@ -745,7 +745,7 @@ const screen_size = ${
 }
 ```
 ## First Class Modules
-Modules are first class in `Ruka`, so they can be passed into and out of functions
+Modules are first class in `Rex`, so they can be passed into and out of functions
 ```
 # To create a generic ds with methods, you must return a record with static bindings
 const List = ($type: typeid): moduleid => {
@@ -769,7 +769,7 @@ intList.insert(12)
 ```
 
 ## Operators
-`Ruka` has many operators and symbols, some have different meaning depending on context:
+`Rex` has many operators and symbols, some have different meaning depending on context:
 ```
 - Miscelaneous Operators
   - /   : Namespace Resolution
@@ -874,7 +874,7 @@ names.insert("foobar")
 ```
 
 ## Circuits
-`Ruka` has an extension called `Silver`, which integrates HDL into the language for simple FPGA development.
+`Rex` has an extension called `Silver`, which integrates HDL into the language for simple FPGA development.
 
 Refer to `Silver` for details
 ```

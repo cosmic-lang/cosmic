@@ -1,6 +1,6 @@
 [package]
-name = "ruka"
-version = "0.1.0"
+name = "rex"
+version = "0.0.1"
 edition = "2021"
 description = "General Purpose Programming Language"
 
