@@ -1,4 +1,4 @@
-//use ruka::prelude::*;
+//use rex::prelude::*;
 
 use std::{path::PathBuf, env};
 
@@ -6,17 +6,17 @@ use anyhow::{Result, anyhow};
 use clap::{Parser, Subcommand};
 use const_format::formatcp;
 
-use ruka::prelude::*;
+use rex::prelude::*;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const DESCRIPTION: &str = env!("CARGO_PKG_DESCRIPTION");
 const ABOUT: &str = formatcp!("\n\
-  Ruka {VERSION} \n\
+  Rex {VERSION} \n\
   {DESCRIPTION}"
 );
 
 #[derive(Parser)]
-#[command(name="ruka", author="ruka-lang", version, about=ABOUT, arg_required_else_help = true)]
+#[command(name="rex", author="rex-lang", version, about=ABOUT, arg_required_else_help = true)]
 struct Cli {
   #[arg(short, long)]
   output: Option<PathBuf>,

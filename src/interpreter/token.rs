@@ -1,9 +1,13 @@
+//!
+//!
+
+///
 #[derive(Debug, PartialEq)]
 pub enum Token<'a> {
   // Literals
   Tag(&'a str),
-  Integer(i64),
-  Float(f64),
+  Integer(&'a str),
+  Float(&'a str),
   String(&'a str),
   Regex(&'a str),
   // Keywords
@@ -43,16 +47,12 @@ pub enum Token<'a> {
   // Punctuation
   Dot,
   Comma,
-  Quote,
-  DoubleQuote,
-  Tick,
   Lparen,
   Rparen,
   Lbracket,
   Rbracket,
   Lsquirly,
   Rsquirly,
-  Backslash,
   Colon,
   Semicolon,
   Arrow,
@@ -65,6 +65,7 @@ pub enum Token<'a> {
   Question,
   RangeExc,
   RangeInc,
+  Pipeline,
   // Arithmetic
   Plus,
   Minus,
@@ -79,6 +80,8 @@ pub enum Token<'a> {
   Pipe,
   Caret,
   Tilde,
+  Lshift,
+  Rshift,
   // Comparators
   Lesser,
   LesserEq,
@@ -93,6 +96,7 @@ pub enum Token<'a> {
 }
 
 impl <'a> Token<'a> {
+  // If tag matches a keyword returns Some(that keyword), else None
   pub fn try_keyword(tag: &str) -> Option<Token> {
     match tag {
       "const"    => Some(Token::Const),
@@ -128,6 +132,7 @@ impl <'a> Token<'a> {
     }
   }
 
+  // Returns the Token eqivalent of char
   pub fn of_char(ch: char) -> Token<'a> {
     match ch {
       //
@@ -135,16 +140,12 @@ impl <'a> Token<'a> {
       //
       '.'  => Token::Dot,
       ','  => Token::Comma,
-      '\'' => Token::Quote,
-      '\"' => Token::DoubleQuote,
-      '`'  => Token::Tick,
       '('  => Token::Lparen,
       ')'  => Token::Rparen,
       '['  => Token::Lbracket,
       ']'  => Token::Rbracket,
       '{'  => Token::Lsquirly,
       '}'  => Token::Rsquirly,
-      '\\' => Token::Backslash,
       ':'  => Token::Colon,
       ';'  => Token::Semicolon,
       //
@@ -171,6 +172,101 @@ impl <'a> Token<'a> {
       '\n' => Token::Newline,
       '\0' => Token::Eof,
       _ => Token::Illegal
+    }
+  }
+
+  // Returns the string representation of token
+  pub fn to_string(&self) -> &'a str {
+    match self {
+      // Complex tokens
+      Token::Tag(tag)     => tag,
+      Token::Integer(int) => int,
+      Token::Float(float) => float,
+      Token::String(str)  => str,
+      Token::Regex(reg)   => reg,
+      // Keywords
+      Token::Const        => "const",
+      Token::Let          => "let",
+      Token::Return       => "return",
+      Token::Fn           => "fn",
+      Token::Record       => "record",
+      Token::Enum         => "enum",
+      Token::Trait        => "trait",
+      Token::Module       => "module",
+      Token::Defer        => "defer",
+      Token::When         => "when",
+      Token::Inline       => "inline",
+      Token::True         => "true",
+      Token::False        => "false",
+      Token::For          => "for",
+      Token::While        => "while",
+      Token::Break        => "break",
+      Token::Continue     => "continue",
+      Token::Match        => "match",
+      Token::If           => "if",
+      Token::Else         => "else",
+      Token::As           => "as",
+      Token::And          => "and",
+      Token::Or           => "or",
+      Token::Dyn          => "dyn",
+      Token::Anytype      => "any",
+      // Modes
+      Token::Mutable      => "mut",
+      Token::Move         => "mov",
+      Token::Local        => "loc",
+      Token::Comptime     => "comptime",
+      // Assignment
+      Token::Assign       => "=",
+      Token::AssignExp    => ":=",
+      // Puctuation
+      Token::Dot          => ".",
+      Token::Comma        => ",",
+      Token::Lparen       => "(",
+      Token::Rparen       => ")",
+      Token::Lbracket     => "[",
+      Token::Rbracket     => "]",
+      Token::Lsquirly     => "{",
+      Token::Rsquirly     => "}",
+      Token::Colon        => ":",
+      Token::Semicolon    => ";",
+      Token::Arrow        => "->",
+      Token::FatArrow     => "=>",
+      // Operators
+      Token::Address      => "@",
+      Token::Cash         => "$",
+      Token::Pound        => "#",
+      Token::Bang         => "!",
+      Token::Question     => "?",
+      Token::RangeExc     => "..",
+      Token::RangeInc     => "...",
+      Token::Pipeline     => "|>",
+      // Arithmetic
+      Token::Plus         => "+",
+      Token::Minus        => "-",
+      Token::Asterisk     => "*",
+      Token::Slash        => "/",
+      Token::Percent      => "%",
+      Token::Increment    => "++",
+      Token::Decrement    => "--",
+      Token::Power        => "**",
+      // Bitwise
+      Token::Ampersand    => "&",
+      Token::Pipe         => "|",
+      Token::Caret        => "^",
+      Token::Tilde        => "~",
+      Token::Lshift       => "<<",
+      Token::Rshift       => ">>",
+      // Comparators
+      Token::Lesser       => "<",
+      Token::LesserEq     => "<=",
+      Token::Greater      => ">",
+      Token::GreaterEq    => ">=",
+      Token::Equal        => "==",
+      Token::NotEqual     => "!=",
+      // Others
+      Token::Newline      => "\n",
+      Token::Illegal      => "illegal",
+      Token::Eof          => "\0"
     }
   }
 }
