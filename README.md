@@ -1,15 +1,15 @@
-# `Ruka`
+# `Rex`
 A general purpose, statically typed, programming language.
 
 # ! In Early Development
-Implementation of `Ruka` has just started, so it is not usable yet.  
+Implementation of `Rex` has just started, so it is not usable yet.  
 Initial development is following three main stages:
 - Stage 1: Scanning/Parsing [in progress]
 - Stage 2: Simple Interpreter
 - Stage 3: Compilation, either using LLVM or to ASM directly
 
 # License
-`Ruka` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
+`Rex` is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 
 # Features
 - Strong static typing
@@ -25,4 +25,4 @@ Initial development is following three main stages:
 - Borrows for when safety is a priority, Pointers for when it's not
 
 # Stretch Goal: Silver
-`Ruka` may have an extension called `Silver`, which integrates `Ruka` and HDL for simple FPGA development
+`Rex` may have an extension called `Silver`, which integrates `Rex` and HDL for simple FPGA development

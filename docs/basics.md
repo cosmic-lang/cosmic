@@ -6,7 +6,7 @@
 ```
 
 ## Bindings
-Bindings in `Ruka` follow the form of:  
+Bindings in `Rex` follow the form of:  
 <pre>
   kind tag [: type] [= expression]
 </pre>
@@ -28,19 +28,19 @@ let year = 2023
 year = 2024
 ```
 
-`Ruka` supports multiple assignment
+`Rex` supports multiple assignment
 ```
 let x = 12
 let y = 31
 x, y = y, x # swaps bindings with no need for temporary bindings
 ```
 
-Assignment in `Ruka` can also be done as an expression using ":=", which returns the rhs value.
+Assignment in `Rex` can also be done as an expression using ":=", which returns the rhs value.
 ```
 let boolean = false
 # Assignment expression
 while (boolean := someFunc()) { # Will loop until someFunc returns false 
-  std.fmt.printf("{}", boolean)
+  std/fmt.printf("{}", boolean)
 }
 ```
 
@@ -73,18 +73,18 @@ then a type specification must be added.
 ```
 
 ## Memory Management
-In `Ruka` memory is GC/stack allocated by default. Memory can be allocated manually using an allocator if desired. And GC can be disabled completely on a pre project basis.
+In `Rex` memory is GC/stack allocated by default. Memory can be allocated manually using an allocator if desired. And GC can be disabled completely on a pre project basis.
 - Manual management:
   - Using an allocator, you can manage memory manually, which will return a pointer to the memory which must be freed before the program ends
 ```
 let name: int = 12 # GC/stack allocated
 
-let names: *[5]string = std.mem.allocator.new([5]string) # Allocates an array and returns a pointer to it
-defer std.mem.allocator.free(names) # Manual memory must be freed
+let names: *[5]string = std/mem.allocator.new([5]string) # Allocates an array and returns a pointer to it
+defer std/mem.allocator.free(names) # Manual memory must be freed
 ```
 
 ## Basic Primitive Types
-Here is a list of `Ruka`'s primitive types:
+Here is a list of `Rex`'s primitive types:
 - `isize`    
   - 12, architecture dependent size
 - `i#`     
@@ -105,14 +105,14 @@ Here is a list of `Ruka`'s primitive types:
     \\ line
     \\ string
 - `regex`
-  - ~r"foo|bar"
+  - \`foo|bar\`
 - `bool` 
   - true, false
 - `void` 
   - also ().
 - `null`
 - `typeid` 
-  - i32, int, char, MyRecord. Types are values in `Ruka`
+  - i32, int, char, MyRecord. Types are values in `Rex`
 - `moduleid`
 - `error`
 - `range` 
@@ -125,13 +125,13 @@ Here is a list of `Ruka`'s primitive types:
 - `anytype`
 
 ## Primitive Data Collections
-`Ruka` has a few primitive data collections for you to use:
+`Rex` has a few primitive data collections for you to use:
 - `Array`
 ```
 # Arrays are static, their sizes cannot change and must be known at compile time
 let arr = [5]{1, 2, 3, 4, 5}
 let num = arr[2]
-std.testing.expect(num == 3)
+std/testing.expect(num == 3)
 ```
 
 - `Dynamic Array`
@@ -139,7 +139,7 @@ std.testing.expect(num == 3)
 # Can change size
 let arr = [dyn]{1, 2, 3}
 let num = arr[1]
-std.testing.expect(num == 2)
+std/testing.expect(num == 2)
 ```
 
 - `Tuple`  
@@ -147,12 +147,12 @@ Tuples can be indexed, or destructured using pattern matching. The $len() functi
 ```
 let pos = {10, 15}
 
-std.testing.expect(@len(pos) == 2)
+std/testing.expect(@len(pos) == 2)
 
 let {x, y} = {pos[0], pos[1]}
 let x, y = pos # The lhs braces are not required
 
-std.testing.expect(x == 10 and y == 15)
+std/testing.expect(x == 10 and y == 15)
 ```
 - `Named Tuple`
 each {k, v} pair can be indexed, this is just syntactic sugar for creating tuples of two element tuples
@@ -174,7 +174,7 @@ let atomic_mass = %{
 }
 
 let carbon_mass = atomic_mass[:carbon]
-std.testing.expect(carbon_mass == 15.999) # For floats == only compares the whole number
+std/testing.expect(carbon_mass == 15.999) # For floats == only compares the whole number
 ```
 
 ## String interpolation
@@ -203,7 +203,7 @@ Multi-line blocks are enclosed using braces: {}
 ```
 
 ## Function Basics
-All functions in `Ruka` are anonymous closures, so function definition involves storing a function literal in a binding. Captured variables must be explicitly captured.
+All functions in `Rex` are anonymous closures, so function definition involves storing a function literal in a binding. Captured variables must be explicitly captured.
 
 Anonymous function creation follows the form of:
 <pre>
@@ -297,8 +297,8 @@ const Result = enum {
 let x = Result.ok(12)
 
 match (x) {
-  | Result.ok => |val| std.fmt.println("{}", val),
-  | .err => |err| std.fmt.println(err),
+  | Result.ok => |val| std/fmt.println("{}", val),
+  | .err => |err| std/fmt.println(err),
   # Cases can be guarded using when followed by a condition
   # If the condition returns true, that case will execute
   | when is?(x) => |val| {}
@@ -310,7 +310,7 @@ let source = "int main() {}"
 # capturing the remaining portion of the string as a slice
 match (source) {
   | "int", ... => |rest| {
-    std.fmt.print("{}\n", rest)
+    std/fmt.print("{}\n", rest)
   }
 }
 
@@ -334,10 +334,10 @@ match (nums[..]) {
 
 ```
 
-`Ruka` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
+`Rex` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
 ```
 let input = "foo"
-let reg = ~r"foo|bar"
+let reg = `foo|bar`
 
 if (foo ~= reg) {
 
@@ -381,7 +381,7 @@ unless (condition) {
 ```
 
 ## Loops
-`Ruka` has two looping constructs, range-based for loops, and while loops.
+`Rex` has two looping constructs, range-based for loops, and while loops.
 ```
 for (iterable, iterable2) |i, i2| {
 
@@ -495,17 +495,17 @@ let o = Result.other
 # Variant can be pattern matched, to access inner values, errors if rhs is not the matching tag
 let Result.ok(z) = x
 
-std.testing.expect(z == 12)
+std/testing.expect(z == 12)
 
 # Variant can also be used for branching based on if the pattern matches or not
 # The variant type can be inferred
 if (.ok := x) |z| {
-  std.fmt.printf("{}", z)
+  std/fmt.printf("{}", z)
 }
 ```
 
 ## Modules
-In `Ruka`, modules are collections of bindings. Bindings can be let or const.
+In `Rex`, modules are collections of bindings. Bindings can be let or const.
 All modules are anonymous, named modules are made by storing modules in bindings
 ```
 const Constants = module {
@@ -541,16 +541,19 @@ const Player = record {
 const set_pos(mut& p: Player) = (pos: {f32, f32}) => self.pos = pos
 
 # Receiver tag can be inferred to be self
-const read_health(&Player) = (health: int) => return self.health
+const set_health(&Player) = (health: int) => self.health = health
 
 # Can also be written using UFCS
-const read_health = (&self: Player, health: int) => return self.health
+const set_health = (&self: Player, health: int) => self.health = health
+
+# And reciever can be inferred to be self
+const set_health = (&Player, health: int) => self.health = health
 ```
 
 ## File imports
 When files are imported, they are stored as modules.
 ```
-const std = @import("std")
+const std/= @import("std")
 ```
 
 ## Signals
@@ -613,7 +616,7 @@ const div = (x, y: int): {int, int} => {
 }
 
 let result = div(12, 5)
-std.testing.expect(result[0] == 2)
+std/testing.expect(result[0] == 2)
 
 const div = (x, y: int): record{quo, rem: int} => {
   let quo = x / y
@@ -623,7 +626,7 @@ const div = (x, y: int): record{quo, rem: int} => {
 }
 
 let result = div(12, 5)
-std.testing.expect(result.quo == 2)
+std/testing.expect(result.quo == 2)
 
 # Anytype infers the function type at compile time where called, think templates
 # If multiple args, they are treated as a tuple
@@ -633,7 +636,7 @@ const variadic = (...args) => {
   let size = @len(args)
 
   for (0..size) |i| {
-    std.fmt.printf("{} ", args[i])
+    std/fmt.printf("{} ", args[i])
   }
 }
 
@@ -683,7 +686,7 @@ let greeting = "!dlrow ,olleh"
 ```
 
 ## Traits
-`Ruka` doesn't have inheritance, instead `Ruka` uses interfaces called `traits`.
+`Rex` doesn't have inheritance, instead `Rex` uses interfaces called `traits`.
 
 Traits cannot specify data members, only methods
 ```
@@ -707,8 +710,8 @@ const Player = record {
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
 #   tagifiers, parameter types, and return types
-const update_pos(mut& Player) = (pos: {f32, f32}) => # code
-const update_health(mut& Player) = (health: int) => # code
+const update_pos = (mut& Player, pos: {f32, f32}) => # code
+const update_health = (mut& Player, health: int) => # code
 
 let player = Player{} # If field values are not provided they will be set to the 
                        #   default values of that type, typically 0 or equivalent.
@@ -716,7 +719,7 @@ system(&player)
 ```
 
 ## Comptime Expressions
-Metaprogramming in `Ruka` is done using comptime expressions, which is just `Ruka` code executed at compile time
+Metaprogramming in `Rex` is done using comptime expressions, which is just `Rex` code executed at compile time
 
 The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
 ```
@@ -742,7 +745,7 @@ const screen_size = ${
 }
 ```
 ## First Class Modules
-Modules are first class in `Ruka`, so they can be passed into and out of functions
+Modules are first class in `Rex`, so they can be passed into and out of functions
 ```
 # To create a generic ds with methods, you must return a record with static bindings
 const List = ($type: typeid): moduleid => {
@@ -757,7 +760,7 @@ const List = ($type: typeid): moduleid => {
       size: uint
     }
 
-    const insert(mut& t) = (value: type) => {...}
+    const insert = (mut& t, value: type) => {...}
   }
 }
 
@@ -766,9 +769,10 @@ intList.insert(12)
 ```
 
 ## Operators
-`Ruka` has many operators and symbols, some have different meaning depending on context:
+`Rex` has many operators and symbols, some have different meaning depending on context:
 ```
 - Miscelaneous Operators
+  - /   : Namespace Resolution
   - =   : Assignment 
   - :=  : Assignment Expression
   - []  : Index 
@@ -804,6 +808,8 @@ intList.insert(12)
   - |   : Bitwise OR
   - ^   : Bitwise XOR
   - !   : Bitwise Negation
+  - <<  : Bitshift Left
+  - >>  : Bitshift Right
 - Type Symbols
   - (type or type)  : Union
   - !type           : type or error
@@ -868,7 +874,7 @@ names.insert("foobar")
 ```
 
 ## Circuits
-`Ruka` has an extension called `Silver`, which integrates HDL into the language for simple FPGA development.
+`Rex` has an extension called `Silver`, which integrates HDL into the language for simple FPGA development.
 
 Refer to `Silver` for details
 ```
