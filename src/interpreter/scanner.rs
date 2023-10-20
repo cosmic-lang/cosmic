@@ -1,7 +1,8 @@
 //!
 //!
 
-use super::token::{Token, TokenType, Position};
+use super::token::{Token, TokenType};
+use super::super::utilities::Position;
 
 ///
 pub struct Scanner<'a> {

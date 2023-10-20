@@ -1,12 +1,7 @@
 //!
 //!
 
-///
-#[derive(Debug, PartialEq)]
-pub struct Position {
-  pub col: usize,
-  pub line: usize
-}
+use super::super::utilities::Position;
 
 ///
 #[derive(Debug, PartialEq)]
