@@ -3,7 +3,22 @@
 
 ///
 #[derive(Debug, PartialEq)]
-pub enum Token<'a> {
+pub struct Position {
+  pub col: usize,
+  pub line: usize
+}
+
+///
+#[derive(Debug, PartialEq)]
+pub struct Token<'a> {
+  pub tt: TokenType<'a>,
+  pub pos: Position,
+  pub file_name: &'a str
+}
+
+///
+#[derive(Debug, PartialEq)]
+pub enum TokenType<'a> {
   // Literals
   Tag(&'a str),
   Integer(&'a str),
@@ -95,83 +110,83 @@ pub enum Token<'a> {
   Eof
 }
 
-impl <'a> Token<'a> {
+impl <'a> TokenType<'a> {
   // If tag matches a keyword returns Some(that keyword), else None
-  pub fn try_keyword(tag: &str) -> Option<Token> {
+  pub fn try_keyword(tag: &str) -> Option<TokenType> {
     match tag {
-      "const"    => Some(Token::Const),
-      "let"      => Some(Token::Let),
-      "return"   => Some(Token::Return),
-      "fn"       => Some(Token::Fn),
-      "record"   => Some(Token::Record),
-      "enum"     => Some(Token::Enum),
-      "trait"    => Some(Token::Trait),
-      "module"   => Some(Token::Module),
-      "defer"    => Some(Token::Defer),
-      "when"     => Some(Token::When),
-      "inline"   => Some(Token::Inline),
-      "true"     => Some(Token::True),
-      "false"    => Some(Token::False),
-      "for"      => Some(Token::For),
-      "while"    => Some(Token::While),
-      "break"    => Some(Token::Break),
-      "continue" => Some(Token::Continue),
-      "match"    => Some(Token::Match),
-      "if"       => Some(Token::If),
-      "else"     => Some(Token::Else),
-      "as"       => Some(Token::As),
-      "and"      => Some(Token::And),
-      "or"       => Some(Token::Or),
-      "dyn"      => Some(Token::Dyn),
-      "anytype"  => Some(Token::Anytype),
-      "mut"      => Some(Token::Mutable),
-      "mov"      => Some(Token::Move),
-      "loc"      => Some(Token::Local),
-      "comptime" => Some(Token::Comptime),
+      "const"    => Some(TokenType::Const),
+      "let"      => Some(TokenType::Let),
+      "return"   => Some(TokenType::Return),
+      "fn"       => Some(TokenType::Fn),
+      "record"   => Some(TokenType::Record),
+      "enum"     => Some(TokenType::Enum),
+      "trait"    => Some(TokenType::Trait),
+      "module"   => Some(TokenType::Module),
+      "defer"    => Some(TokenType::Defer),
+      "when"     => Some(TokenType::When),
+      "inline"   => Some(TokenType::Inline),
+      "true"     => Some(TokenType::True),
+      "false"    => Some(TokenType::False),
+      "for"      => Some(TokenType::For),
+      "while"    => Some(TokenType::While),
+      "break"    => Some(TokenType::Break),
+      "continue" => Some(TokenType::Continue),
+      "match"    => Some(TokenType::Match),
+      "if"       => Some(TokenType::If),
+      "else"     => Some(TokenType::Else),
+      "as"       => Some(TokenType::As),
+      "and"      => Some(TokenType::And),
+      "or"       => Some(TokenType::Or),
+      "dyn"      => Some(TokenType::Dyn),
+      "anytype"  => Some(TokenType::Anytype),
+      "mut"      => Some(TokenType::Mutable),
+      "mov"      => Some(TokenType::Move),
+      "loc"      => Some(TokenType::Local),
+      "comptime" => Some(TokenType::Comptime),
       _ => None
     }
   }
 
-  // Returns the Token eqivalent of char
-  pub fn of_char(ch: char) -> Token<'a> {
+  // Returns the TokenType eqivalent of char
+  pub fn of_char(ch: char) -> TokenType<'a> {
     match ch {
       //
-      '='  => Token::Assign,
+      '='  => TokenType::Assign,
       //
-      '.'  => Token::Dot,
-      ','  => Token::Comma,
-      '('  => Token::Lparen,
-      ')'  => Token::Rparen,
-      '['  => Token::Lbracket,
-      ']'  => Token::Rbracket,
-      '{'  => Token::Lsquirly,
-      '}'  => Token::Rsquirly,
-      ':'  => Token::Colon,
-      ';'  => Token::Semicolon,
+      '.'  => TokenType::Dot,
+      ','  => TokenType::Comma,
+      '('  => TokenType::Lparen,
+      ')'  => TokenType::Rparen,
+      '['  => TokenType::Lbracket,
+      ']'  => TokenType::Rbracket,
+      '{'  => TokenType::Lsquirly,
+      '}'  => TokenType::Rsquirly,
+      ':'  => TokenType::Colon,
+      ';'  => TokenType::Semicolon,
       //
-      '@'  => Token::Address,
-      '$'  => Token::Cash,
-      '#'  => Token::Pound,
-      '!'  => Token::Bang,
-      '?'  => Token::Question,
+      '@'  => TokenType::Address,
+      '$'  => TokenType::Cash,
+      '#'  => TokenType::Pound,
+      '!'  => TokenType::Bang,
+      '?'  => TokenType::Question,
       // 
-      '+'  => Token::Plus,
-      '-'  => Token::Minus,
-      '*'  => Token::Asterisk,
-      '/'  => Token::Slash,
-      '%'  => Token::Percent,
+      '+'  => TokenType::Plus,
+      '-'  => TokenType::Minus,
+      '*'  => TokenType::Asterisk,
+      '/'  => TokenType::Slash,
+      '%'  => TokenType::Percent,
       //
-      '&'  => Token::Ampersand,
-      '|'  => Token::Pipe,
-      '^'  => Token::Caret,
-      '~'  => Token::Tilde,
+      '&'  => TokenType::Ampersand,
+      '|'  => TokenType::Pipe,
+      '^'  => TokenType::Caret,
+      '~'  => TokenType::Tilde,
       //
-      '<'  => Token::Lesser,
-      '>'  => Token::Greater,
+      '<'  => TokenType::Lesser,
+      '>'  => TokenType::Greater,
       //
-      '\n' => Token::Newline,
-      '\0' => Token::Eof,
-      _ => Token::Illegal
+      '\n' => TokenType::Newline,
+      '\0' => TokenType::Eof,
+      _ => TokenType::Illegal
     }
   }
 
@@ -179,94 +194,94 @@ impl <'a> Token<'a> {
   pub fn to_string(&self) -> &'a str {
     match self {
       // Complex tokens
-      Token::Tag(tag)     => tag,
-      Token::Integer(int) => int,
-      Token::Float(float) => float,
-      Token::String(str)  => str,
-      Token::Regex(reg)   => reg,
+      TokenType::Tag(tag)     => tag,
+      TokenType::Integer(int) => int,
+      TokenType::Float(float) => float,
+      TokenType::String(str)  => str,
+      TokenType::Regex(reg)   => reg,
       // Keywords
-      Token::Const        => "const",
-      Token::Let          => "let",
-      Token::Return       => "return",
-      Token::Fn           => "fn",
-      Token::Record       => "record",
-      Token::Enum         => "enum",
-      Token::Trait        => "trait",
-      Token::Module       => "module",
-      Token::Defer        => "defer",
-      Token::When         => "when",
-      Token::Inline       => "inline",
-      Token::True         => "true",
-      Token::False        => "false",
-      Token::For          => "for",
-      Token::While        => "while",
-      Token::Break        => "break",
-      Token::Continue     => "continue",
-      Token::Match        => "match",
-      Token::If           => "if",
-      Token::Else         => "else",
-      Token::As           => "as",
-      Token::And          => "and",
-      Token::Or           => "or",
-      Token::Dyn          => "dyn",
-      Token::Anytype      => "any",
+      TokenType::Const        => "const",
+      TokenType::Let          => "let",
+      TokenType::Return       => "return",
+      TokenType::Fn           => "fn",
+      TokenType::Record       => "record",
+      TokenType::Enum         => "enum",
+      TokenType::Trait        => "trait",
+      TokenType::Module       => "module",
+      TokenType::Defer        => "defer",
+      TokenType::When         => "when",
+      TokenType::Inline       => "inline",
+      TokenType::True         => "true",
+      TokenType::False        => "false",
+      TokenType::For          => "for",
+      TokenType::While        => "while",
+      TokenType::Break        => "break",
+      TokenType::Continue     => "continue",
+      TokenType::Match        => "match",
+      TokenType::If           => "if",
+      TokenType::Else         => "else",
+      TokenType::As           => "as",
+      TokenType::And          => "and",
+      TokenType::Or           => "or",
+      TokenType::Dyn          => "dyn",
+      TokenType::Anytype      => "any",
       // Modes
-      Token::Mutable      => "mut",
-      Token::Move         => "mov",
-      Token::Local        => "loc",
-      Token::Comptime     => "comptime",
+      TokenType::Mutable      => "mut",
+      TokenType::Move         => "mov",
+      TokenType::Local        => "loc",
+      TokenType::Comptime     => "comptime",
       // Assignment
-      Token::Assign       => "=",
-      Token::AssignExp    => ":=",
+      TokenType::Assign       => "=",
+      TokenType::AssignExp    => ":=",
       // Puctuation
-      Token::Dot          => ".",
-      Token::Comma        => ",",
-      Token::Lparen       => "(",
-      Token::Rparen       => ")",
-      Token::Lbracket     => "[",
-      Token::Rbracket     => "]",
-      Token::Lsquirly     => "{",
-      Token::Rsquirly     => "}",
-      Token::Colon        => ":",
-      Token::Semicolon    => ";",
-      Token::Arrow        => "->",
-      Token::FatArrow     => "=>",
+      TokenType::Dot          => ".",
+      TokenType::Comma        => ",",
+      TokenType::Lparen       => "(",
+      TokenType::Rparen       => ")",
+      TokenType::Lbracket     => "[",
+      TokenType::Rbracket     => "]",
+      TokenType::Lsquirly     => "{",
+      TokenType::Rsquirly     => "}",
+      TokenType::Colon        => ":",
+      TokenType::Semicolon    => ";",
+      TokenType::Arrow        => "->",
+      TokenType::FatArrow     => "=>",
       // Operators
-      Token::Address      => "@",
-      Token::Cash         => "$",
-      Token::Pound        => "#",
-      Token::Bang         => "!",
-      Token::Question     => "?",
-      Token::RangeExc     => "..",
-      Token::RangeInc     => "...",
-      Token::Pipeline     => "|>",
+      TokenType::Address      => "@",
+      TokenType::Cash         => "$",
+      TokenType::Pound        => "#",
+      TokenType::Bang         => "!",
+      TokenType::Question     => "?",
+      TokenType::RangeExc     => "..",
+      TokenType::RangeInc     => "...",
+      TokenType::Pipeline     => "|>",
       // Arithmetic
-      Token::Plus         => "+",
-      Token::Minus        => "-",
-      Token::Asterisk     => "*",
-      Token::Slash        => "/",
-      Token::Percent      => "%",
-      Token::Increment    => "++",
-      Token::Decrement    => "--",
-      Token::Power        => "**",
+      TokenType::Plus         => "+",
+      TokenType::Minus        => "-",
+      TokenType::Asterisk     => "*",
+      TokenType::Slash        => "/",
+      TokenType::Percent      => "%",
+      TokenType::Increment    => "++",
+      TokenType::Decrement    => "--",
+      TokenType::Power        => "**",
       // Bitwise
-      Token::Ampersand    => "&",
-      Token::Pipe         => "|",
-      Token::Caret        => "^",
-      Token::Tilde        => "~",
-      Token::Lshift       => "<<",
-      Token::Rshift       => ">>",
+      TokenType::Ampersand    => "&",
+      TokenType::Pipe         => "|",
+      TokenType::Caret        => "^",
+      TokenType::Tilde        => "~",
+      TokenType::Lshift       => "<<",
+      TokenType::Rshift       => ">>",
       // Comparators
-      Token::Lesser       => "<",
-      Token::LesserEq     => "<=",
-      Token::Greater      => ">",
-      Token::GreaterEq    => ">=",
-      Token::Equal        => "==",
-      Token::NotEqual     => "!=",
+      TokenType::Lesser       => "<",
+      TokenType::LesserEq     => "<=",
+      TokenType::Greater      => ">",
+      TokenType::GreaterEq    => ">=",
+      TokenType::Equal        => "==",
+      TokenType::NotEqual     => "!=",
       // Others
-      Token::Newline      => "\n",
-      Token::Illegal      => "illegal",
-      Token::Eof          => "\0"
+      TokenType::Newline      => "\n",
+      TokenType::Illegal      => "illegal",
+      TokenType::Eof          => "\0"
     }
   }
 }
@@ -278,16 +293,16 @@ mod tests {
     use crate::prelude::*;
 
     let source = "const let match hello".split(" ");
-    let mut tokens = Vec::<Option<Token>>::new();
+    let mut tokens = Vec::<Option<TokenType>>::new();
     let expected = [
-      Some(Token::Const), 
-      Some(Token::Let), 
-      Some(Token::Match), 
+      Some(TokenType::Const), 
+      Some(TokenType::Let), 
+      Some(TokenType::Match), 
       None
     ];
     
     for word in source {
-      tokens.push(Token::try_keyword(word)); 
+      tokens.push(TokenType::try_keyword(word)); 
     }
 
     for i in 0..4 {

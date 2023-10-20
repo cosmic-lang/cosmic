@@ -1,7 +1,7 @@
 //!
 //!
 
-use super::token::Token;
+use super::token::{Token, TokenType, Position};
 
 ///
 pub struct Scanner<'a> {
@@ -129,7 +129,7 @@ impl <'a> Scanner<'a> {
   }
 
   /// Checks for compound operators
-  fn compound_or_else(&mut self, rules: Vec<(char, Token<'a>)>, default: Token<'a>) -> Token<'a> {
+  fn compound_or_else(&mut self, rules: Vec<(char, TokenType<'a>)>, default: TokenType<'a>) -> TokenType<'a> {
     match self.char {
       ' ' | '\r' | '\t' => self.skip_whitespace(),
       _ => self.advance(1)
@@ -146,7 +146,7 @@ impl <'a> Scanner<'a> {
   }
   
   /// Checks for three char compound operators
-  fn compound_three(&mut self, rules: Vec<(char, char, Token<'a>)>) -> Option<Token<'a>> {
+  fn compound_three(&mut self, rules: Vec<(char, char, TokenType<'a>)>) -> Option<TokenType<'a>> {
     for rule in rules {
       if self.peek() == rule.0 {
         if self.peek_plus(1) == rule.1 {
@@ -159,7 +159,7 @@ impl <'a> Scanner<'a> {
     return None;
   }
 
-  /// Scans the next token from the source
+  /// Scans the next tokentype from the source
   pub fn next_token(&mut self) -> Token<'a> {
     self.skip_whitespace();
 
@@ -171,9 +171,21 @@ impl <'a> Scanner<'a> {
       }
       ch if is_alphabetical(ch) => {
         let chars = self.read_tag(self.read, self.read);
-        return match Token::try_keyword(chars) {
-          Some(token) => token,
-          None => Token::Tag(chars)
+        return match TokenType::try_keyword(chars) {
+          Some(tokentype) => {
+            Token{
+              tt: tokentype,
+              pos: Position{col: 0, line: 0},
+              file_name: ""
+            }
+          },
+          None => {
+            Token{
+              tt: TokenType::Tag(chars),
+              pos: Position{col: 0, line: 0},
+              file_name: ""
+            }
+          }
         }
       },
       // Integers and Floats
@@ -182,10 +194,18 @@ impl <'a> Scanner<'a> {
 
         return match chars.find('.') {
           Some(_) => {
-            Token::Float(chars)  
+            Token{
+              tt: TokenType::Float(chars), 
+              pos: Position{col: 0, line: 0},
+              file_name: ""
+            }
           },
           None => {
-            Token::Integer(chars)
+            Token{
+              tt: TokenType::Integer(chars), 
+              pos: Position{col: 0, line: 0},
+              file_name: ""
+            }
           }
         }
       },
@@ -193,84 +213,162 @@ impl <'a> Scanner<'a> {
       '"' => {
         self.advance(1);
         let chars = self.read_string(self.read, self.read);
-        Token::String(chars)
+
+        Token{
+          tt: TokenType::String(chars), 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       // Multiline Strings
       '\\' if self.peek() == '\\' => {
         self.advance(2);
         let chars = self.read_multistring(self.read, self.read);
-        Token::String(chars)
+        
+        Token{
+          tt: TokenType::String(chars), 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       // Regex
       '`' => {
-        Token::Regex("")
+        Token{
+          tt: TokenType::Regex(""), 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       }
       // Compound operators
       '=' => {
-        self.compound_or_else(vec![
-          ('>', Token::FatArrow),
-          ('=', Token::Equal)
-        ], Token::Assign)
+        let tt = self.compound_or_else(vec![
+          ('>', TokenType::FatArrow),
+          ('=', TokenType::Equal)
+        ], TokenType::Assign);
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       '+' => { 
-        self.compound_or_else(vec![
-          ('+', Token::Increment)
-        ], Token::Plus)
+        let tt = self.compound_or_else(vec![
+          ('+', TokenType::Increment)
+        ], TokenType::Plus);
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       '*' => { 
-        self.compound_or_else(vec![
-          ('*', Token::Power)
-        ], Token::Asterisk)
+        let tt = self.compound_or_else(vec![
+          ('*', TokenType::Power)
+        ], TokenType::Asterisk);
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       '-' => {
-        self.compound_or_else(vec![
-          ('>', Token::Arrow),
-          ('-', Token::Decrement)
-        ], Token::Minus)
+        let tt = self.compound_or_else(vec![
+          ('>', TokenType::Arrow),
+          ('-', TokenType::Decrement)
+        ], TokenType::Minus);
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       '<' => {
-        self.compound_or_else(vec![
-          ('=', Token::LesserEq),
-          ('<', Token::Lshift)
-        ], Token::Lesser) 
+        let tt = self.compound_or_else(vec![
+          ('=', TokenType::LesserEq),
+          ('<', TokenType::Lshift)
+        ], TokenType::Lesser);
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       '>' => {
-        self.compound_or_else(vec![
-          ('=', Token::GreaterEq),
-          ('>', Token::Rshift)
-        ], Token::Greater)  
+        let tt = self.compound_or_else(vec![
+          ('=', TokenType::GreaterEq),
+          ('>', TokenType::Rshift)
+        ], TokenType::Greater); 
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       '!' => {
-        self.compound_or_else(vec![
-          ('=', Token::NotEqual)
-        ], Token::Bang) 
+        let tt = self.compound_or_else(vec![
+          ('=', TokenType::NotEqual)
+        ], TokenType::Bang);
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       ':' => {
-        self.compound_or_else(vec![
-          ('=', Token::AssignExp)
-        ], Token::Colon)
+        let tt = self.compound_or_else(vec![
+          ('=', TokenType::AssignExp)
+        ], TokenType::Colon);
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       '|' => { 
-        self.compound_or_else(vec![
-          ('>', Token::Pipeline)
-        ], Token::Pipe)
+        let tt = self.compound_or_else(vec![
+          ('>', TokenType::Pipeline)
+        ], TokenType::Pipe);
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       },
       '.' => {
         // Check for three char operator
-        match self.compound_three(vec![('.', '.', Token::RangeInc)]) {
-          Some(token) => token,
+        let tt = match self.compound_three(vec![('.', '.', TokenType::RangeInc)]) {
+          Some(tokentype) => tokentype,
           None => {
             // Check for two char operator
             self.compound_or_else(vec![
-              ('.', Token::RangeExc)
-            ], Token::Dot)    
+              ('.', TokenType::RangeExc)
+            ], TokenType::Dot)    
           }
+        };
+        
+        Token{
+          tt, 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
         }
       },
       // All else
       ch => {
         self.advance(1);
-        Token::of_char(ch)
+        Token{
+          tt: TokenType::of_char(ch), 
+          pos: Position{col: 0, line: 0},
+          file_name: ""
+        }
       }
     }
   }
@@ -317,25 +415,25 @@ mod tests {
 
     let source = "+-*/<>!@$%&^=|;:?,.";
     let expected = [
-      Token::Plus,
-      Token::Minus,
-      Token::Asterisk,
-      Token::Slash,
-      Token::Lesser,
-      Token::Greater,
-      Token::Bang,
-      Token::Address,
-      Token::Cash,
-      Token::Percent,
-      Token::Ampersand,
-      Token::Caret,
-      Token::Assign,
-      Token::Pipe,
-      Token::Semicolon,
-      Token::Colon,
-      Token::Question,
-      Token::Comma,
-      Token::Dot
+      TokenType::Plus,
+      TokenType::Minus,
+      TokenType::Asterisk,
+      TokenType::Slash,
+      TokenType::Lesser,
+      TokenType::Greater,
+      TokenType::Bang,
+      TokenType::Address,
+      TokenType::Cash,
+      TokenType::Percent,
+      TokenType::Ampersand,
+      TokenType::Caret,
+      TokenType::Assign,
+      TokenType::Pipe,
+      TokenType::Semicolon,
+      TokenType::Colon,
+      TokenType::Question,
+      TokenType::Comma,
+      TokenType::Dot
     ];
   
     let mut scanner = Scanner::new(&source);
@@ -345,14 +443,18 @@ mod tests {
     loop {
       let token = scanner.next_token();
 
-      if token == Token::Eof {
+      if token.tt == TokenType::Eof {
         break;
       } else {
         tokens.push(token);
       }
     }
 
-    assert!(tokens == expected);
+    assert!(tokens.len() == expected.len());
+
+    for (pos, t) in tokens.iter().enumerate() {
+      assert!(t.tt == expected[pos])
+    };
   }
 
   #[test]
@@ -367,32 +469,36 @@ mod tests {
     ";
 
     let expected = [
-      Token::Newline,
-      Token::Integer("1234"),
-      Token::Newline,
-      Token::Float("12.4"),
-      Token::Newline,
-      Token::Float("12.2"),
-      Token::Dot,
-      Token::Integer("4"),
-      Token::Newline
+      TokenType::Newline,
+      TokenType::Integer("1234"),
+      TokenType::Newline,
+      TokenType::Float("12.4"),
+      TokenType::Newline,
+      TokenType::Float("12.2"),
+      TokenType::Dot,
+      TokenType::Integer("4"),
+      TokenType::Newline
     ];
   
     let mut scanner = Scanner::new(&source);
 
     let mut tokens = Vec::new();
-
+    
     loop {
       let token = scanner.next_token();
 
-      if token == Token::Eof {
+      if token.tt == TokenType::Eof {
         break;
       } else {
         tokens.push(token);
       }
     }
 
-    assert!(tokens == expected);
+    assert!(tokens.len() == expected.len());
+
+    for (pos, t) in tokens.iter().enumerate() {
+      assert!(t.tt == expected[pos])
+    }
   }
   
   #[test]
@@ -405,10 +511,10 @@ mod tests {
     ";
 
     let expected = [
-      Token::String("12.2.1"),
-      Token::Newline,
-      Token::String("hello"),
-      Token::Newline,
+      TokenType::String("12.2.1"),
+      TokenType::Newline,
+      TokenType::String("hello"),
+      TokenType::Newline,
     ];
   
     let mut scanner = Scanner::new(&source);
@@ -417,19 +523,23 @@ mod tests {
 
     loop {
       let token = scanner.next_token();
-      dbg!(&token);
-      if token == Token::Eof {
+
+      if token.tt == TokenType::Eof {
         break;
       } else {
         tokens.push(token);
       }
     }
 
-    assert!(tokens == expected);
+    assert!(tokens.len() == expected.len());
+
+    for (pos, t) in tokens.iter().enumerate() {
+      assert!(t.tt == expected[pos])
+    }
   }
   
   #[test]
-  fn tags_n_keywords() {
+  fn tags_and_keywords() {
     use crate::prelude::*;
 
     let source = "
@@ -440,14 +550,14 @@ mod tests {
     ";
 
     let expected = [
-      Token::Tag("hello"),
-      Token::Newline,
-      Token::Tag("hey?"),
-      Token::Newline,
-      Token::Tag("yo!"),
-      Token::Newline,
-      Token::Let,
-      Token::Newline
+      TokenType::Tag("hello"),
+      TokenType::Newline,
+      TokenType::Tag("hey?"),
+      TokenType::Newline,
+      TokenType::Tag("yo!"),
+      TokenType::Newline,
+      TokenType::Let,
+      TokenType::Newline
     ];
   
     let mut scanner = Scanner::new(&source);
@@ -457,14 +567,18 @@ mod tests {
     loop {
       let token = scanner.next_token();
 
-      if token == Token::Eof {
+      if token.tt == TokenType::Eof {
         break;
       } else {
         tokens.push(token);
       }
     }
 
-    assert!(tokens == expected);
+    assert!(tokens.len() == expected.len());
+
+    for (pos, t) in tokens.iter().enumerate() {
+      assert!(t.tt == expected[pos])
+    }
   }
   
   #[test]
@@ -474,14 +588,14 @@ mod tests {
     let source = "<==>->!!=..:=...";
 
     let expected = [
-      Token::LesserEq,
-      Token::FatArrow,
-      Token::Arrow,
-      Token::Bang,
-      Token::NotEqual,
-      Token::RangeExc,
-      Token::AssignExp,
-      Token::RangeInc
+      TokenType::LesserEq,
+      TokenType::FatArrow,
+      TokenType::Arrow,
+      TokenType::Bang,
+      TokenType::NotEqual,
+      TokenType::RangeExc,
+      TokenType::AssignExp,
+      TokenType::RangeInc
     ];
   
     let mut scanner = Scanner::new(&source);
@@ -491,13 +605,17 @@ mod tests {
     loop {
       let token = scanner.next_token();
 
-      if token == Token::Eof {
+      if token.tt == TokenType::Eof {
         break;
       } else {
         tokens.push(token);
       }
     }
 
-    assert!(tokens == expected);
+    assert!(tokens.len() == expected.len());
+
+    for (pos, t) in tokens.iter().enumerate() {
+      assert!(t.tt == expected[pos])
+    }
   }
 }
