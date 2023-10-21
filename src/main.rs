@@ -47,6 +47,7 @@ fn main() -> Result<()> {
   let cli = Cli::parse();
 
   match &cli.command {
+    // Compile file at path
     Some(Commands::Compile {path}) => {
       let file_name = path.file_name().unwrap().to_str().unwrap();
       let source = read_file(path, EXT)?;
@@ -54,6 +55,7 @@ fn main() -> Result<()> {
       let _ = Scanner::new(file_name, &source[..]);
       println!("{}", source.trim_end_matches('\n'));
     },
+    // Interpret file at path
     Some(Commands::Run {path}) => {
       let file_name = path.file_name().unwrap().to_str().unwrap();
       let source = read_file(path, EXTI)?;
