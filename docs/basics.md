@@ -415,7 +415,9 @@ const add = (x, y: int): int => {
   return x + y
 }
 
-const add_three = (x, y, z: int): int => return x + y + z
+# Function types can be specified separately
+@fn (int, int, int) -> int
+const add_three = (x, y, z) => return x + y + z
 ```
 
 ## Modes
@@ -618,7 +620,8 @@ const div = (x, y: int): {int, int} => {
 let result = div(12, 5)
 std/testing.expect(result[0] == 2)
 
-const div = (x, y: int): record{quo, rem: int} => {
+@fn (int, int) -> record{quo, rem: int}
+const div = (x, y) => {
   let quo = x / y
   let rem = x % y
   return .{quo = quo, rem = rem} # if names match field tags, can ommit field name 
@@ -631,7 +634,7 @@ std/testing.expect(result.quo == 2)
 # Any infers the function type at compile time where called, think templates
 # If multiple args, they are treated as a tuple
 # Must be the final argument
-# ...tag can be used as shorthand for any tuples
+# ...tag can be used as shorthand for $any tuples
 const variadic = (...args) => {
   let size = @len(args)
 
