@@ -128,6 +128,17 @@ impl <'a> Scanner<'a> {
   fn read_multistring(&mut self, _start: usize, _end: usize) -> &'a str {
     return ""
   }
+  
+  /// Reads regex
+  fn read_regex(&mut self, start: usize, end: usize) -> &'a str {
+    if self.char != '`' && self.read < self.source.len() {
+      self.advance(1);
+      return self.read_regex(start, end + 1);
+    }
+
+    self.advance(1);
+    return &self.source[start..end];
+  }
 
   /// Checks for compound operators
   fn compound_or_else(&mut self, rules: Vec<(char, TokenType<'a>)>, default: TokenType<'a>) -> TokenType<'a> {
@@ -234,12 +245,15 @@ impl <'a> Scanner<'a> {
       },
       // Regex
       '`' => {
+        self.advance(1);
+        let chars = self.read_regex(self.read, self.read);
+
         Token{
-          tt: TokenType::Regex(""), 
+          tt: TokenType::Regex(chars), 
           pos: Position{col: 0, line: 0},
           file_name: ""
         }
-      }
+      },
       // Compound operators
       '=' => {
         let tt = self.compound_or_else(vec![
@@ -410,12 +424,20 @@ fn is_alphanumeric(ch: char) -> bool {
 
 #[cfg(test)]
 mod tests {
+  use crate::prelude::*;
+
+  fn test_tokens(tokens: &Vec<Token>, expected: &Vec<TokenType>) {
+    assert!(tokens.len() == expected.len());
+
+    for (t, e) in tokens.iter().zip(expected.iter()) {
+      assert!(t.tt == *e)
+    }
+  }
+
   #[test]
   fn operators() {
-    use crate::prelude::*;
-
     let source = "+-*/<>!@$%&^=|;:?,.";
-    let expected = [
+    let expected = vec![
       TokenType::Plus,
       TokenType::Minus,
       TokenType::Asterisk,
@@ -451,17 +473,11 @@ mod tests {
       }
     }
 
-    assert!(tokens.len() == expected.len());
-
-    for (pos, t) in tokens.iter().enumerate() {
-      assert!(t.tt == expected[pos])
-    };
+    test_tokens(&tokens, &expected)
   }
 
   #[test]
   fn numbers() {
-    use crate::prelude::*;
-
     let source = "
     # imma comment
     1234
@@ -469,7 +485,7 @@ mod tests {
     12.2.4
     ";
 
-    let expected = [
+    let expected = vec![
       TokenType::Newline,
       TokenType::Integer("1234"),
       TokenType::Newline,
@@ -495,23 +511,17 @@ mod tests {
       }
     }
 
-    assert!(tokens.len() == expected.len());
-
-    for (pos, t) in tokens.iter().enumerate() {
-      assert!(t.tt == expected[pos])
-    }
+    test_tokens(&tokens, &expected)
   }
   
   #[test]
   fn strings() {
-    use crate::prelude::*;
-
     let source = "
     \"12.2.1\"
     \"hello\"
     ";
 
-    let expected = [
+    let expected = vec![
       TokenType::String("12.2.1"),
       TokenType::Newline,
       TokenType::String("hello"),
@@ -532,17 +542,11 @@ mod tests {
       }
     }
 
-    assert!(tokens.len() == expected.len());
-
-    for (pos, t) in tokens.iter().enumerate() {
-      assert!(t.tt == expected[pos])
-    }
+    test_tokens(&tokens, &expected)
   }
   
   #[test]
   fn tags_and_keywords() {
-    use crate::prelude::*;
-
     let source = "
     hello
     hey?
@@ -550,7 +554,7 @@ mod tests {
     let
     ";
 
-    let expected = [
+    let expected = vec![
       TokenType::Tag("hello"),
       TokenType::Newline,
       TokenType::Tag("hey?"),
@@ -575,20 +579,14 @@ mod tests {
       }
     }
 
-    assert!(tokens.len() == expected.len());
-
-    for (pos, t) in tokens.iter().enumerate() {
-      assert!(t.tt == expected[pos])
-    }
+    test_tokens(&tokens, &expected)
   }
   
   #[test]
   fn compound_operators() {
-    use crate::prelude::*;
-
     let source = "<==>->!!=..:=...";
 
-    let expected = [
+    let expected = vec![
       TokenType::LesserEq,
       TokenType::FatArrow,
       TokenType::Arrow,
@@ -613,23 +611,17 @@ mod tests {
       }
     }
 
-    assert!(tokens.len() == expected.len());
-
-    for (pos, t) in tokens.iter().enumerate() {
-      assert!(t.tt == expected[pos])
-    }
+    test_tokens(&tokens, &expected)
   }
   
   #[test]
   fn assignment() {
-    use crate::prelude::*;
-
     let source = "
     let x: int = 12
-    const y: string := \"hello\"
+    const y: regex = `hello`
     ";
 
-    let expected = [
+    let expected = vec![
       TokenType::Let,
       TokenType::Tag("x"),
       TokenType::Colon,
@@ -640,9 +632,9 @@ mod tests {
       TokenType::Const,
       TokenType::Tag("y"),
       TokenType::Colon,
-      TokenType::Tag("string"),
-      TokenType::AssignExp,
-      TokenType::String("hello"),
+      TokenType::Tag("regex"),
+      TokenType::Assign,
+      TokenType::Regex("hello"),
       TokenType::Newline
     ];
   
@@ -652,6 +644,7 @@ mod tests {
 
     loop {
       let token = scanner.next_token();
+      dbg!(&token);
 
       if token.tt == TokenType::Eof {
         break;
@@ -660,10 +653,6 @@ mod tests {
       }
     }
 
-    assert!(tokens.len() == expected.len());
-
-    for (pos, t) in tokens.iter().enumerate() {
-      assert!(t.tt == expected[pos])
-    }
+    test_tokens(&tokens, &expected)
   }
 }
