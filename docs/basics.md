@@ -147,7 +147,7 @@ Tuples can be indexed, or destructured using pattern matching. The $len() functi
 ```
 let pos = {10, 15}
 
-std/testing.expect(@len(pos) == 2)
+std/testing.expect($len(pos) == 2)
 
 let {x, y} = {pos[0], pos[1]}
 let x, y = pos # The lhs braces are not required
@@ -310,7 +310,7 @@ let source = "int main() {}"
 # capturing the remaining portion of the string as a slice
 match (source) {
   | "int", ... => |rest| {
-    std/fmt.print("{}\n", rest)
+    std/fmt.print("{}\n", rest) #" main() {}"
   }
 }
 
@@ -334,12 +334,12 @@ match (nums[..]) {
 
 ```
 
-`Rex` also has a pattern matching operator `~=`, which returns true if pattern matches, otherwise returns false.
+`Rex` also has a pattern matching operator `=~`, which returns rhs if pattern matches, otherwise returns null.
 ```
 let input = "foo"
 let reg = `foo|bar`
 
-if (foo ~= reg) {
+if (foo =~ reg) {
 
 }
 
@@ -363,7 +363,7 @@ if (condition) {
 
 } else if (another_condition) {
 
-} else if (variant := value) |inner| {
+} else if (variant =~ value) |inner| {
 
 } else if (optional()) |not_null| {
 
@@ -416,7 +416,7 @@ const add = (x, y: int): int => {
 }
 
 # Function types can be specified separately
-@fn (int, int, int) -> int
+$ fn (int, int, int) -> int
 const add_three = (x, y, z) => return x + y + z
 ```
 
@@ -431,7 +431,7 @@ may be able to be relaxed, so all values behind borrows can be modified
       - `mov` unique mode, ownership of borrow is moved into function
       - `mut` exclusive mode, only one active borrow to value so safe to mutate
 - All types
-  - `comptime` or `$` compile time mode
+  - `comptime` or `@` compile time mode
 ```
 let x, y = 12, 11
 
@@ -501,7 +501,7 @@ std/testing.expect(z == 12)
 
 # Variant can also be used for branching based on if the pattern matches or not
 # The variant type can be inferred
-if (.ok := x) |z| {
+if (.ok =~ x) |z| {
   std/fmt.printf("{}", z)
 }
 ```
@@ -555,20 +555,20 @@ const set_health = (&Player, health: int) => self.health = health
 ## File imports
 When files are imported, they are stored as modules.
 ```
-const std/= @import("std")
+const std = $import("std")
 ```
 
 ## Signals
 Reactivity
 ```
 # name: &string, update_name: signal
-let (name, update_name) = @signal(string)
+let (name, update_name) = $signal(string)
 ```
 
 ## Strings
 Green threads
 ```
-let sid = @spawn(() => {
+let sid = $spawn(() => {
   # Some code
 })
 defer sid.join()
@@ -577,10 +577,10 @@ defer sid.join()
 ## Channels
 ```
 # name: &string, update_name: signal
-let chan = @channel(string)
+let chan = $channel(string)
 
 for (0..10) |i| {
-  @spawn(() => |chan| {
+  $spawn(() => |chan| {
     chan.send(i)
   })
 }
@@ -620,7 +620,7 @@ const div = (x, y: int): {int, int} => {
 let result = div(12, 5)
 std/testing.expect(result[0] == 2)
 
-@fn (int, int) -> record{quo, rem: int}
+$ fn (int, int) -> record{quo, rem: int}
 const div = (x, y) => {
   let quo = x / y
   let rem = x % y
@@ -636,20 +636,20 @@ std/testing.expect(result.quo == 2)
 # Must be the final argument
 # ...tag can be used as shorthand for $any tuples
 const variadic = (...args) => {
-  let size = @len(args)
+  let size = $len(args)
 
   for (0..size) |i| {
-    std/fmt.printf("{} ", args[i])
+    std/fmt.println("{} ", args[i])
   }
 }
 
-const struct = ($tup: any) => {
-  inline for (@typeOf(tup).members) |member| {
+const struct = (@tup: any) => {
+  inline for ($typeOf(tup).members) |member| {
 
   }
 }
 
-$struct(.{...})
+@struct(.{...})
 
 # Functions can be taken as parameters and returned from functions
 const sort = (slice: []i32, pred: fn (i32, i32) -> bool) => {
@@ -726,8 +726,8 @@ Metaprogramming in `Rex` is done using comptime expressions, which is just `Rex`
 
 The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
 ```
-# `$` or `comptime` preceeding a tagifier states that this parameter must be known at compile time
-const Vector = ($t: typeid): typeid => {
+# `@` or `comptime` preceeding a tagifier states that this parameter must be known at compile time
+const Vector = (@t: typeid): typeid => {
   return record{
     x: t,
     y: t
@@ -740,10 +740,10 @@ let Pos = Vector(t) # This cannot be used in meta expressions
                      #   because it is executed at runtime
 # Or compile time:
 let Pos = comptime Vector(t) # This can be used in later compile time expressions as long as it is not assigned to again
-const Pos = $Vector(t) # This can be used in later compile time expressions
+const Pos = @Vector(t) # This can be used in later compile time expressions
 
 # Blocks can also be run at compile time
-const screen_size = ${
+const screen_size = @{
   return {1920, 1080}
 }
 ```
@@ -751,10 +751,10 @@ const screen_size = ${
 Modules are first class in `Rex`, so they can be passed into and out of functions
 ```
 # To create a generic ds with methods, you must return a record with static bindings
-const List = ($type: typeid): moduleid => {
+const List = (@type: typeid): moduleid => {
   return module {
     const Node = record {
-      next: @this(),
+      next: $this(),
       data: type
     }
     
@@ -784,9 +784,9 @@ intList.insert(12)
   - .   : Member Access 
   - ()  : Function Call 
   - &   : Borrow 
-  - $   : Comptime Mode
+  - @   : Comptime Mode
   - *   : Dereference
-  - @   : Built in function
+  - $   : Built in function
 - Arithmetic Operators          - Wrapping - Saturating
   - +   : Addition                - +%      - +|
   - -   : Subtraction             - -%      - -|
@@ -834,12 +834,12 @@ intList.insert(12)
 
 ## Example: Linked List
 ```
-const List = ($type: typeid): moduleid => {
+const List = (@type: typeid): moduleid => {
   return module {
     let max_size = 100
 
     const node = record {
-      next: ?@this(),
+      next: ?$this(),
       data: type
     }
 
@@ -901,13 +901,12 @@ const AndGate = circuit {
   )
 }
 
-let and = $AndGate{} # This creates an instance of AndGate, 
+let and = @AndGate{} # This creates an instance of AndGate, 
                      # which must be done at compile time
 
 and.put(x: 1, y: 1)
 
-let result = and.get('z) # Output ports are setup with signals,
+let result = and.get(:z) # Output ports are setup with signals,
                          # so reading from a output port blocks 
                          # execution until the signal is high
 ```
-
