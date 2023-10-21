@@ -17,7 +17,7 @@ pub struct Scanner<'a> {
 impl <'a> Scanner<'a> {
   /// Returns a new scanner
   pub fn new(file_name: &'a str, source: &'a str) -> Scanner<'a> {
-    let source = source.trim_start();
+    let source = source.trim_start_matches('\n');
     Self {
       source,
       read: 0,
@@ -43,7 +43,7 @@ impl <'a> Scanner<'a> {
 
       self.file_pos.col += 1;
 
-      if self.source.chars().nth(self.read - 1) == Some('\n') {
+      if self.read > 0 && self.source.chars().nth(self.read - 1) == Some('\n') {
         self.file_pos.col = 1;
         self.file_pos.line += 1;
       }
@@ -102,12 +102,12 @@ impl <'a> Scanner<'a> {
       None => TokenType::Tag(&self.source[start..end])
     };
 
-    let mut pos = self.file_pos;
-    pos.col -= end - start;
-
     return Token{
       tt,
-      pos,
+      pos: Position{
+        col: self.file_pos.col - (end - start), 
+        line: self.file_pos.line
+      },
       file_name: self.file_name
     }
   }
@@ -122,12 +122,12 @@ impl <'a> Scanner<'a> {
       return self.read_number(start, end + 1)
     }
 
-    let mut pos = self.file_pos;
-    pos.col -= end - start;
-    
     return Token{
       tt: TokenType::Integer(&self.source[start..end]),
-      pos,
+      pos: Position{
+        col: self.file_pos.col - (end - start), 
+        line: self.file_pos.line
+      },
       file_name: self.file_name
     }
   }
@@ -139,12 +139,12 @@ impl <'a> Scanner<'a> {
       return self.read_float(start, end + 1)
     }
     
-    let mut pos = self.file_pos;
-    pos.col -= end - start;
-
     return Token{
       tt: TokenType::Float(&self.source[start..end]),
-      pos,
+      pos: Position{
+        col: self.file_pos.col - (end - start), 
+        line: self.file_pos.line
+      },
       file_name: self.file_name
     }
   }
@@ -158,12 +158,12 @@ impl <'a> Scanner<'a> {
 
     self.advance(1);
 
-    let mut pos = self.file_pos;
-    pos.col -= end - start;
-    
     return Token{
       tt: TokenType::String(&self.source[start..end]),
-      pos,
+      pos: Position{
+        col: self.file_pos.col - (end - start), 
+        line: self.file_pos.line
+      },
       file_name: self.file_name
     }
   }
@@ -186,12 +186,12 @@ impl <'a> Scanner<'a> {
 
     self.advance(1);
     
-    let mut pos = self.file_pos;
-    pos.col -= end - start;
-
     return Token{
       tt: TokenType::Regex(&self.source[start..end]),
-      pos,
+      pos: Position{
+        col: self.file_pos.col - (end - start), 
+        line: self.file_pos.line
+      },
       file_name: self.file_name
     }
   }
@@ -229,6 +229,7 @@ impl <'a> Scanner<'a> {
 
   /// Scans the next tokentype from the source
   pub fn next_token(&mut self) -> Token<'a> {
+    dbg!(&self.char);
     self.skip_whitespace();
 
     return match self.char {
@@ -267,11 +268,12 @@ impl <'a> Scanner<'a> {
           ('=', TokenType::Equal)
         ], TokenType::Assign);
     
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Assign => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Assign => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -285,11 +287,12 @@ impl <'a> Scanner<'a> {
           ('+', TokenType::Increment)
         ], TokenType::Plus);
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Plus => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Plus => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -303,11 +306,12 @@ impl <'a> Scanner<'a> {
           ('*', TokenType::Power)
         ], TokenType::Asterisk);
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Asterisk => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Asterisk => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -322,11 +326,12 @@ impl <'a> Scanner<'a> {
           ('-', TokenType::Decrement)
         ], TokenType::Minus);
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Minus => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Minus => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -341,11 +346,12 @@ impl <'a> Scanner<'a> {
           ('<', TokenType::Lshift)
         ], TokenType::Lesser);
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Lesser => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Lesser => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -360,11 +366,12 @@ impl <'a> Scanner<'a> {
           ('>', TokenType::Rshift)
         ], TokenType::Greater); 
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Greater => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Greater => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -379,11 +386,12 @@ impl <'a> Scanner<'a> {
           ('~', TokenType::PatternNotMatch)
         ], TokenType::Bang);
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Bang => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Bang => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -397,11 +405,12 @@ impl <'a> Scanner<'a> {
           ('=', TokenType::AssignExp)
         ], TokenType::Colon);
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Colon => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Colon => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -415,11 +424,12 @@ impl <'a> Scanner<'a> {
           ('>', TokenType::Pipeline)
         ], TokenType::Pipe);
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Pipe => 1,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Pipe => 1,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -440,12 +450,13 @@ impl <'a> Scanner<'a> {
           }
         };
         
-        let mut pos = self.file_pos;
-
-        pos.col -= match tt {
-          TokenType::Dot => 1,
-          TokenType::RangeInc => 3,
-          _ => 2
+        let pos = Position{
+          col: self.file_pos.col - match tt {
+            TokenType::Dot => 1,
+            TokenType::RangeInc => 3,
+            _ => 2
+          },
+          line: self.file_pos.line
         };
         
         Token{
@@ -740,6 +751,7 @@ mod tests {
 
     loop {
       let token = scanner.next_token();
+      dbg!(&token);
 
       if token.tt == TokenType::Eof {
         break;

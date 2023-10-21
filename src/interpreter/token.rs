@@ -12,7 +12,7 @@ pub struct Token<'a> {
 }
 
 ///
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum TokenType<'a> {
   // Literals
   Tag(&'a str),
