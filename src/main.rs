@@ -52,14 +52,14 @@ fn main() -> Result<()> {
       let source = read_file(path, EXT)?;
 
       let _ = Scanner::new(file_name, &source[..]);
-      println!("{}", source);
+      println!("{}", source.trim_end_matches('\n'));
     },
     Some(Commands::Run {path}) => {
       let file_name = path.file_name().unwrap().to_str().unwrap();
       let source = read_file(path, EXTI)?;
 
       let _ = Scanner::new(file_name, &source[..]);
-      println!("{}", source);
+      println!("{}", source.trim_end_matches('\n'));
     },
     _ => {}
   }
