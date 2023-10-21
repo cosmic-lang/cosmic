@@ -122,7 +122,7 @@ Here is a list of `Rex`'s primitive types:
   - Polymorphic enums, i.e. don't need to be part of a type. 
   - Also used for identifiers, when used for identifiers the ":" can be omitted.
   - When used for map keys, the ":" is moved to the rhs
-- `anytype`
+- `any`
 
 ## Primitive Data Collections
 `Rex` has a few primitive data collections for you to use:
@@ -628,10 +628,10 @@ const div = (x, y: int): record{quo, rem: int} => {
 let result = div(12, 5)
 std/testing.expect(result.quo == 2)
 
-# Anytype infers the function type at compile time where called, think templates
+# Any infers the function type at compile time where called, think templates
 # If multiple args, they are treated as a tuple
 # Must be the final argument
-# ...tag can be used as shorthand for anytype tuples
+# ...tag can be used as shorthand for any tuples
 const variadic = (...args) => {
   let size = @len(args)
 
@@ -640,7 +640,7 @@ const variadic = (...args) => {
   }
 }
 
-const struct = ($tup: anytype) => {
+const struct = ($tup: any) => {
   inline for (@typeOf(tup).members) |member| {
 
   }
@@ -762,7 +762,7 @@ const List = ($type: typeid): moduleid => {
 
     const insert = (mut& t, value: type) => {...}
   }
-}
+};
 
 let intList = List(int).t{}
 intList.insert(12)
@@ -775,6 +775,8 @@ intList.insert(12)
   - /   : Namespace Resolution
   - =   : Assignment 
   - :=  : Assignment Expression
+  - =~  : Pattern Match
+  - !~  : Pattern Not Match
   - []  : Index 
   - .   : Member Access 
   - ()  : Function Call 
@@ -811,6 +813,7 @@ intList.insert(12)
   - <<  : Bitshift Left
   - >>  : Bitshift Right
 - Type Symbols
+  - any             : Comptime Inferred type
   - (type or type)  : Union
   - !type           : type or error
   - ?type           : type or null

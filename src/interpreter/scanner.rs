@@ -263,6 +263,7 @@ impl <'a> Scanner<'a> {
       '=' => {
         let tt = self.compound_or_else(vec![
           ('>', TokenType::FatArrow),
+          ('~', TokenType::PatternMatch),
           ('=', TokenType::Equal)
         ], TokenType::Assign);
     
@@ -374,7 +375,8 @@ impl <'a> Scanner<'a> {
       },
       '!' => {
         let tt = self.compound_or_else(vec![
-          ('=', TokenType::NotEqual)
+          ('=', TokenType::NotEqual),
+          ('~', TokenType::PatternNotMatch)
         ], TokenType::Bang);
         
         let mut pos = self.file_pos;
@@ -663,7 +665,7 @@ mod tests {
   
   #[test]
   fn compound_operators() {
-    let source = "<==>->!!=..:=...";
+    let source = "<==>->!!=..:=...=~!~";
 
     let expected = vec![
       TokenType::LesserEq,
@@ -673,7 +675,9 @@ mod tests {
       TokenType::NotEqual,
       TokenType::RangeExc,
       TokenType::AssignExp,
-      TokenType::RangeInc
+      TokenType::RangeInc,
+      TokenType::PatternMatch,
+      TokenType::PatternNotMatch
     ];
   
     let mut scanner = Scanner::new("test", &source);
@@ -697,7 +701,9 @@ mod tests {
   fn assignment() {
     let source = "
     let x: int = 12
-    const y: regex = `hello`
+    const y: regex = `rex(lang|xer)`
+    let z: string = \"rexlang\"
+    z =~ y
     ";
 
     let expected = vec![
@@ -713,7 +719,18 @@ mod tests {
       TokenType::Colon,
       TokenType::Tag("regex"),
       TokenType::Assign,
-      TokenType::Regex("hello"),
+      TokenType::Regex("rex(lang|xer)"),
+      TokenType::Newline,
+      TokenType::Let,
+      TokenType::Tag("z"),
+      TokenType::Colon,
+      TokenType::Tag("string"),
+      TokenType::Assign,
+      TokenType::String("rexlang"),
+      TokenType::Newline,
+      TokenType::Tag("z"),
+      TokenType::PatternMatch,
+      TokenType::Tag("y"),
       TokenType::Newline
     ];
   
