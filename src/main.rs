@@ -47,6 +47,7 @@ fn main() -> Result<()> {
   match &cli.command {
     Some(Commands::Compile {path}) => {
       let path = env::current_dir()?.join(path);
+      let file_name = path.file_name().unwrap().to_str().unwrap();
 
       let source: String;
       match path.to_str() {
@@ -54,7 +55,7 @@ fn main() -> Result<()> {
         None => return Err(anyhow!("Could not convert path to string")) 
       };
 
-      let _ = Scanner::new(&source[..]);
+      let _ = Scanner::new(file_name, &source[..]);
       println!("{}", source);
     },
     Some(Commands::Run {path}) => {
