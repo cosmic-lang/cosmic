@@ -183,7 +183,7 @@ impl <'a> Scanner<'a> {
   }
 
   /// Returns char for escape characters, else None
-  fn check_escape(&self) -> Option<char> {
+  fn _check_escape(&self) -> Option<char> {
     return None
   }
 
