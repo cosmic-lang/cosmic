@@ -18,7 +18,7 @@ pub enum TokenType<'a> {
   Tag(&'a str),
   Integer(&'a str),
   Float(&'a str),
-  String(String),
+  String(Box<str>),
   Regex(&'a str),
   // Keywords
   Const,
