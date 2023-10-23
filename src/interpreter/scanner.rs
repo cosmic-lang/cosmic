@@ -14,6 +14,39 @@ pub struct Scanner<'a> {
   file_pos: Position
 }
 
+/// Returns true if char is a alphabetical char or '_'
+fn is_alphabetical(ch: char) -> bool {
+  return match ch {
+    'a'..='z' | 'A'..='Z' | '_' => true,
+    _ => false
+  }
+}
+
+/// Returns true if char is a integer
+fn is_integer(ch: char) -> bool {
+  return match ch {
+    '0'..='9' => true,
+    _ => false
+  }
+}
+
+/// Returns true if char is a number or '.'
+fn is_numeric(ch: char) -> bool {
+  return match ch {
+    ch if is_integer(ch) => true,
+    '.' => true,
+    _ => false
+  }
+}
+
+/// Returns true if char is a number or letter or '_'
+fn is_alphanumeric(ch: char) -> bool {
+  return match ch {
+    ch if is_alphabetical(ch) | is_integer(ch) => true, 
+    _ => false
+  }
+}
+
 impl <'a> Scanner<'a> {
   /// Returns a new scanner
   pub fn new(file_name: &'a str, source: &'a str) -> Scanner<'a> {
@@ -227,16 +260,13 @@ impl <'a> Scanner<'a> {
     return None;
   }
 
-  /// Scans the next tokentype from the source
-  pub fn next_token(&mut self) -> Token<'a> {
-    dbg!(&self.char);
-    self.skip_whitespace();
-
-    return match self.char {
+  // Matches self.char and gets the assosiated token
+  fn get_next_token(&mut self) -> Token<'a> {
+    match self.char {
       // Tags and Keywords
       '#' => {
         self.skip_comment();
-        self.next_token()
+        self.get_next_token()
       }
       ch if is_alphabetical(ch) => {
         self.read_tag(self.read, self.read)
@@ -479,38 +509,18 @@ impl <'a> Scanner<'a> {
       }
     }
   }
-}
 
-/// Returns true if char is a alphabetical char or '_'
-fn is_alphabetical(ch: char) -> bool {
-  return match ch {
-    'a'..='z' | 'A'..='Z' | '_' => true,
-    _ => false
-  }
-}
+  /// Scans the next tokentype from the source
+  pub fn next_token(&mut self) -> Option<Token<'a>> {
+    if self.read > self.source.len() {
+      return None;
+    }
 
-/// Returns true if char is a integer
-fn is_integer(ch: char) -> bool {
-  return match ch {
-    '0'..='9' => true,
-    _ => false
-  }
-}
+    self.skip_whitespace();
 
-/// Returns true if char is a number or '.'
-fn is_numeric(ch: char) -> bool {
-  return match ch {
-    ch if is_integer(ch) => true,
-    '.' => true,
-    _ => false
-  }
-}
+    let token = self.get_next_token();
 
-/// Returns true if char is a number or letter or '_'
-fn is_alphanumeric(ch: char) -> bool {
-  return match ch {
-    ch if is_alphabetical(ch) | is_integer(ch) => true, 
-    _ => false
+    return Some(token);
   }
 }
 
@@ -548,7 +558,8 @@ mod tests {
       TokenType::Colon,
       TokenType::Question,
       TokenType::Comma,
-      TokenType::Dot
+      TokenType::Dot,
+      TokenType::Eof
     ];
   
     let mut scanner = Scanner::new("test", &source);
@@ -556,12 +567,10 @@ mod tests {
     let mut tokens = Vec::new();
 
     loop {
-      let token = scanner.next_token();
-
-      if token.tt == TokenType::Eof {
-        break;
-      } else {
+      if let Some(token) = scanner.next_token() {
         tokens.push(token);
+      } else {
+        break;
       }
     }
 
@@ -586,7 +595,8 @@ mod tests {
       TokenType::Float("12.2"),
       TokenType::Dot,
       TokenType::Integer("4"),
-      TokenType::Newline
+      TokenType::Newline,
+      TokenType::Eof
     ];
   
     let mut scanner = Scanner::new("test", &source);
@@ -594,12 +604,10 @@ mod tests {
     let mut tokens = Vec::new();
     
     loop {
-      let token = scanner.next_token();
-
-      if token.tt == TokenType::Eof {
-        break;
-      } else {
+      if let Some(token) = scanner.next_token() {
         tokens.push(token);
+      } else {
+        break;
       }
     }
 
@@ -618,19 +626,18 @@ mod tests {
       TokenType::Newline,
       TokenType::String("hello"),
       TokenType::Newline,
+      TokenType::Eof
     ];
   
     let mut scanner = Scanner::new("test", &source);
 
     let mut tokens = Vec::new();
-
+    
     loop {
-      let token = scanner.next_token();
-
-      if token.tt == TokenType::Eof {
-        break;
-      } else {
+      if let Some(token) = scanner.next_token() {
         tokens.push(token);
+      } else {
+        break;
       }
     }
 
@@ -654,7 +661,8 @@ mod tests {
       TokenType::Tag("yo!"),
       TokenType::Newline,
       TokenType::Let,
-      TokenType::Newline
+      TokenType::Newline,
+      TokenType::Eof
     ];
   
     let mut scanner = Scanner::new("test", &source);
@@ -662,12 +670,10 @@ mod tests {
     let mut tokens = Vec::new();
 
     loop {
-      let token = scanner.next_token();
-
-      if token.tt == TokenType::Eof {
-        break;
-      } else {
+      if let Some(token) = scanner.next_token() {
         tokens.push(token);
+      } else {
+        break;
       }
     }
 
@@ -688,20 +694,19 @@ mod tests {
       TokenType::AssignExp,
       TokenType::RangeInc,
       TokenType::PatternMatch,
-      TokenType::PatternNotMatch
+      TokenType::PatternNotMatch,
+      TokenType::Eof
     ];
   
     let mut scanner = Scanner::new("test", &source);
 
     let mut tokens = Vec::new();
-
+    
     loop {
-      let token = scanner.next_token();
-
-      if token.tt == TokenType::Eof {
-        break;
-      } else {
+      if let Some(token) = scanner.next_token() {
         tokens.push(token);
+      } else {
+        break;
       }
     }
 
@@ -742,7 +747,8 @@ mod tests {
       TokenType::Tag("z"),
       TokenType::PatternMatch,
       TokenType::Tag("y"),
-      TokenType::Newline
+      TokenType::Newline,
+      TokenType::Eof
     ];
   
     let mut scanner = Scanner::new("test", &source);
@@ -750,13 +756,10 @@ mod tests {
     let mut tokens = Vec::new();
 
     loop {
-      let token = scanner.next_token();
-      dbg!(&token);
-
-      if token.tt == TokenType::Eof {
-        break;
-      } else {
+      if let Some(token) = scanner.next_token() {
         tokens.push(token);
+      } else {
+        break;
       }
     }
 
