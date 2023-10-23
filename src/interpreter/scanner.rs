@@ -91,7 +91,7 @@ impl <'a> Scanner<'a> {
     }
   }
   
-  /// Returns the next char at peek + count, skipping whitespace
+  /// Returns the char at peek + count, skipping whitespace
   fn peek_plus(&self, count: usize) -> char {
     return match self.peek + count >= self.source.len() {
       false => self.source.chars().nth(self.peek + count).unwrap(),
@@ -102,7 +102,7 @@ impl <'a> Scanner<'a> {
   /// Skips whitespace, preserves \n
   fn skip_whitespace(&mut self) {
     match self.char {
-      ' ' | '\r' | '\t' => {
+      ' ' | '\t' => {
         self.advance(1);
         self.skip_whitespace()
       },
