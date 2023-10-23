@@ -50,7 +50,7 @@ pub enum TokenType<'a> {
   Mutable,
   Move,
   Local,
-  Comptime,
+  Ctime,
   // Assignment
   Assign,
   AssignExp,
@@ -135,11 +135,11 @@ impl <'a> TokenType<'a> {
       "and"      => Some(TokenType::And),
       "or"       => Some(TokenType::Or),
       "dyn"      => Some(TokenType::Dyn),
-      "anytype"  => Some(TokenType::Anytype),
+      "any"      => Some(TokenType::Anytype),
       "mut"      => Some(TokenType::Mutable),
       "mov"      => Some(TokenType::Move),
       "loc"      => Some(TokenType::Local),
-      "comptime" => Some(TokenType::Comptime),
+      "ctime"    => Some(TokenType::Ctime),
       _ => None
     }
   }
@@ -226,7 +226,7 @@ impl <'a> TokenType<'a> {
       TokenType::Mutable         => "mut",
       TokenType::Move            => "mov",
       TokenType::Local           => "loc",
-      TokenType::Comptime        => "comptime",
+      TokenType::Ctime           => "ctime",
       // Assignment
       TokenType::Assign          => "=",
       TokenType::AssignExp       => ":=",

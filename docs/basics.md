@@ -431,7 +431,7 @@ may be able to be relaxed, so all values behind borrows can be modified
       - `mov` unique mode, ownership of borrow is moved into function
       - `mut` exclusive mode, only one active borrow to value so safe to mutate
 - All types
-  - `comptime` or `@` compile time mode
+  - `@` or `ctime@` compile time mode
 ```
 let x, y = 12, 11
 
@@ -721,13 +721,13 @@ let player = Player{} # If field values are not provided they will be set to the
 system(&player)
 ```
 
-## Comptime Expressions
-Metaprogramming in `Rex` is done using comptime expressions, which is just `Rex` code executed at compile time
+## `ctime` Expressions
+Metaprogramming in `Rex` is done using ctime expressions, which is just `Rex` code executed at compile time
 
-The return of compile time expressions can be stored in let, but they will no longer be usable in later meta expressions
+The return of compile time expressions is a reference to a static variable
 ```
-# `@` or `comptime` preceeding a tagifier states that this parameter must be known at compile time
-const Vector = (@t: typeid): typeid => {
+# `@` or `ctime@` preceeding a tagifier states that this parameter must be known at compile time
+const Vector = (ctime@t: typeid): typeid => {
   return record{
     x: t,
     y: t
@@ -738,8 +738,8 @@ const t = int
 # The function :Vector could be called at runtime:
 let Pos = Vector(t) # This cannot be used in meta expressions 
                      #   because it is executed at runtime
-# Or compile time:
-let Pos = comptime Vector(t) # This can be used in later compile time expressions as long as it is not assigned to again
+# Or compile time (@ is used to run an expression at ctime):
+let Pos = @Vector(t) # This can be used in later compile time expressions as long as it is not assigned to again
 const Pos = @Vector(t) # This can be used in later compile time expressions
 
 # Blocks can also be run at compile time
@@ -751,7 +751,7 @@ const screen_size = @{
 Modules are first class in `Rex`, so they can be passed into and out of functions
 ```
 # To create a generic ds with methods, you must return a record with static bindings
-const List = (@type: typeid): moduleid => {
+const List = (ctime@type: typeid): moduleid => {
   return module {
     const Node = record {
       next: $this(),
@@ -784,7 +784,7 @@ intList.insert(12)
   - .   : Member Access 
   - ()  : Function Call 
   - &   : Borrow 
-  - @   : Comptime Mode
+  - @   : Ctime Mode
   - *   : Dereference
   - $   : Built in function
 - Arithmetic Operators          - Wrapping - Saturating
@@ -816,7 +816,7 @@ intList.insert(12)
   - <<  : Bitshift Left
   - >>  : Bitshift Right
 - Type Symbols
-  - any             : Comptime Inferred type
+  - any             : Ctime Inferred type
   - (type or type)  : Union
   - !type           : type or error
   - ?type           : type or null
@@ -834,7 +834,7 @@ intList.insert(12)
 
 ## Example: Linked List
 ```
-const List = (@type: typeid): moduleid => {
+const List = (ctime@type: typeid): moduleid => {
   return module {
     let max_size = 100
 
