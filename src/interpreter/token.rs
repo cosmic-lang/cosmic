@@ -12,13 +12,13 @@ pub struct Token<'a> {
 }
 
 ///
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum TokenType<'a> {
   // Literals
   Tag(&'a str),
   Integer(&'a str),
   Float(&'a str),
-  String(&'a str),
+  String(String),
   Regex(&'a str),
   // Keywords
   Const,
@@ -188,7 +188,7 @@ impl <'a> TokenType<'a> {
   }
 
   // Returns the string representation of token
-  pub fn to_string(&self) -> &'a str {
+  pub fn to_string(&'a self) -> &'a str {
     match self {
       // Complex tokens
       TokenType::Tag(tag)        => tag,

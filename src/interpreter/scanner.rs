@@ -197,7 +197,7 @@ impl <'a> Scanner<'a> {
     self.advance(1);
 
     return Token{
-      tt: TokenType::String(&self.source[start..end]),
+      tt: TokenType::String(self.source[start..end].into()),
       pos: Position{
         col: self.file_pos.col - (end - start), 
         line: self.file_pos.line
@@ -209,7 +209,7 @@ impl <'a> Scanner<'a> {
   /// Reads multiline strings
   fn read_multistring(&mut self, _start: usize, _end: usize) -> Token<'a> {
     return Token{
-      tt: TokenType::String(""),
+      tt: TokenType::String("".into()),
       pos: self.file_pos,
       file_name: self.file_name
     }
@@ -627,9 +627,9 @@ mod tests {
     ";
 
     let expected = vec![
-      TokenType::String("12.2.1"),
+      TokenType::String("12.2.1".into()),
       TokenType::Newline,
-      TokenType::String("hello"),
+      TokenType::String("hello".into()),
       TokenType::Newline,
       TokenType::Eof
     ];
@@ -747,7 +747,7 @@ mod tests {
       TokenType::Colon,
       TokenType::Tag("string"),
       TokenType::Assign,
-      TokenType::String("rexlang"),
+      TokenType::String("rexlang".into()),
       TokenType::Newline,
       TokenType::Tag("z"),
       TokenType::PatternMatch,
