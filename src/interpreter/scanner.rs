@@ -240,12 +240,12 @@ impl <'a> Scanner<'a> {
   fn read_multistring(&mut self, str: &mut Vec<&'a str>, pos: Position, start: usize, end: usize) -> Token<'a> {
     if self.read < self.source.len() {
       if self.char != '\n' {
-        if let Some(strg) = self.check_escape() {
-          str.push(strg);
-        } else {
+        //if let Some(strg) = self.check_escape() {
+        //  str.push(strg);
+        //} else {
           self.advance(1);
           return self.read_multistring(str, pos, start, end + 1);
-        }
+        //}
       } else if self.char == '\n' {
         str.push(&self.source[start..end]);
 

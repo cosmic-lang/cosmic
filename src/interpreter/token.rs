@@ -1,6 +1,8 @@
 //!
 //!
 
+use std::rc::Rc;
+
 use super::super::utilities::Position;
 
 ///
@@ -18,7 +20,7 @@ pub enum TokenType<'a> {
   Tag(&'a str),
   Integer(&'a str),
   Float(&'a str),
-  String(Box<str>),
+  String(Rc<str>),
   Regex(&'a str),
   // Keywords
   Const,
