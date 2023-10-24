@@ -207,7 +207,20 @@ impl <'a> Scanner<'a> {
   }
   
   /// Reads multiline strings
-  fn read_multistring(&mut self, _start: usize, _end: usize) -> Token<'a> {
+  fn read_multistring(&mut self, str: &Vec<&str>, start: usize, end: usize) -> Token<'a> {
+    if self.char != '\n' && self.read < self.source.len() {
+      self.advance(1);
+      return self.read_multistring(str, start, end + 1);
+    } else if self.char == '\n' {
+      str.push(&self.source[start..end]);
+      self.advance(1);
+      self.skip_whitespace();
+
+      return self.read_multistring(str, self.read, self.read);
+    }
+
+    self.advance(1);
+
     return Token{
       tt: TokenType::String("".into()),
       pos: self.file_pos,
