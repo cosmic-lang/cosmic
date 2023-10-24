@@ -183,20 +183,35 @@ impl <'a> Scanner<'a> {
   }
 
   /// Returns char for escape characters, else None
-  fn check_escape(&self) -> Option<char> {
+  fn check_escape(&mut self) -> Option<&str> {
     match self.peek() {
-      'n' => Some('\n'),
-      'r' => Some('\r'),
-      't' => Some('\t'),
-      '\\' => Some('\\'),
-      '"' => Some('\"'),
+      'n' => {
+        self.advance(2);
+        Some("\n")
+      },
+      'r' => {
+        self.advance(2);
+        Some("\r")
+      },
+      't' => {
+        self.advance(2);
+        Some("\t")
+      },
+      '\\' => {
+        self.advance(2);
+        Some("\\")
+      },
+      '"' => {
+        self.advance(2);
+        Some("\"")
+      },
       ch if is_integer(ch) => {
 
-        Some(' ')
+        Some("")
       },
       'u' => {
         
-        Some(' ')
+        Some("")
       },
       _ => None
     }
@@ -225,8 +240,12 @@ impl <'a> Scanner<'a> {
   fn read_multistring(&mut self, str: &mut Vec<&'a str>, pos: Position, start: usize, end: usize) -> Token<'a> {
     if self.read < self.source.len() {
       if self.char != '\n' {
-        self.advance(1);
-        return self.read_multistring(str, pos, start, end + 1);
+        if let Some(strg) = self.check_escape() {
+          str.push(strg);
+        } else {
+          self.advance(1);
+          return self.read_multistring(str, pos, start, end + 1);
+        }
       } else if self.char == '\n' {
         str.push(&self.source[start..end]);
 
