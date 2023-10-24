@@ -183,8 +183,23 @@ impl <'a> Scanner<'a> {
   }
 
   /// Returns char for escape characters, else None
-  fn _check_escape(&self) -> Option<char> {
-    return None
+  fn check_escape(&self) -> Option<char> {
+    match self.peek() {
+      'n' => Some('\n'),
+      'r' => Some('\r'),
+      't' => Some('\t'),
+      '\\' => Some('\\'),
+      '"' => Some('\"'),
+      ch if is_integer(ch) => {
+
+        Some(' ')
+      },
+      'u' => {
+        
+        Some(' ')
+      },
+      _ => None
+    }
   }
 
   /// Reads strings
