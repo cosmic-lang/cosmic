@@ -182,36 +182,38 @@ impl <'a> Scanner<'a> {
     }
   }
 
-  /// Returns char for escape characters, else None
-  fn check_escape(&mut self) -> Option<&str> {
+  /// Returns &str for escape characters, else None
+  fn check_escape(&mut self) -> Option<char> {
     match self.peek() {
       'n' => {
         self.advance(2);
-        Some("\n")
+        Some('\n')
       },
       'r' => {
         self.advance(2);
-        Some("\r")
+        Some('\r')
       },
       't' => {
         self.advance(2);
-        Some("\t")
+        Some('\t')
       },
       '\\' => {
         self.advance(2);
-        Some("\\")
+        Some('\\')
       },
       '"' => {
         self.advance(2);
-        Some("\"")
+        Some('"')
       },
       ch if is_integer(ch) => {
+        self.advance(1);
 
-        Some("")
+        Some(' ')
       },
       'u' => {
+        self.advance(2);
         
-        Some("")
+        Some(' ')
       },
       _ => None
     }
