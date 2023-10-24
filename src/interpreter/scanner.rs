@@ -207,23 +207,30 @@ impl <'a> Scanner<'a> {
   }
   
   /// Reads multiline strings
-  fn read_multistring(&mut self, str: &Vec<&str>, start: usize, end: usize) -> Token<'a> {
-    if self.char != '\n' && self.read < self.source.len() {
-      self.advance(1);
-      return self.read_multistring(str, start, end + 1);
-    } else if self.char == '\n' {
-      str.push(&self.source[start..end]);
-      self.advance(1);
-      self.skip_whitespace();
+  fn read_multistring(&mut self, str: &mut Vec<&'a str>, pos: Position, start: usize, end: usize) -> Token<'a> {
+    if self.read < self.source.len() {
+      if self.char != '\n' {
+        self.advance(1);
+        return self.read_multistring(str, pos, start, end + 1);
+      } else if self.char == '\n' {
+        str.push(&self.source[start..end]);
 
-      return self.read_multistring(str, self.read, self.read);
+        self.advance(1);
+        self.skip_whitespace();
+
+        // If next line starts with \\, push \n and call recursively to read next line
+        if self.char == '\\' && self.peek() == '\\' {
+          str.push("\n");
+          self.advance(2);
+          return self.read_multistring(str, pos, self.read, self.read);
+        }
+      }
     }
 
-    self.advance(1);
-
+    // Concat Vec<&str> into Box<str> and return token
     return Token{
-      tt: TokenType::String("".into()),
-      pos: self.file_pos,
+      tt: TokenType::String(str.concat().into()),
+      pos,
       file_name: self.file_name
     }
   }
@@ -301,7 +308,7 @@ impl <'a> Scanner<'a> {
       // Multiline Strings
       '\\' if self.peek() == '\\' => {
         self.advance(2);
-        self.read_multistring(self.read, self.read)
+        self.read_multistring(&mut vec![], self.file_pos, self.read, self.read)
       },
       // Regex
       '`' => {
@@ -556,7 +563,7 @@ mod tests {
 
   #[test]
   fn operators() {
-    let source = "+-*/<>!@$%&^=|;:?,.";
+    let source = r#"+-*/<>!@$%&^=|;:?,."#;
     let expected = vec![
       TokenType::Plus,
       TokenType::Minus,
@@ -597,12 +604,12 @@ mod tests {
 
   #[test]
   fn numbers() {
-    let source = "
+    let source = r#"
     # imma comment
     1234
-    12.4 # Anothe Comment
+    12.4 # Another Comment
     12.2.4
-    ";
+    "#;
 
     let expected = vec![
       TokenType::Newline,
@@ -634,16 +641,19 @@ mod tests {
   
   #[test]
   fn strings() {
-    let source = "
-    \"12.2.1\"
-    \"hello\"
-    ";
+    let source = r#"
+    "12.2.1"
+    "hello"
+    \\hello, world
+    \\!
+    "#;
 
     let expected = vec![
       TokenType::String("12.2.1".into()),
       TokenType::Newline,
       TokenType::String("hello".into()),
       TokenType::Newline,
+      TokenType::String("hello, world\n!".into()),
       TokenType::Eof
     ];
   
@@ -664,12 +674,12 @@ mod tests {
   
   #[test]
   fn tags_and_keywords() {
-    let source = "
+    let source = r#"
     hello
     hey?
     yo!
     let
-    ";
+    "#;
 
     let expected = vec![
       TokenType::Tag("hello"),
@@ -700,7 +710,7 @@ mod tests {
   
   #[test]
   fn compound_operators() {
-    let source = "<==>->!!=..:=...=~!~";
+    let source = r#"<==>->!!=..:=...=~!~"#;
 
     let expected = vec![
       TokenType::LesserEq,
@@ -733,12 +743,12 @@ mod tests {
   
   #[test]
   fn assignment() {
-    let source = "
+    let source = r#"
     let x: int = 12
     const y: regex = `rex(lang|xer)`
-    let z: string = \"rexlang\"
+    let z: string = "rexlang"
     z =~ y
-    ";
+    "#;
 
     let expected = vec![
       TokenType::Let,
