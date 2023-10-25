@@ -61,6 +61,14 @@ impl <'a> Scanner<'a> {
     }
   }
 
+  /// Resets the scanner to the beginning of the file
+  pub fn reset(&mut self) {
+    self.read = 0;
+    self.peek = 1;
+    self.char = self.source.chars().nth(0).unwrap();
+    self.file_pos = Position{col: 1, line: 1};
+  }
+
   /// Advances the scanner count number of times
   fn advance(&mut self, count: usize) {
     let count = count.clamp(0, 3);
