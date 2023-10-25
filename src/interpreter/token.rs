@@ -7,21 +7,21 @@ use super::super::utilities::Position;
 
 ///
 #[derive(Debug, PartialEq)]
-pub struct Token<'a> {
-  pub tt: TokenType<'a>,
+pub struct Token {
+  pub tt: TokenType,
   pub pos: Position,
-  pub file_name: &'a str
+  pub file_name: Rc<str>
 }
 
 ///
 #[derive(Clone, Debug, PartialEq)]
-pub enum TokenType<'a> {
+pub enum TokenType {
   // Literals
-  Tag(&'a str),
-  Integer(&'a str),
-  Float(&'a str),
-  String(Rc<str>),
-  Regex(&'a str),
+  Tag(Box<str>),
+  Integer(Box<str>),
+  Float(Box<str>),
+  String(Box<str>),
+  Regex(Box<str>),
   // Keywords
   Const,
   Let,
@@ -109,7 +109,7 @@ pub enum TokenType<'a> {
   Eof
 }
 
-impl <'a> TokenType<'a> {
+impl TokenType {
   // If tag matches a keyword returns Some(that keyword), else None
   pub fn try_keyword(tag: &str) -> Option<TokenType> {
     match tag {
@@ -147,7 +147,7 @@ impl <'a> TokenType<'a> {
   }
 
   // Returns the TokenType eqivalent of char
-  pub fn of_char(ch: char) -> TokenType<'a> {
+  pub fn of_char(ch: char) -> TokenType {
     match ch {
       //
       '='  => TokenType::Assign,
@@ -190,7 +190,7 @@ impl <'a> TokenType<'a> {
   }
 
   // Returns the string representation of token
-  pub fn to_string(&'a self) -> &'a str {
+  pub fn to_string(&self) -> &str {
     match self {
       // Complex tokens
       TokenType::Tag(tag)        => tag,

@@ -1,6 +1,6 @@
 //use rex::prelude::*;
 
-use std::{path::PathBuf, env};
+use std::{path::PathBuf, env, rc::Rc};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -49,18 +49,21 @@ fn main() -> Result<()> {
   match &cli.command {
     // Compile file at path
     Some(Commands::Compile {path}) => {
-      let file_name = path.file_name().unwrap().to_str().unwrap();
+      let file_name: Rc<str> = path.file_name().unwrap().to_str().unwrap().into();
       let source = read_file(path, EXT)?;
 
-      let _ = Scanner::new(file_name, &source[..]);
-      println!("{}", source.trim_end_matches('\n'));
+      let scanner = Scanner::new(file_name, source);
+
+      for token in scanner {
+        dbg!(token);
+      }
     },
     // Interpret file at path
     Some(Commands::Run {path}) => {
-      let file_name = path.file_name().unwrap().to_str().unwrap();
+      let file_name: Rc<str> = path.file_name().unwrap().to_str().unwrap().into();
       let source = read_file(path, EXTI)?;
 
-      let scanner = Scanner::new(file_name, &source[..]);
+      let scanner = Scanner::new(file_name, source);
 
       for token in scanner {
         dbg!(token);

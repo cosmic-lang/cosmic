@@ -1,18 +1,10 @@
 //!
 //!
 
+use std::rc::Rc;
+
 use super::token::{Token, TokenType};
 use super::super::utilities::Position;
-
-///
-pub struct Scanner<'a> {
-  source: &'a str,
-  read: usize,
-  peek: usize,
-  char: char,
-  file_name: &'a str,
-  file_pos: Position
-}
 
 /// Returns true if char is a alphabetical char or '_'
 fn is_alphabetical(ch: char) -> bool {
@@ -47,16 +39,25 @@ fn is_alphanumeric(ch: char) -> bool {
   }
 }
 
-impl <'a> Scanner<'a> {
+///
+pub struct Scanner {
+  source: Box<str>,
+  read: usize,
+  peek: usize,
+  char: char,
+  file_name: Rc<str>,
+  file_pos: Position
+}
+
+impl<'a> Scanner {
   /// Returns a new scanner
-  pub fn new(file_name: &'a str, source: &'a str) -> Scanner<'a> {
-    let source = source.trim_start_matches('\n');
+  pub fn new(file_name: Rc<str>, source: Box<str>) -> Scanner {
     Self {
+      char: source.chars().nth(0).unwrap(),
       source,
       read: 0,
       peek: 1,
       file_name,
-      char: source.chars().nth(0).unwrap(),
       file_pos: Position{col: 1, line: 1}
     }
   }
@@ -127,7 +128,7 @@ impl <'a> Scanner<'a> {
   }
 
   /// Reads sequences of chars, used for tags and keywords
-  fn read_tag(&mut self, start: usize, mut end: usize) -> Token<'a> {
+  fn read_tag(&mut self, start: usize, mut end: usize) -> Token {
     if is_alphanumeric(self.char) {
       self.advance(1);
       return self.read_tag(start, end + 1)
@@ -140,7 +141,7 @@ impl <'a> Scanner<'a> {
 
     let tt = match TokenType::try_keyword(&self.source[start..end]) {
       Some(keyword) => keyword,
-      None => TokenType::Tag(&self.source[start..end])
+      None => TokenType::Tag(self.source[start..end].into())
     };
 
     return Token{
@@ -149,12 +150,12 @@ impl <'a> Scanner<'a> {
         col: self.file_pos.col - (end - start), 
         line: self.file_pos.line
       },
-      file_name: self.file_name
+      file_name: self.file_name.clone()
     }
   }
 
   /// Reads integers and floats, if '.' is read, switches to read_float to read the decimals
-  fn read_number(&mut self, start: usize, end: usize) -> Token<'a> {
+  fn read_number(&mut self, start: usize, end: usize) -> Token {
     if self.char == '.' {
       self.advance(1);
       return self.read_float(start, end + 1)
@@ -164,29 +165,29 @@ impl <'a> Scanner<'a> {
     }
 
     return Token{
-      tt: TokenType::Integer(&self.source[start..end]),
+      tt: TokenType::Integer(self.source[start..end].into()),
       pos: Position{
         col: self.file_pos.col - (end - start), 
         line: self.file_pos.line
       },
-      file_name: self.file_name
+      file_name: self.file_name.clone()
     }
   }
   
   /// Read the decimal portion of the float
-  fn read_float(&mut self, start: usize, end: usize) -> Token<'a> {
+  fn read_float(&mut self, start: usize, end: usize) -> Token {
     if is_integer(self.char) {
       self.advance(1);
       return self.read_float(start, end + 1)
     }
     
     return Token{
-      tt: TokenType::Float(&self.source[start..end]),
+      tt: TokenType::Float(self.source[start..end].into()),
       pos: Position{
         col: self.file_pos.col - (end - start), 
         line: self.file_pos.line
       },
-      file_name: self.file_name
+      file_name: self.file_name.clone()
     }
   }
 
@@ -228,7 +229,7 @@ impl <'a> Scanner<'a> {
   }
 
   /// Reads strings
-  fn read_string(&mut self, start: usize, end: usize) -> Token<'a> {
+  fn read_string(&mut self, start: usize, end: usize) -> Token {
     if self.char != '"' && self.read < self.source.len() {
       self.advance(1);
       return self.read_string(start, end + 1);
@@ -242,12 +243,12 @@ impl <'a> Scanner<'a> {
         col: self.file_pos.col - (end - start), 
         line: self.file_pos.line
       },
-      file_name: self.file_name
+      file_name: self.file_name.clone()
     }
   }
   
   /// Reads multiline strings
-  fn read_multistring(&mut self, str: &mut Vec<&'a str>, pos: Position, start: usize, end: usize) -> Token<'a> {
+  fn read_multistring(&'a mut self, str: &mut Vec<String>, pos: Position, start: usize, end: usize) -> Token {
     if self.read < self.source.len() {
       if self.char != '\n' {
         //if let Some(strg) = self.check_escape() {
@@ -257,14 +258,14 @@ impl <'a> Scanner<'a> {
           return self.read_multistring(str, pos, start, end + 1);
         //}
       } else if self.char == '\n' {
-        str.push(&self.source[start..end]);
+        str.push(self.source[start..end].to_owned());
 
         self.advance(1);
         self.skip_whitespace();
 
         // If next line starts with \\, push \n and call recursively to read next line
         if self.char == '\\' && self.peek() == '\\' {
-          str.push("\n");
+          str.push("\n".to_owned());
           self.advance(2);
           return self.read_multistring(str, pos, self.read, self.read);
         }
@@ -275,12 +276,12 @@ impl <'a> Scanner<'a> {
     return Token{
       tt: TokenType::String(str.concat().into()),
       pos,
-      file_name: self.file_name
+      file_name: self.file_name.clone()
     }
   }
   
   /// Reads regex
-  fn read_regex(&mut self, start: usize, end: usize) -> Token<'a> {
+  fn read_regex(&mut self, start: usize, end: usize) -> Token {
     if self.char != '`' && self.read < self.source.len() {
       self.advance(1);
       return self.read_regex(start, end + 1);
@@ -289,17 +290,17 @@ impl <'a> Scanner<'a> {
     self.advance(1);
     
     return Token{
-      tt: TokenType::Regex(&self.source[start..end]),
+      tt: TokenType::Regex(self.source[start..end].into()),
       pos: Position{
         col: self.file_pos.col - (end - start), 
         line: self.file_pos.line
       },
-      file_name: self.file_name
+      file_name: self.file_name.clone()
     }
   }
 
   /// Checks for compound operators
-  fn compound_or_else(&mut self, rules: Vec<(char, TokenType<'a>)>, default: TokenType<'a>) -> TokenType<'a> {
+  fn compound_or_else(&mut self, rules: Vec<(char, TokenType)>, default: TokenType) -> TokenType {
     match self.char {
       ' ' | '\r' | '\t' => self.skip_whitespace(),
       _ => self.advance(1)
@@ -316,7 +317,7 @@ impl <'a> Scanner<'a> {
   }
   
   /// Checks for three char compound operators
-  fn compound_three(&mut self, rules: Vec<(char, char, TokenType<'a>)>) -> Option<TokenType<'a>> {
+  fn compound_three(&mut self, rules: Vec<(char, char, TokenType)>) -> Option<TokenType> {
     for rule in rules {
       if self.peek() == rule.0 {
         if self.peek_plus(1) == rule.1 {
@@ -330,7 +331,7 @@ impl <'a> Scanner<'a> {
   }
 
   // Matches self.char and gets the assosiated token
-  fn get_next_token(&mut self) -> Token<'a> {
+  fn get_next_token(&mut self) -> Token {
     match self.char {
       // Tags and Keywords
       '#' => {
@@ -378,7 +379,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       '+' => { 
@@ -397,7 +398,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       '*' => { 
@@ -416,7 +417,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       '-' => {
@@ -436,7 +437,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       '<' => {
@@ -456,7 +457,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       '>' => {
@@ -476,7 +477,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       '!' => {
@@ -496,7 +497,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       ':' => {
@@ -515,7 +516,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       '|' => { 
@@ -534,7 +535,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       '.' => {
@@ -561,7 +562,7 @@ impl <'a> Scanner<'a> {
         Token{
           tt, 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       },
       // All else
@@ -573,15 +574,15 @@ impl <'a> Scanner<'a> {
         Token{
           tt: TokenType::of_char(ch), 
           pos,
-          file_name: self.file_name
+          file_name: self.file_name.clone()
         }
       }
     }
   }
 }
 
-impl<'a>  Iterator for Scanner<'a> {
-  type Item = Token<'a>;
+impl Iterator for Scanner {
+  type Item = Token;
 
   /// Scans the next Token from the source
   fn next(&mut self) -> Option<Self::Item> {
@@ -636,7 +637,7 @@ mod tests {
       TokenType::Eof
     ];
   
-    let mut scanner = Scanner::new("test", &source);
+    let mut scanner = Scanner::new("test".into(), source.into());
 
     let mut tokens = Vec::new();
 
@@ -658,22 +659,22 @@ mod tests {
     1234
     12.4 # Another Comment
     12.2.4
-    "#;
+    "#.trim_start();
 
     let expected = vec![
       TokenType::Newline,
-      TokenType::Integer("1234"),
+      TokenType::Integer("1234".into()),
       TokenType::Newline,
-      TokenType::Float("12.4"),
+      TokenType::Float("12.4".into()),
       TokenType::Newline,
-      TokenType::Float("12.2"),
+      TokenType::Float("12.2".into()),
       TokenType::Dot,
-      TokenType::Integer("4"),
+      TokenType::Integer("4".into()),
       TokenType::Newline,
       TokenType::Eof
     ];
   
-    let mut scanner = Scanner::new("test", &source);
+    let mut scanner = Scanner::new("test".into(), source.into());
 
     let mut tokens = Vec::new();
     
@@ -695,7 +696,7 @@ mod tests {
     "hello"
     \\hello, world
     \\!
-    "#;
+    "#.trim_start();
 
     let expected = vec![
       TokenType::String("12.2.1".into()),
@@ -706,7 +707,7 @@ mod tests {
       TokenType::Eof
     ];
   
-    let mut scanner = Scanner::new("test", &source);
+    let mut scanner = Scanner::new("test".into(), source.into());
 
     let mut tokens = Vec::new();
     
@@ -728,21 +729,21 @@ mod tests {
     hey?
     yo!
     let
-    "#;
+    "#.trim_start();
 
     let expected = vec![
-      TokenType::Tag("hello"),
+      TokenType::Tag("hello".into()),
       TokenType::Newline,
-      TokenType::Tag("hey?"),
+      TokenType::Tag("hey?".into()),
       TokenType::Newline,
-      TokenType::Tag("yo!"),
+      TokenType::Tag("yo!".into()),
       TokenType::Newline,
       TokenType::Let,
       TokenType::Newline,
       TokenType::Eof
     ];
   
-    let mut scanner = Scanner::new("test", &source);
+    let mut scanner = Scanner::new("test".into(), source.into());
 
     let mut tokens = Vec::new();
 
@@ -775,7 +776,7 @@ mod tests {
       TokenType::Eof
     ];
   
-    let mut scanner = Scanner::new("test", &source);
+    let mut scanner = Scanner::new("test".into(), source.into());
 
     let mut tokens = Vec::new();
     
@@ -797,38 +798,38 @@ mod tests {
     const y: regex = `rex(lang|xer)`
     let z: string = "rexlang"
     z =~ y
-    "#;
+    "#.trim_start();
 
     let expected = vec![
       TokenType::Let,
-      TokenType::Tag("x"),
+      TokenType::Tag("x".into()),
       TokenType::Colon,
-      TokenType::Tag("int"),
+      TokenType::Tag("int".into()),
       TokenType::Assign,
-      TokenType::Integer("12"),
+      TokenType::Integer("12".into()),
       TokenType::Newline,
       TokenType::Const,
-      TokenType::Tag("y"),
+      TokenType::Tag("y".into()),
       TokenType::Colon,
-      TokenType::Tag("regex"),
+      TokenType::Tag("regex".into()),
       TokenType::Assign,
-      TokenType::Regex("rex(lang|xer)"),
+      TokenType::Regex("rex(lang|xer)".into()),
       TokenType::Newline,
       TokenType::Let,
-      TokenType::Tag("z"),
+      TokenType::Tag("z".into()),
       TokenType::Colon,
-      TokenType::Tag("string"),
+      TokenType::Tag("string".into()),
       TokenType::Assign,
       TokenType::String("rexlang".into()),
       TokenType::Newline,
-      TokenType::Tag("z"),
+      TokenType::Tag("z".into()),
       TokenType::PatternMatch,
-      TokenType::Tag("y"),
+      TokenType::Tag("y".into()),
       TokenType::Newline,
       TokenType::Eof
     ];
   
-    let mut scanner = Scanner::new("test", &source);
+    let mut scanner = Scanner::new("test".into(), source.into());
 
     let mut tokens = Vec::new();
 
