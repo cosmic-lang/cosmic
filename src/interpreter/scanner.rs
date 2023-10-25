@@ -603,10 +603,10 @@ mod tests {
   use crate::prelude::*;
 
   fn test_tokens(tokens: &Vec<Token>, expected: &Vec<TokenType>) {
-    assert!(tokens.len() == expected.len());
+    assert_eq!(tokens.len(), expected.len());
 
     for (t, e) in tokens.iter().zip(expected.iter()) {
-      assert!(t.tt == *e)
+      assert_eq!(t.tt, *e)
     }
   }
 
