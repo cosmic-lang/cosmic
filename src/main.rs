@@ -1,6 +1,6 @@
 //use rex::prelude::*;
 
-use std::{path::PathBuf, env, vec};
+use std::{path::PathBuf, env};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -60,14 +60,10 @@ fn main() -> Result<()> {
       let file_name = path.file_name().unwrap().to_str().unwrap();
       let source = read_file(path, EXTI)?;
 
-      let mut scanner = Scanner::new(file_name, &source[..]);
+      let scanner = Scanner::new(file_name, &source[..]);
 
-      loop {
-        if let Some(token) = scanner.next_token() {
-          dbg!(token);
-        } else {
-          break;
-        }
+      for token in scanner {
+        dbg!(token);
       }
     },
     _ => {}

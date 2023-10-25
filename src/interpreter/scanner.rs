@@ -183,7 +183,7 @@ impl <'a> Scanner<'a> {
   }
 
   /// Returns &str for escape characters, else None
-  fn check_escape(&mut self) -> Option<char> {
+  fn _check_escape(&mut self) -> Option<char> {
     match self.peek() {
       'n' => {
         self.advance(2);
@@ -570,9 +570,13 @@ impl <'a> Scanner<'a> {
       }
     }
   }
+}
 
-  /// Scans the next tokentype from the source
-  pub fn next_token(&mut self) -> Option<Token<'a>> {
+impl<'a>  Iterator for Scanner<'a> {
+  type Item = Token<'a>;
+
+  /// Scans the next Token from the source
+  fn next(&mut self) -> Option<Self::Item> {
     if self.read > self.source.len() {
       return None;
     }
@@ -583,6 +587,7 @@ impl <'a> Scanner<'a> {
 
     return Some(token);
   }
+
 }
 
 #[cfg(test)]
@@ -628,7 +633,7 @@ mod tests {
     let mut tokens = Vec::new();
 
     loop {
-      if let Some(token) = scanner.next_token() {
+      if let Some(token) = scanner.next() {
         tokens.push(token);
       } else {
         break;
@@ -665,7 +670,7 @@ mod tests {
     let mut tokens = Vec::new();
     
     loop {
-      if let Some(token) = scanner.next_token() {
+      if let Some(token) = scanner.next() {
         tokens.push(token);
       } else {
         break;
@@ -698,7 +703,7 @@ mod tests {
     let mut tokens = Vec::new();
     
     loop {
-      if let Some(token) = scanner.next_token() {
+      if let Some(token) = scanner.next() {
         tokens.push(token);
       } else {
         break;
@@ -734,7 +739,7 @@ mod tests {
     let mut tokens = Vec::new();
 
     loop {
-      if let Some(token) = scanner.next_token() {
+      if let Some(token) = scanner.next() {
         tokens.push(token);
       } else {
         break;
@@ -767,7 +772,7 @@ mod tests {
     let mut tokens = Vec::new();
     
     loop {
-      if let Some(token) = scanner.next_token() {
+      if let Some(token) = scanner.next() {
         tokens.push(token);
       } else {
         break;
@@ -820,7 +825,7 @@ mod tests {
     let mut tokens = Vec::new();
 
     loop {
-      if let Some(token) = scanner.next_token() {
+      if let Some(token) = scanner.next() {
         tokens.push(token);
       } else {
         break;
