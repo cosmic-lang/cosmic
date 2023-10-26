@@ -363,9 +363,9 @@ impl<'a> Scanner {
             // Compound operators
             '=' => {
                 let tt = self.compound_or_else(vec![
-                                               ('>', TokenType::FatArrow),
-                                               ('~', TokenType::PatternMatch),
-                                               ('=', TokenType::Equal)
+                    ('>', TokenType::FatArrow),
+                    ('~', TokenType::PatternMatch),
+                    ('=', TokenType::Equal)
                 ], TokenType::Assign);
 
                 let pos = Position{
@@ -376,15 +376,11 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             '+' => { 
                 let tt = self.compound_or_else(vec![
-                                               ('+', TokenType::Increment)
+                    ('+', TokenType::Increment)
                 ], TokenType::Plus);
 
                 let pos = Position{
@@ -395,15 +391,11 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             '*' => { 
                 let tt = self.compound_or_else(vec![
-                                               ('*', TokenType::Power)
+                    ('*', TokenType::Power)
                 ], TokenType::Asterisk);
 
                 let pos = Position{
@@ -414,16 +406,12 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             '-' => {
                 let tt = self.compound_or_else(vec![
-                                               ('>', TokenType::Arrow),
-                                               ('-', TokenType::Decrement)
+                    ('>', TokenType::Arrow),
+                    ('-', TokenType::Decrement)
                 ], TokenType::Minus);
 
                 let pos = Position{
@@ -434,16 +422,12 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             '<' => {
                 let tt = self.compound_or_else(vec![
-                                               ('=', TokenType::LesserEq),
-                                               ('<', TokenType::Lshift)
+                    ('=', TokenType::LesserEq),
+                    ('<', TokenType::Lshift)
                 ], TokenType::Lesser);
 
                 let pos = Position{
@@ -454,16 +438,12 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             '>' => {
                 let tt = self.compound_or_else(vec![
-                                               ('=', TokenType::GreaterEq),
-                                               ('>', TokenType::Rshift)
+                    ('=', TokenType::GreaterEq),
+                    ('>', TokenType::Rshift)
                 ], TokenType::Greater); 
 
                 let pos = Position{
@@ -474,16 +454,12 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             '!' => {
                 let tt = self.compound_or_else(vec![
-                                               ('=', TokenType::NotEqual),
-                                               ('~', TokenType::PatternNotMatch)
+                    ('=', TokenType::NotEqual),
+                    ('~', TokenType::PatternNotMatch)
                 ], TokenType::Bang);
 
                 let pos = Position{
@@ -494,15 +470,11 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             ':' => {
                 let tt = self.compound_or_else(vec![
-                                               ('=', TokenType::AssignExp)
+                    ('=', TokenType::AssignExp)
                 ], TokenType::Colon);
 
                 let pos = Position{
@@ -513,15 +485,11 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             '|' => { 
                 let tt = self.compound_or_else(vec![
-                                               ('>', TokenType::Pipeline)
+                    ('>', TokenType::Pipeline)
                 ], TokenType::Pipe);
 
                 let pos = Position{
@@ -532,11 +500,7 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             '.' => {
                 // Check for three char operator
@@ -545,7 +509,7 @@ impl<'a> Scanner {
                     None => {
                         // Check for two char operator
                         self.compound_or_else(vec![
-                                              ('.', TokenType::RangeExc)
+                            ('.', TokenType::RangeExc)
                         ], TokenType::Dot)    
                     }
                 };
@@ -559,23 +523,18 @@ impl<'a> Scanner {
                     line: self.file_pos.line
                 };
 
-                Token{
-                    tt, 
-                    pos,
-                    file_name: self.file_name.clone()
-                }
+                Token{tt, pos, file_name: self.file_name.clone()}
             },
             // All else
             ch => {
-                let pos = self.file_pos;
-
-                self.advance(1);
-
-                Token{
+                let tok = Token{
+                    pos: self.file_pos,
                     tt: TokenType::of_char(ch), 
-                    pos,
                     file_name: self.file_name.clone()
-                }
+                };
+                
+                self.advance(1);
+                tok
             }
         }
     }
