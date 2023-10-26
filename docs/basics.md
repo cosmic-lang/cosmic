@@ -40,7 +40,7 @@ Assignment in `Rex` can also be done as an expression using ":=", which returns 
 let boolean = false
 # Assignment expression
 while (boolean := someFunc()) { # Will loop until someFunc returns false 
-  std/fmt.printf("{}", boolean)
+    std/fmt.printf("{}", boolean)
 }
 ```
 
@@ -48,8 +48,8 @@ Bindings of the same type can be grouped together.
 ``` 
 # let bindings still don't need to be initialized right away
 let (
-  x = 72
-  y
+    x = 72
+    y
 )
 # If done on the same line, must be separated by commas
 let (x, y)
@@ -61,15 +61,15 @@ When declaring bindings, types are usually inferred based on later usage of the 
 but types can be specified if desired.
 
 <pre>
-  kind tag [: type] [= expression];
+    kind tag [: type] [= expression];
 </pre>
 
 If the binding is not initialized,
 then a type specification must be added.
 ```
-  let x = 83
+let x = 83
 
-  let name: string
+let name: string
 ```
 
 ## Memory Management
@@ -164,13 +164,13 @@ let tagged_tuple = {name: "foo", age: 25, likes_ramen: true}
 ```
 # Can change size
 let atomic_mass: %{tag, f32} = %{
-  beryllium: 9.1022,
-  carbon: 15.999
+    beryllium: 9.1022,
+    carbon: 15.999
 }
 
 let atomic_mass = %{
-  "beryllium" => 9.1022,
-  "carbon" => 15.999
+    "beryllium" => 9.1022,
+    "carbon" => 15.999
 }
 
 let carbon_mass = atomic_mass[:carbon]
@@ -198,7 +198,7 @@ let name = foo ++ " " ++ bar
 Multi-line blocks are enclosed using braces: {}
 ```
 {
-  let x = 83
+    let x = 83
 }
 ```
 
@@ -225,13 +225,13 @@ values must be returned explicitly
 A multi line body.
 ```
 const add = (x, y) => {
-  return x + y
+    return x + y
 }
 ```
 Parameters can be positional, or named. Named parameters must be declared with ~ preceding the tag. They are inferred to be optional types, but their types can be set to standard types. If used as optional types, must be after all positional parameters.
 ```
 const add = (x, y) => {
-  return x + y
+    return x + y
 }
 
 add(1, 2) # x = 1, y = 2
@@ -255,16 +255,16 @@ is the same type as the expression the "method" is being called on
 ```
 # Returns a result, which is a union (string or error)
 const func1 = (): !string {
-  if (...) {
-    return error.someError
-  }
+    if (...) {
+        return error.someError
+    }
 }
 
 # Returns a result, which is a union (void or error)
 const func1 = () !void {
-  if (...) {
-    return error.someError
-  }
+    if (...) {
+        return error.someError
+    }
 }
 
 # Will throw exception if error
@@ -289,19 +289,19 @@ let i: int = func2() or 12
 ## Pattern Matching
 ```
 const Result = enum {
-  ok(int),
-  err(string),
-  other
+    ok(int),
+    err(string),
+    other
 }
 
 let x = Result.ok(12)
 
 match (x) {
-  | Result.ok => |val| std/fmt.println("{}", val),
-  | .err => |err| std/fmt.println(err),
-  # Cases can be guarded using when followed by a condition
-  # If the condition returns true, that case will execute
-  | when is?(x) => |val| {}
+    | Result.ok => |val| std/fmt.println("{}", val),
+    | .err => |err| std/fmt.println(err),
+    # Cases can be guarded using when followed by a condition
+    # If the condition returns true, that case will execute
+    | when is?(x) => |val| {}
 }
 
 let source = "int main() {}"
@@ -309,27 +309,27 @@ let source = "int main() {}"
 # The beginning of strings can be pattern matched,
 # capturing the remaining portion of the string as a slice
 match (source) {
-  | "int", ... => |rest| {
-    std/fmt.print("{}\n", rest) #" main() {}"
-  }
+    | "int", ... => |rest| {
+        std/fmt.print("{}\n", rest) #" main() {}"
+    }
 }
 
 let nums = [5]{1, 4, 2, 6, 8}
 
 # Slices can be matched
 match (nums[..]) {
-  | [] => {
-    # Matches an empty slice
-  },
-  | [] => |elem| {
-    # Matches a slice with one element
-  },
-  | [..] => |elem, rest| {
-    # Matches a slice with atleast two elements
-  },
-  | [..] => |_, rest| {
-    # Captures can be ignored with "_"
-  }
+    | [] => {
+        # Matches an empty slice
+    },
+    | [] => |elem| {
+        # Matches a slice with one element
+    },
+    | [..] => |elem, rest| {
+        # Matches a slice with atleast two elements
+    },
+    | [..] => |_, rest| {
+        # Captures can be ignored with "_"
+    }
 }
 
 ```
@@ -412,7 +412,7 @@ const bar: fn void -> void
 
 # Types can be specified for multiple parameters at a time.
 const add = (x, y: int): int => {
-  return x + y
+    return x + y
 }
 
 # Function types can be specified separately
@@ -438,14 +438,14 @@ let x, y = 12, 11
 const use = (mov& x: int) => {}
 
 const add = (&x, y: int) => {
-  use(&x)
-  return x + y # Error x used after move
+    use(&x)
+    return x + y # Error x used after move
 }
 
 let name = "foo"
 
 const rename = (mut& name: string) => {
-  name = "bar"
+    name = "bar"
 }
 
 rename(&name)
@@ -460,14 +460,14 @@ All records are anonymous. Members can be accessed with the `.` operator. Member
 ```
 # Record definitions only contain data members, methods are added separately
 const Pos = record { # record{} is the syntax to create anonymous record type
-  x: int, 
-  y: int
+    x: int, 
+    y: int
 }
 
 # Record members can be given default values, the types will be inferred
 const Other = record {
-  x = 12, # int
-  y = 32.1 # float
+    x = 12, # int
+    y = 32.1 # float
 }
 
 let pos = .{x = 12, y = 13} # .{} is the syntax to create anonymous record instances, type will be inferred
@@ -485,9 +485,9 @@ let pos_z = pos[:x]
 Tagged unions, anonymous. If a tag is not given a type, it is given void. Can specify tag integer type
 ```
 const Result = enum(u8) {
-  ok(int),
-  err(string),
-  other
+    ok(int),
+    err(string),
+    other
 }
 
 let x = Result.ok(12)
@@ -502,7 +502,7 @@ std/testing.expect(z == 12)
 # Variant can also be used for branching based on if the pattern matches or not
 # The variant type can be inferred
 if (.ok =~ x) |z| {
-  std/fmt.printf("{}", z)
+    std/fmt.printf("{}", z)
 }
 ```
 
@@ -511,7 +511,7 @@ In `Rex`, modules are collections of bindings. Bindings can be let or const.
 All modules are anonymous, named modules are made by storing modules in bindings
 ```
 const Constants = module {
-  const PI = 3.14
+    const PI = 3.14
 }
 
 let area = Constants.PI * (radius ** 2)
@@ -519,13 +519,13 @@ let area = Constants.PI * (radius ** 2)
 Modules can be extended using functional updates
 ```
 const Constants = module {
-  const PI = 3.14
+    const PI = 3.14
 }
 
 const MoreConstants = module {
-  ...Constants
-  const TwoPi = Constants.PI * 2
-  const Avogadros = 6.022e-23
+    ...Constants
+    const TwoPi = Constants.PI * 2
+    const Avogadros = 6.022e-23
 }
 ```
 
@@ -534,8 +534,8 @@ const MoreConstants = module {
 Types can be given methods using receivers
 ```
 const Player = record {
-  pos: {f32, f32},
-  health: int
+    pos: {f32, f32},
+    health: int
 }
 
 # Methods for types are declared by specifying a reciever after the indentifier
@@ -569,7 +569,7 @@ let (name, update_name) = $signal(string)
 Green threads
 ```
 let sid = $spawn(() => {
-  # Some code
+    # Some code
 })
 defer sid.join()
 ```
@@ -580,18 +580,18 @@ defer sid.join()
 let chan = $channel(string)
 
 for (0..10) |i| {
-  $spawn(() => |chan| {
-    chan.send(i)
-  })
+    $spawn(() => |chan| {
+        chan.send(i)
+    })
 }
 
 let sum = 0
 for (0..10) {
-  sum += chan.receive()
+    sum += chan.receive()
 }
 
 for (chan.queue) |msg| {
-  sum += msg
+    sum += msg
 }
 ```
 
@@ -603,18 +603,18 @@ for (chan.queue) |msg| {
 # Return values can be given tagifiers to declare bindings to use for returning, 
 # allowing for naked returns
 const div = (x, y: int): (quo, rem: int) => {
-  quo = x / y
-  rem = x % y
-  return
+    quo = x / y
+    rem = x % y
+    return
 }
 
 let quo, rem = div(12, 5)
 
 # Returning a tuple or record allows the return to be stored in a single binding
 const div = (x, y: int): {int, int} => {
-  let quo = x / y
-  let rem = x % y
-  return {quo, rem}
+    let quo = x / y
+    let rem = x % y
+    return {quo, rem}
 }
 
 let result = div(12, 5)
@@ -622,10 +622,10 @@ std/testing.expect(result[0] == 2)
 
 $ fn (int, int) -> record{quo, rem: int}
 const div = (x, y) => {
-  let quo = x / y
-  let rem = x % y
-  return .{quo = quo, rem = rem} # if names match field tags, can ommit field name 
-                                #   ie .{quo, rem}
+    let quo = x / y
+    let rem = x % y
+    return .{quo = quo, rem = rem} # if names match field tags, can ommit field name 
+                                   #   ie .{quo, rem}
 }
 
 let result = div(12, 5)
@@ -636,26 +636,26 @@ std/testing.expect(result.quo == 2)
 # Must be the final argument
 # ...tag can be used as shorthand for $any tuples
 const variadic = (...args) => {
-  let size = $len(args)
+    let size = $len(args)
 
-  for (0..size) |i| {
-    std/fmt.println("{} ", args[i])
-  }
+    for (0..size) |i| {
+        std/fmt.println("{} ", args[i])
+    }
 }
 
 const struct = (@tup: any) => {
-  inline for ($typeOf(tup).members) |member| {
+    inline for ($typeOf(tup).members) |member| {
 
-  }
+    }
 }
 
 @struct(.{...})
 
 # Functions can be taken as parameters and returned from functions
 const sort = (slice: []i32, pred: fn (i32, i32) -> bool) => {
-  # code
-  if pred(slice[i], slice[j]) {
-  # code
+    # code
+    if pred(slice[i], slice[j]) {
+    # code
 }
 
 const arr = [41, 22, 31, 84, 75]
@@ -677,14 +677,14 @@ let source = "some source code"
 let ast = parse(scan(source))
 # Instead, this can be decomposed into steps, which follows the order of execution.
 let ast = source
-  |> scan()
-  |> parse()
+    |> scan()
+    |> parse()
 
 # This is similar to method chaining, an example of which is below, but using functions
 #   which are separate from the data
 let greeting = "!dlrow ,olleh"
-  .reverse()
-  .capitalize() # reverse and capitalize are methods of strings
+    .reverse()
+    .capitalize() # reverse and capitalize are methods of strings
 
 ```
 
@@ -693,22 +693,22 @@ let greeting = "!dlrow ,olleh"
 
 Traits cannot specify data members, only methods
 ```
-# Behaviour definition
+# Trait definition
 const Entity = trait {
-  # Method types have restrictions on the receiver type, which goes after fn
-  # Both of these methods require receivers to be &'e' (a exclusive mode borrow)
-  update_pos: fn (mut&)({f32, f32}) -> (),
-  update_health: fn (mut&)(int) -> ()
+    # Method types have restrictions on the receiver type, which goes after fn
+    # Both of these methods require receivers to be &'e' (a exclusive mode borrow)
+    update_pos: fn (mut&)({f32, f32}) -> (),
+    update_health: fn (mut&)(int) -> ()
 }
 
 const system = (mut& entity: Entity) => # code
 
 # Traits are implemented implicitly
 const Player = record {
-  # Members which are unique to each instance of the record are declared like parameters
-  pos: {f32, f32},
-  health: int,
-  ...,
+    # Members which are unique to each instance of the record are declared like parameters
+    pos: {f32, f32},
+    health: int,
+    ...,
 }
 
 # To implement the Entity Behaviour, it must have all methods defined with matching
@@ -728,10 +728,10 @@ The return of compile time expressions is a reference to a static variable
 ```
 # `@` or `ctime@` preceeding a tagifier states that this parameter must be known at compile time
 const Vector = (ctime@t: typeid): typeid => {
-  return record{
-    x: t,
-    y: t
-  }
+    return record{
+        x: t,
+        y: t
+    }
 }
 
 const t = int
@@ -744,7 +744,7 @@ const Pos = @Vector(t) # This can be used in later compile time expressions
 
 # Blocks can also be run at compile time
 const screen_size = @{
-  return {1920, 1080}
+    return {1920, 1080}
 }
 ```
 ## First Class Modules
@@ -752,19 +752,19 @@ Modules are first class in `Rex`, so they can be passed into and out of function
 ```
 # To create a generic ds with methods, you must return a record with static bindings
 const List = (ctime@type: typeid): moduleid => {
-  return module {
-    const Node = record {
-      next: $this(),
-      data: type
-    }
+    return module {
+        const Node = record {
+            next: $this(),
+            data: type
+        }   
     
-    pub const t = record {
-      head: Node,
-      size: uint
-    }
+        pub const t = record {
+            head: Node,
+            size: uint
+        }
 
-    const insert = (mut& t, value: type) => {...}
-  }
+        const insert = (mut& t, value: type) => {...}
+    }
 };
 
 let intList = List(int).t{}
@@ -835,41 +835,41 @@ intList.insert(12)
 ## Example: Linked List
 ```
 const List = (ctime@type: typeid): moduleid => {
-  return module {
-    let max_size = 100
+    return module {
+        let max_size = 100
 
-    const node = record {
-      next: ?$this(),
-      data: type
-    }
-
-    pub const t = record {
-      head: ?node,
-      size: uint
-    }
-
-    const insert(mut& t) = (value: type) => |max_size| {
-      if (self.size == 0) {
-        self.head = node {
-          next: null,
-          data: value
+        const node = record {
+            next: ?$this(),
+            data: type
         }
-        self.size++ 
-      } else if (self.size <= max_size) {
-        let tmp = self.head
 
-        self.head = node {
-          next: tmp,
-          data: value
+        pub const t = record {
+            head: ?node,
+            size: uint
         }
-        self.size++ 
-      }
-    }
 
-    const set_max = (size: usize) => |max_size| {
-      max_size.* = size
+        const insert(mut& t) = (value: type) => |max_size| {
+            if (self.size == 0) {
+                self.head = node {
+                    next: null,
+                    data: value
+                }
+                self.size++ 
+            } else if (self.size <= max_size) {
+                let tmp = self.head
+
+                self.head = node {
+                    next: tmp,
+                    data: value
+                }
+                self.size++ 
+            }
+        }
+
+        const set_max = (size: usize) => |max_size| {
+            max_size.* = size
+        }
     }
-  }
 }
 
 let names = List(string).t{}
@@ -890,15 +890,15 @@ Refer to `Silver` for details
 
 # This creates a circuit type
 const AndGate = circuit { 
-  port (
-    x(in: u1)
-    y(in: u1)
-    z(out: u1)
-  )
+    port (
+        x(in: u1)
+        y(in: u1)
+        z(out: u1)
+    )
   
-  arch (
-    z = x & y
-  )
+    arch (
+        z = x & y
+    )
 }
 
 let and = @AndGate{} # This creates an instance of AndGate, 
