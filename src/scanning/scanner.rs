@@ -39,7 +39,8 @@ fn is_alphanumeric(ch: char) -> bool {
     }
 }
 
-///
+/// Holds on to source code and provides an iterator for 
+/// tokenizing the source as needed
 pub struct Scanner {
     source: Box<str>,
     read: usize,
@@ -555,7 +556,6 @@ impl Iterator for Scanner {
 
         return Some(token);
     }
-
 }
 
 #[cfg(test)]

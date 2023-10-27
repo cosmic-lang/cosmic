@@ -49,7 +49,12 @@ fn main() -> Result<()> {
     match &cli.command {
         // Compile file at path
         Some(Commands::Compile {path}) => {
-            let file_name: Rc<str> = path.file_name().unwrap().to_str().unwrap().into();
+            let file_name: Rc<str> = path.file_name()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .into();
+
             let source = read_file(path, EXT)?;
 
             let scanner = Scanner::new(file_name, source);
@@ -60,7 +65,12 @@ fn main() -> Result<()> {
         },
         // Interpret file at path
         Some(Commands::Run {path}) => {
-            let file_name: Rc<str> = path.file_name().unwrap().to_str().unwrap().into();
+            let file_name: Rc<str> = path.file_name()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .into();
+
             let source = read_file(path, EXTI)?;
 
             let scanner = Scanner::new(file_name, source);
@@ -69,7 +79,7 @@ fn main() -> Result<()> {
                 dbg!(token);
             }
         },
-        _ => {}
+        None => {}
     }
 
     Ok(())
