@@ -1,5 +1,7 @@
 # Language Syntax
 
+## Maybe make language use semicolons, so assign expressions just don't end in semicolons
+
 ## Comments
 ```
 # A single-line comment
