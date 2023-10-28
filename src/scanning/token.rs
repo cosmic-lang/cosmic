@@ -8,9 +8,9 @@ use super::super::utilities::Position;
 ///
 #[derive(Debug, PartialEq)]
 pub struct Token {
-    pub tt: TokenType,
+    pub kind: TokenType,
     pub pos: Position,
-    pub file_name: Rc<str>
+    pub file: Rc<str>
 }
 
 ///
