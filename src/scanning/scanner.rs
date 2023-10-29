@@ -4,40 +4,7 @@
 use std::rc::Rc;
 
 use super::token::{Token, TokenType};
-use super::super::utilities::Position;
-
-/// Returns true if char is a alphabetical char or '_'
-fn is_alphabetical(ch: char) -> bool {
-    return match ch {
-        'a'..='z' | 'A'..='Z' | '_' => true,
-        _ => false
-    }
-}
-
-/// Returns true if char is a integer
-fn is_integer(ch: char) -> bool {
-    return match ch {
-        '0'..='9' => true,
-        _ => false
-    }
-}
-
-/// Returns true if char is a number or '.'
-fn is_numeric(ch: char) -> bool {
-    return match ch {
-        ch if is_integer(ch) => true,
-        '.' => true,
-        _ => false
-    }
-}
-
-/// Returns true if char is a number or letter or '_'
-fn is_alphanumeric(ch: char) -> bool {
-    return match ch {
-        ch if is_alphabetical(ch) | is_integer(ch) => true, 
-        _ => false
-    }
-}
+use crate::utilities::{Position, is_alphabetical, is_integer, is_numeric, is_alphanumeric};
 
 /// Holds on to source code and provides an iterator for 
 /// tokenizing the source as needed
