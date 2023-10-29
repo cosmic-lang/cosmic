@@ -486,7 +486,7 @@ let pos_z = pos[:x]
 
 Tagged unions, anonymous. If a tag is not given a type, it is given void. Can specify tag integer type
 ```
-const Result = enum(u8) {
+const Result = enum {
     ok(int),
     err(string),
     other
