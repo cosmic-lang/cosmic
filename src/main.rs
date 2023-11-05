@@ -56,7 +56,6 @@ fn main() -> Result<()> {
                 .into();
 
             let source = read_file(path, EXT)?;
-
             let scanner = Scanner::new(file_name, source);
 
             for token in scanner {
@@ -72,7 +71,6 @@ fn main() -> Result<()> {
                 .into();
 
             let source = read_file(path, EXTI)?;
-
             let scanner = Scanner::new(file_name, source);
 
             for token in scanner {
