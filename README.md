@@ -17,7 +17,7 @@ Initial development is following three main stages:
 - First class `Types`, `Errors`, `Functions`, and `Modules`
 - Shared functionality with interfaces called `Traits`
 - Pattern matching
-- Meta-programming with compile time execution
+- Meta-programming with `ctime`, expressions can be interpreted during compilation
 - Type reflection
 - Automatic memory management by default
     - Variables are stack or GC allocated based on usage

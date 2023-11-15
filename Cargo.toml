@@ -8,7 +8,7 @@ description = "General Purpose Programming Language"
 
 [dependencies]
 anyhow = "1.0.75"
-clap = { version = "4.4.6", features = ["derive", "env"] }
+clap = { version = "4.4.7", features = ["derive", "env"] }
 const_format = "0.2.32"
-serde = { version = "1.0.189", features = ["derive"] }
+serde = { version = "1.0.190", features = ["derive"] }
 serde_json = "1.0.107"
