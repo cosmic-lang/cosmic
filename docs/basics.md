@@ -81,8 +81,8 @@ In `Rex` memory is GC/stack allocated by default. Memory can be allocated manual
 ```
 let name: int = 12 # GC/stack allocated
 
-let names: *[5]string = std/mem.allocator.new([5]string) # Allocates an array and returns a pointer to it
-defer std/mem.allocator.free(names) # Manual memory must be freed
+let names: *[5]string = std/mem/allocator.new([5]string) # Allocates an array and returns a pointer to it
+defer std/mem/allocator.free(names) # Manual memory must be freed
 ```
 
 ## Basic Primitive Types
@@ -263,7 +263,7 @@ const func1 = (): !string {
 }
 
 # Returns a result, which is a union (void or error)
-const func1 = () !void {
+const func1 = (): !void {
     if (...) {
         return error.someError
     }
