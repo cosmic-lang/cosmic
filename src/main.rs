@@ -7,7 +7,6 @@ use const_format::formatcp;
 use rex::prelude::*;
 
 const EXT: &str = "rx";
-const EXTI: &str = "rxi";
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const DESCRIPTION: &str = env!("CARGO_PKG_DESCRIPTION");
@@ -34,7 +33,7 @@ enum Commands {
         /// relative path of file to compile
         path: PathBuf
     },
-    /// Interprets file at relative path
+    /// Compiles and executes file at relative path
     Run{
         /// relative path of file to interpret
         path: PathBuf
@@ -68,7 +67,7 @@ fn main() -> Result<()> {
                 .unwrap()
                 .into();
 
-            let source = read_file(path, EXTI)?;
+            let source = read_file(path, EXT)?;
             let scanner = Scanner::new(file_name, source);
 
             for token in scanner {
