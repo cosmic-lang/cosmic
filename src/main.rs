@@ -16,7 +16,7 @@ const ABOUT: &str = formatcp!("\n\
 );
 
 #[derive(Parser)]
-#[command(name="rex", author="rex-lang", version, about=ABOUT, arg_required_else_help = true)]
+#[command(name="rex", author="rexlang", version, about=ABOUT, arg_required_else_help = true)]
 struct Cli {
     #[arg(short, long)]
     output: Option<PathBuf>,
