@@ -11,5 +11,5 @@ A general purpose, statically typed, programming language.
 - [Compiler](https://www.github.com/rexlang/rex-c)
 - [Build System](https://www.github.com/rexlang/tea)
 - [Standard Library](https://www.github.com/rexlang/rex-std)
-- [LSP](https://www.github.com/rexlang/rexls)
+- [Language Server](https://www.github.com/rexlang/rexls)
 
