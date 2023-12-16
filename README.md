@@ -8,8 +8,8 @@ A general purpose, statically typed, programming language.
 [Read the docs](https://www.rexlang.org)
 
 ## Repositories
-[![Compiler]](https://www.github.com/rexlang/rex-c)
-[![Build System]](https://www.github.com/rexlang/tea)
-[![Standard Library]](https://www.github.com/rexlang/rex-std)
-[![LSP]](https://www.github.com/rexlang/rexls)
+- [Compiler](https://www.github.com/rexlang/rex-c)
+- [Build System](https://www.github.com/rexlang/tea)
+- [Standard Library](https://www.github.com/rexlang/rex-std)
+- [LSP](https://www.github.com/rexlang/rexls)
 
