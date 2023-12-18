@@ -5,7 +5,7 @@
 
 A general purpose, statically typed, programming language.
 
-[Read the docs](https://www.iodo-lang.io)
+[Read the docs](https://www.iodo-lang.org)
 
 ## Repositories
 - [Compiler](https://www.github.com/iodo-lang/iodo-c)
