@@ -7,7 +7,7 @@ A general purpose, statically typed, programming language.
 [Read the docs](https://www.rexlang.org)
 
 ## Repositories
-- [Compiler](https://www.github.com/rexlang/rex-c) | [![Build](https://github.com/rexlang/rex-c/workflows/Build/badge.svg)](https://github.com/rexlang/rex-c/actions/workflows/build.yml)
+- [Compiler](https://www.github.com/rexlang/rex-c)
 - [Build System](https://www.github.com/rexlang/halogen)
 - [Standard Library](https://www.github.com/rexlang/rex-std)
 - [Language Server](https://www.github.com/rexlang/rex-ls)
