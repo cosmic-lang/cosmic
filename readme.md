@@ -4,6 +4,13 @@
 
 A general purpose, statically typed, programming language.
 
+Disclaimer: Not yet ready for use!
+
+# Installation
+When Rex reaches a usable state, the instructions for installing the build tools will live here.
+
+# Documentation
+
 [Read the docs](https://www.rexlang.org)
 
 ## Repositories
