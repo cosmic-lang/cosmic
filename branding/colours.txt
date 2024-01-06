@@ -1,0 +1,2 @@
+Main       = #a04732
+Background = #edeae2

@@ -1,2 +1,0 @@
-Main       = #ff9900
-Background = #333333
